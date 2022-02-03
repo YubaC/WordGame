@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordGame</title>
+</head>
+
+<body>
+    <button onclick="up()">↑</button><br>
+    <button onclick="left()">←</button>
+    <button onclick="down()">↓</button>
+    <button onclick="right()">→</button><br>
+    <p id="map"></p>
+    <!--  
+----------------→y
+|
+|
+|
+|
+|
+|
+↓x -->
+    <script>
+        x = 4;
+        y = 4;
+        x_old = 3;
+        y_old = 3;
+
+        map = new Array();
+        map[0] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[1] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[2] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[3] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[4] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[5] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[6] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[7] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[8] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[9] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[10] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+        map[11] = ["土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土", "土"];
+
+        drawmap();
+
+        function drawmap() {
+            map[x][y] = '<span style="color:red;">人</span>';
+            map[x_old][y_old] = "土";
+            document.getElementById("map").innerHTML = "";
+            for (i = 0; i < map.length; i++) {
+                document.getElementById("map").innerHTML += map[i] + "<br /><br />";
+            }
+        }
+
+        function left() {
+            if (y > 0) {
+                x_old = x;
+                y_old = y;
+                y -= 1;
+            }
+            drawmap();
+        }
+
+        function right() {
+            if (y < 11) {
+                x_old = x;
+                y_old = y;
+                y += 1;
+            }
+            drawmap();
+        }
+
+        function up() {
+            if (x > 0) {
+                x_old = x;
+                y_old = y;
+                x -= 1;
+            }
+            drawmap();
+        }
+
+        function down() {
+            if (x < 11) {
+                x_old = x;
+                y_old = y;
+                x += 1;
+            }
+            drawmap();
+        }
+    </script>
+
+</body>
+
+</html>
