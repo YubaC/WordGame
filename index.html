@@ -21,7 +21,8 @@
     <button onclick="up()">↑</button><br>
     <button onclick="left()">←</button>
     <button onclick="down()">↓</button>
-    <button onclick="right()">→</button><br>
+    <button onclick="right()">→</button>
+    <button onclick="boom()">&#128163;</button><br>
     <!--  
 ----------------→y
 |
@@ -32,10 +33,14 @@
 |
 ↓x -->
     <script>
+        var i = 0;
+        var j = 0;
         x = 0;
         y = 0;
         x_old = 0;
         y_old = 0;
+        boom_x = -1;
+        boom_y = -1;
         block = "草";
         block_old = "草";
 
@@ -56,17 +61,26 @@
         word = ["水", "桥", "草", "人"]
         color = ["blue", "orange", "green", "red"]
         drawmap();
+        findwarter();
 
         function drawmap() {
 
             map[x_old][y_old] = block_old;
             map[x][y] = '人';
+            if (boom_x != -1 && boom_y != -1) {
+                map[boom_x][boom_y] = "&#128163";
+            }
 
             document.getElementById("map").innerHTML = "";
             for (i = 0; i < map.length; i++) {
                 var line = "";
                 for (j = 0; j < map[i].length; j++) {
-                    line += map[i][j];
+                    if (map[i][j] != "水_new") {
+                        line += map[i][j];
+                    } else {
+                        line += "水";
+                        map[i][j] = "水";
+                    }
                 }
                 document.getElementById("map").innerHTML += line + "<br>";
 
@@ -82,7 +96,7 @@
         }
 
         function left() {
-            if (y > 0 && (map[x][y - 1] == "草" || map[x][y - 1] == "桥")) {
+            if (y > 0 && (map[x][y - 1] == "草" || map[x][y - 1] == "桥" || map[x][y - 1] == "土")) {
                 block_old = block;
                 block = map[x][y - 1];
                 x_old = x;
@@ -93,7 +107,7 @@
         }
 
         function right() {
-            if (y < 11 && (map[x][y + 1] == "草" || map[x][y + 1] == "桥")) {
+            if (y < 11 && (map[x][y + 1] == "草" || map[x][y + 1] == "桥" || map[x][y + 1] == "土")) {
                 block_old = block;
                 block = map[x][y + 1];
                 x_old = x;
@@ -104,7 +118,7 @@
         }
 
         function up() {
-            if (x > 0 && (map[x - 1][y] == "草" || map[x - 1][y] == "桥")) {
+            if (x > 0 && (map[x - 1][y] == "草" || map[x - 1][y] == "桥" || map[x - 1][y] == "土")) {
                 block_old = block;
                 block = map[x - 1][y];
                 x_old = x;
@@ -115,7 +129,7 @@
         }
 
         function down() {
-            if (x < 11 && (map[x + 1][y] == "草" || map[x + 1][y] == "桥")) {
+            if (x < 11 && (map[x + 1][y] == "草" || map[x + 1][y] == "桥" || map[x + 1][y] == "土")) {
                 block_old = block;
                 block = map[x + 1][y];
                 x_old = x;
@@ -123,6 +137,86 @@
                 x += 1;
             }
             drawmap();
+        }
+
+        function boom() {
+            if (boom_x == -1 && boom_y == -1) {
+                boom_x = x;
+                boom_y = y;
+                boom_x_old = x;
+                boom_y_old = y;
+                setTimeout("explode()", 3000);
+            }
+            drawmap();
+        }
+
+        function explode() {
+            for (q = -1; q < 2; q++) {
+                for (w = -1; w < 2; w++) {
+                    if (boom_x + q > -1 && boom_y + w > -1 && boom_x + q < 12 && boom_y + w < 12) {
+                        map[boom_x + q][boom_y + w] = "炸";
+                    }
+                }
+            }
+            boom_x = -1;
+            boom_y = -1;
+            drawmap();
+            setTimeout("replace()", 1000);
+        }
+
+        function replace() {
+            for (e = -1; e < 2; e++) {
+                for (r = -1; r < 2; r++) {
+                    if (boom_x_old + e > -1 && boom_y_old + r > -1 && boom_x_old + e < 12 && boom_y_old + r < 12) {
+                        map[boom_x_old + e][boom_y_old + r] = "土";
+                    }
+                }
+            }
+            drawmap();
+        }
+
+        function findwarter() {
+            //     for (o = 0; o < 12; o++) {
+            //         for (u = 0; u < map[o].length; u++) {
+            //             if (map[o][u] == "土" && o < 12) {
+            //                 if (map[o + 1][u] == "水") {
+            //                     map[o][u] = "水_new";
+            //                 }
+            //             } else if (map[o][u] == "土" && o < 12) {
+            //                 if (map[o][u + 1] == "水") {
+            //                     map[o][u] = "水_new";
+            //                 }
+            //                 map[o][u] = "水_new";
+            //             } else if (map[o][u] == "土" && o - 1 > 0) {
+            //                 if (map[o - 1][u] == "水") {
+            //                     map[o][u] = "水_new";
+            //                 }
+            //             } else if (map[o][u] == "土" && u - 1 > 0) {
+            //                 if (map[o][u - 1] == "水") {
+            //                     map[o][u] = "水_new";
+            //                 }
+            //             }
+            //             drawmap();
+            //         }
+            //     }
+            //     setTimeout("findwarter()", 1000);
+            for (o = 0; o < 12; o++) {
+                for (u = 0; u < map[o].length; u++) {
+                    if (map[o][u] == "土") {
+                        for (q = -1; q < 2; q++) {
+                            for (w = -1; w < 2; w++) {
+                                if (o + q > -1 && u + w > -1 && o + q < 12 && u + w < 12) {
+                                    if (map[o + q][u + w] == "水") {
+                                        map[o][u] = "水_new";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            drawmap();
+            setTimeout("findwarter()", 1000);
         }
     </script>
 
