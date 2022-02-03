@@ -23,6 +23,7 @@
     <button onclick="down()">↓</button>
     <button onclick="right()">→</button>
     <button onclick="boom()">&#128163;</button><br>
+    <input type="CheckBox" id="waterrun" checked="true">河水蔓延
     <!--  
 ----------------→y
 |
@@ -176,46 +177,24 @@
         }
 
         function findwarter() {
-            //     for (o = 0; o < 12; o++) {
-            //         for (u = 0; u < map[o].length; u++) {
-            //             if (map[o][u] == "土" && o < 12) {
-            //                 if (map[o + 1][u] == "水") {
-            //                     map[o][u] = "水_new";
-            //                 }
-            //             } else if (map[o][u] == "土" && o < 12) {
-            //                 if (map[o][u + 1] == "水") {
-            //                     map[o][u] = "水_new";
-            //                 }
-            //                 map[o][u] = "水_new";
-            //             } else if (map[o][u] == "土" && o - 1 > 0) {
-            //                 if (map[o - 1][u] == "水") {
-            //                     map[o][u] = "水_new";
-            //                 }
-            //             } else if (map[o][u] == "土" && u - 1 > 0) {
-            //                 if (map[o][u - 1] == "水") {
-            //                     map[o][u] = "水_new";
-            //                 }
-            //             }
-            //             drawmap();
-            //         }
-            //     }
-            //     setTimeout("findwarter()", 1000);
-            for (o = 0; o < 12; o++) {
-                for (u = 0; u < map[o].length; u++) {
-                    if (map[o][u] == "土") {
-                        for (q = -1; q < 2; q++) {
-                            for (w = -1; w < 2; w++) {
-                                if (o + q > -1 && u + w > -1 && o + q < 12 && u + w < 12) {
-                                    if (map[o + q][u + w] == "水") {
-                                        map[o][u] = "水_new";
+            if (document.getElementById("waterrun")) {
+                for (o = 0; o < 12; o++) {
+                    for (u = 0; u < map[o].length; u++) {
+                        if (map[o][u] == "土") {
+                            for (q = -1; q < 2; q++) {
+                                for (w = -1; w < 2; w++) {
+                                    if (o + q > -1 && u + w > -1 && o + q < 12 && u + w < 12) {
+                                        if (map[o + q][u + w] == "水") {
+                                            map[o][u] = "水_new";
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                 }
+                drawmap();
             }
-            drawmap();
             setTimeout("findwarter()", 1000);
         }
     </script>
