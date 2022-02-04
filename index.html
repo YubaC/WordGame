@@ -17,7 +17,10 @@
         }
     </style>
 
+    <!-- 画布 -->
     <p id="map"></p>
+
+    <!-- 操作 -->
     <button onclick="up()">↑</button><br>
     <button onclick="left()">←</button>
     <button onclick="down()">↓</button>
@@ -46,6 +49,8 @@
         block_old = "草";
 
         map = new Array();
+
+        //定义地图
         map[0] = ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"];
         map[1] = ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"];
         map[2] = ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"];
@@ -61,24 +66,27 @@
 
         word = ["水", "桥", "草", "人"]
         color = ["blue", "orange", "green", "red"]
+        passable = ["草", "桥", "土"];
+
+        //初始化
         drawmap();
         findwarter();
 
         function drawmap() {
 
-            map[x_old][y_old] = block_old;
+            map[x_old][y_old] = block_old; //上一步所在的方块
             map[x][y] = '人';
-            if (boom_x != -1 && boom_y != -1) {
+            if (boom_x != -1 && boom_y != -1) { //有人放了炸弹
                 map[boom_x][boom_y] = "&#128163";
             }
-
+            //画地图
             document.getElementById("map").innerHTML = "";
             for (i = 0; i < map.length; i++) {
                 var line = "";
                 for (j = 0; j < map[i].length; j++) {
                     if (map[i][j] != "水_new") {
                         line += map[i][j];
-                    } else {
+                    } else { //新生成的水变成普通的水，"水_new"是为了防止水蔓延的时候一次刷新多格（新手保护？）
                         line += "水";
                         map[i][j] = "水";
                     }
@@ -87,6 +95,7 @@
 
             }
 
+            //地图着色
             for (i = 0; i < word.length; i++) {
                 var oBox = document.getElementById("map");
                 var oContent = oBox.innerHTML;
@@ -96,10 +105,23 @@
             }
         }
 
+        // 判断元素是否在数组内的函数，使用方法：contains(Array，元素)，返回true或false
+        function contains(arr, obj) {
+            var i = arr.length;
+            while (i--) {
+                if (arr[i] === obj) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        // 移动
         function left() {
-            if (y > 0 && (map[x][y - 1] == "草" || map[x][y - 1] == "桥" || map[x][y - 1] == "土")) {
-                block_old = block;
-                block = map[x][y - 1];
+            if (y > 0 && contains(passable, map[x][y - 1])) { //如果不会出地图
+                block_old = block; //block_old更新为当前所在的方块（block：当前所在的方块 block_old：上一个走过的方块）
+                block = map[x][y - 1]; //block更新为即将走到的方块
                 x_old = x;
                 y_old = y;
                 y -= 1;
@@ -108,7 +130,7 @@
         }
 
         function right() {
-            if (y < 11 && (map[x][y + 1] == "草" || map[x][y + 1] == "桥" || map[x][y + 1] == "土")) {
+            if (y < map[x].length - 1 && contains(passable, map[x][y + 1])) {
                 block_old = block;
                 block = map[x][y + 1];
                 x_old = x;
@@ -119,7 +141,7 @@
         }
 
         function up() {
-            if (x > 0 && (map[x - 1][y] == "草" || map[x - 1][y] == "桥" || map[x - 1][y] == "土")) {
+            if (x > 0 && contains(passable, map[x - 1][y])) {
                 block_old = block;
                 block = map[x - 1][y];
                 x_old = x;
@@ -130,7 +152,7 @@
         }
 
         function down() {
-            if (x < 11 && (map[x + 1][y] == "草" || map[x + 1][y] == "桥" || map[x + 1][y] == "土")) {
+            if (x < map.length - 1 && contains(passable, map[x + 1][y])) {
                 block_old = block;
                 block = map[x + 1][y];
                 x_old = x;
@@ -140,35 +162,38 @@
             drawmap();
         }
 
+        // 放炸弹
         function boom() {
-            if (boom_x == -1 && boom_y == -1) {
+            if (boom_x == -1 && boom_y == -1) { //如果没有炸弹（炸弹只能存在一个）
                 boom_x = x;
                 boom_y = y;
                 boom_x_old = x;
                 boom_y_old = y;
-                setTimeout("explode()", 3000);
+                setTimeout("explode()", 3000); //延时3秒爆炸
             }
             drawmap();
         }
 
+        // 爆炸特效（周围一圈“炸”）
         function explode() {
             for (q = -1; q < 2; q++) {
                 for (w = -1; w < 2; w++) {
-                    if (boom_x + q > -1 && boom_y + w > -1 && boom_x + q < 12 && boom_y + w < 12) {
+                    if (boom_x + q > -1 && boom_y + w > -1 && boom_x + q < map.length && boom_y + w < map[boom_x].length) {
                         map[boom_x + q][boom_y + w] = "炸";
                     }
                 }
             }
-            boom_x = -1;
+            boom_x = -1; //清除炸弹
             boom_y = -1;
             drawmap();
-            setTimeout("replace()", 1000);
+            setTimeout("replace()", 1000); //过一秒后清除特效，替换为“土”
         }
 
+        // 清除特效，替换为“土”
         function replace() {
             for (e = -1; e < 2; e++) {
                 for (r = -1; r < 2; r++) {
-                    if (boom_x_old + e > -1 && boom_y_old + r > -1 && boom_x_old + e < 12 && boom_y_old + r < 12) {
+                    if (boom_x_old + e > -1 && boom_y_old + r > -1 && boom_x_old + e < map.length && boom_y_old + r < map[boom_x_old].length) {
                         map[boom_x_old + e][boom_y_old + r] = "土";
                     }
                 }
@@ -176,16 +201,17 @@
             drawmap();
         }
 
+        // 河水蔓延
         function findwarter() {
-            if (waterrun.checked) {
-                for (o = 0; o < 12; o++) {
+            if (waterrun.checked) { //如果开启河水蔓延
+                for (o = 0; o < map.length; o++) { //遍历全图，寻找“土”
                     for (u = 0; u < map[o].length; u++) {
                         if (map[o][u] == "土") {
-                            for (q = -1; q < 2; q++) {
+                            for (q = -1; q < 2; q++) { //找到“土”，在土周围3x3区域寻找“水”
                                 for (w = -1; w < 2; w++) {
-                                    if (o + q > -1 && u + w > -1 && o + q < 12 && u + w < 12) {
-                                        if (map[o + q][u + w] == "水") {
-                                            map[o][u] = "水_new";
+                                    if (o + q > -1 && u + w > -1 && o + q < map.length && u + w < map[o].length) {
+                                        if (map[o + q][u + w] == "水") { //如果周围有水
+                                            map[o][u] = "水_new"; //“土”替换为“水_new”（“水_new”是新生成的水源，绘图时会被刷新为普通水源）
                                         }
                                     }
                                 }
@@ -195,7 +221,7 @@
                 }
                 drawmap();
             }
-            setTimeout("findwarter()", 1000);
+            setTimeout("findwarter()", 1000); //间隔一秒重复执行
         }
     </script>
 
