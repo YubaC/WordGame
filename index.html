@@ -26,7 +26,17 @@
     <button onclick="down()">↓</button>
     <button onclick="right()">→</button>
     <button id="boom" onclick="boom()">&#128163;</button><br>
-    <input type="CheckBox" id="waterrun">河水蔓延
+    <input type="CheckBox" id="waterrun">河水蔓延<br>
+
+    <a href="javascript:void(0);" onClick="show()" id="show">显示地图组件</a><br>
+
+    <div id="hide">
+        <textarea id="in" placeholder="导入地图" rows="15" cols="30"></textarea>
+        <a href="javascript:void(0);" onClick="process()" id="do_process">加载地图</a><br>
+        <a href="mapbuilder.html" id="show">编辑地图</a><br>
+        <a href="explain.html" id="show">说明</a><br>
+        <a href="javascript:void(0);" onClick="hide()" id="hide">隐藏地图组件</a>
+    </div>
     <!--  
 ----------------→y
 |
@@ -41,8 +51,8 @@
         var j = 0;
         x = 0;
         y = 0;
-        x_old = 0;
-        y_old = 0;
+        x_old = 1;
+        y_old = 1;
         boom_x = -1;
         boom_y = -1;
         block = "草";
@@ -64,13 +74,27 @@
         map[10] = ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"];
         map[11] = ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"];
 
-        word = ["水", "桥", "草", "人"]
-        color = ["blue", "orange", "green", "red"]
+        word = ["水", "桥", "草", "人"];
+        color = ["blue", "orange", "green", "red"];
         passable = ["草", "桥", "土"];
 
         //初始化
         drawmap();
         findwarter();
+
+        map_input = new Array();
+
+        hide();
+
+        function show() {
+            document.getElementById('show').style.visibility = "hidden";
+            document.getElementById('hide').style.visibility = "visible";
+        }
+
+        function hide() {
+            document.getElementById('show').style.visibility = "visible";
+            document.getElementById('hide').style.visibility = "hidden";
+        }
 
         function drawmap() {
 
@@ -116,10 +140,44 @@
             return false;
         }
 
+        function process() {
+            var ee = document.getElementById("in");
+            var lines = ee.value.split(";");
+            for (i = 0; i < lines.length; i++) {
+                map_input[i] = lines[i].split(",");
+            }
+            for (g = 0; g < map_input.length - 3; g++) {
+                map[g] = map_input[g];
+            }
+            word = map_input[map_input.length - 3];
+            color = map_input[map_input.length - 2];
+            passable = map_input[map_input.length - 1];
+
+            map[x][y] = '人';
+            block = map_input[x_old][y_old];
+            //画地图
+            document.getElementById("map").innerHTML = "";
+            for (i = 0; i < map.length; i++) {
+                var line = "";
+                for (j = 0; j < map[i].length; j++) {
+                    line += map[i][j];
+                }
+                document.getElementById("map").innerHTML += line + "<br>";
+            }
+
+            //地图着色
+            for (i = 0; i < word.length; i++) {
+                var oBox = document.getElementById("map");
+                var oContent = oBox.innerHTML;
+                var val = word[i];
+                var findText = oContent.split(val);
+                oBox.innerHTML = findText.join('<span style="color:' + color[i] + ';">' + val + '</span>');
+            }
+        }
 
         // 移动
         function left() {
-            if (y > 0 && contains(passable, map[x][y - 1])) { //如果不会出地图
+            if (y > 0 && contains(passable, map[x][y - 1])) { //如果不会出地图并且前面的方块可以踩上去
                 block_old = block; //block_old更新为当前所在的方块（block：当前所在的方块 block_old：上一个走过的方块）
                 block = map[x][y - 1]; //block更新为即将走到的方块
                 x_old = x;
