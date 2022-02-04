@@ -25,7 +25,7 @@
     <button onclick="left()">←</button>
     <button onclick="down()">↓</button>
     <button onclick="right()">→</button>
-    <button onclick="boom()">&#128163;</button><br>
+    <button id="boom" onclick="boom()">&#128163;</button><br>
     <input type="CheckBox" id="waterrun">河水蔓延
     <!--  
 ----------------→y
@@ -169,6 +169,7 @@
                 boom_y = y;
                 boom_x_old = x;
                 boom_y_old = y;
+                document.getElementById("boom").disabled = true;
                 setTimeout("explode()", 3000); //延时3秒爆炸
             }
             drawmap();
@@ -199,6 +200,7 @@
                 }
             }
             drawmap();
+            document.getElementById("boom").disabled = false;
         }
 
         // 河水蔓延
