@@ -20,12 +20,25 @@
         .right,
         .down,
         .boom {
-            margin-top: 10px;
             margin-left: 50px;
+        }
+        
+        .up,
+        .right,
+        .down {
+            margin-top: 10px;
+        }
+        
+        .boom {
+            margin-top: 50px;
         }
         
         .down {
             margin-bottom: 50px;
+        }
+        
+        input {
+            float: none;
         }
     </style>
 
@@ -33,12 +46,20 @@
     <p id="map"></p>
 
     <!-- 操作 -->
-    <button onclick="up()" class="up">↑</button><br>
-    <button onclick="left()" class="left">←</button>
-    <button onclick="right()" class="right">→</button>
-    <button id="boom" onclick="boom()" class="boom">&#128163;</button><br>
-    <button onclick="down()" class="down">↓</button><br>
+    <div class="button1" id="button">
+        <button onclick="up()" class="up">↑</button><br>
+        <button onclick="left()" class="left">←</button>
+        <button onclick="right()" class="right">→</button><br>
+        <button id="down" onclick="down()" class="down">↓</button>
+    </div>
+    <div class="button2" id="button">
+        <button id="boom" onclick="boom()" class="boom">&#128163;</button><br>
+    </div>
+    <br>
     <input type="CheckBox" id="waterrun">河水蔓延<br>
+    <div id="leftmain">
+        <input type="CheckBox" onclick="ischeck(this);">惯用左手<br>
+    </div>
 
     <a href="javascript:void(0);" onClick="show()" id="show">显示地图组件</a><br>
 
@@ -97,6 +118,32 @@
         map_input = new Array();
 
         hide(); //隐藏地图组件
+
+        if (!IsPc()) { //是PC端
+            document.getElementById("boom").style.marginTop = '10px';
+            document.getElementById("down").style.marginBottom = '10px';
+            document.getElementById('leftmain').style.display = "none";
+        } else { //是移动端
+            document.getElementById('leftmain').style.display = "block";
+            document.getElementById("button").style.cssFloat = "right";
+        }
+
+        function IsPc() { //是PC→false，是移动端→true
+            let userAgent = navigator.userAgent,
+                Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
+            console.log('userAgent:', userAgent)
+            return Agents.some((i) => {
+                return userAgent.includes(i)
+            })
+        }
+
+        function ischeck(e) {
+            if (e.checked) {
+                document.getElementById("button").style.cssFloat = "left";
+            } else {
+                document.getElementById("button").style.cssFloat = "right";
+            }
+        }
 
         function show() { //显示地图组件
             document.getElementById('show').style.visibility = "hidden";
