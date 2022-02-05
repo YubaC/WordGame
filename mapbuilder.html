@@ -111,6 +111,9 @@
             map_length = map.length - 1;
             map_output = [];
             map_output = JSON.parse(JSON.stringify(map)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
+            word[word.length] = "土";
+            color[color.length] = "Sienna"
+            passable[passable.length] = "土";
             map_output[map_length + 1] = word;
             map_output[map_length + 2] = color;
             map_output[map_length + 3] = passable;
