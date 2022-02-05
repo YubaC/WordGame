@@ -15,17 +15,29 @@
             height: 50px;
             font-size: 24px;
         }
+        
+        .up,
+        .right,
+        .down,
+        .boom {
+            margin-top: 10px;
+            margin-left: 50px;
+        }
+        
+        .down {
+            margin-bottom: 50px;
+        }
     </style>
 
     <!-- 画布 -->
     <p id="map"></p>
 
     <!-- 操作 -->
-    <button onclick="up()">↑</button><br>
-    <button onclick="left()">←</button>
-    <button onclick="down()">↓</button>
-    <button onclick="right()">→</button>
-    <button id="boom" onclick="boom()">&#128163;</button><br>
+    <button onclick="up()" class="up">↑</button><br>
+    <button onclick="left()" class="left">←</button>
+    <button onclick="right()" class="right">→</button>
+    <button id="boom" onclick="boom()" class="boom">&#128163;</button><br>
+    <button onclick="down()" class="down">↓</button><br>
     <input type="CheckBox" id="waterrun">河水蔓延<br>
 
     <a href="javascript:void(0);" onClick="show()" id="show">显示地图组件</a><br>
@@ -84,21 +96,22 @@
 
         map_input = new Array();
 
-        hide();
+        hide(); //隐藏地图组件
 
-        function show() {
+        function show() { //显示地图组件
             document.getElementById('show').style.visibility = "hidden";
             document.getElementById('hide').style.visibility = "visible";
         }
 
-        function hide() {
+        function hide() { //隐藏地图组件
             document.getElementById('show').style.visibility = "visible";
             document.getElementById('hide').style.visibility = "hidden";
         }
 
-        function drawmap() {
-
-            map[x_old][y_old] = block_old; //上一步所在的方块
+        function drawmap() { //画地图
+            if (map[x_old][y_old] != "炸" && map[x_old][y_old] != "土") { //如果没被爆炸波及
+                map[x_old][y_old] = block_old; //上一步所在的方块
+            }
             map[x][y] = '人';
             if (boom_x != -1 && boom_y != -1) { //有人放了炸弹
                 map[boom_x][boom_y] = "&#128163";
@@ -140,18 +153,21 @@
             return false;
         }
 
-        function process() {
+        function process() { //加载导入的地图
             var ee = document.getElementById("in");
-            var lines = ee.value.split(";");
+            var lines = ee.value.split(";"); //沿";"分割
             for (i = 0; i < lines.length; i++) {
-                map_input[i] = lines[i].split(",");
+                map_input[i] = lines[i].split(","); //沿","分割
             }
-            for (g = 0; g < map_input.length - 3; g++) {
+            for (g = 0; g < map_input.length - 3; g++) { //除去最后三行，剩下的赋值给map数组
                 map[g] = map_input[g];
             }
-            word = map_input[map_input.length - 3];
-            color = map_input[map_input.length - 2];
-            passable = map_input[map_input.length - 1];
+            word = map_input[map_input.length - 3]; //倒数第三行是新的word数组
+            color = map_input[map_input.length - 2]; //倒数第二行是新的color数组
+            passable = map_input[map_input.length - 1]; //倒数第一行是新的passable数组
+
+            x = 0; //“人”回到初始位置
+            y = 0;
 
             map[x][y] = '人';
             block = map_input[x_old][y_old];
