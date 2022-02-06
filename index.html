@@ -248,8 +248,8 @@
                 x_old = x;
                 y_old = y;
                 y -= 1;
+                drawmap();
             }
-            drawmap();
         }
 
         function right() {
@@ -259,8 +259,8 @@
                 x_old = x;
                 y_old = y;
                 y += 1;
+                drawmap();
             }
-            drawmap();
         }
 
         function up() {
@@ -270,8 +270,8 @@
                 x_old = x;
                 y_old = y;
                 x -= 1;
+                drawmap();
             }
-            drawmap();
         }
 
         function down() {
@@ -281,8 +281,8 @@
                 x_old = x;
                 y_old = y;
                 x += 1;
+                drawmap();
             }
-            drawmap();
         }
 
         // 放炸弹
@@ -344,9 +344,35 @@
                         }
                     }
                 }
-                drawmap();
+                map[x][y] = '人';
+                if (boom_x != -1 && boom_y != -1) { //有人放了炸弹
+                    map[boom_x][boom_y] = "&#128163";
+                }
+                //画地图
+                document.getElementById("map").innerHTML = "";
+                for (i = 0; i < map.length; i++) {
+                    var line = "";
+                    for (j = 0; j < map[i].length; j++) {
+                        if (map[i][j] != "水_new") {
+                            line += map[i][j];
+                        } else { //新生成的水变成普通的水，"水_new"是为了防止水蔓延的时候一次刷新多格（新手保护？）
+                            line += "水";
+                            map[i][j] = "水";
+                        }
+                    }
+                    document.getElementById("map").innerHTML += line + "<br>";
+                }
+
+                //地图着色
+                for (i = 0; i < word.length; i++) {
+                    var oBox = document.getElementById("map");
+                    var oContent = oBox.innerHTML;
+                    var val = word[i];
+                    var findText = oContent.split(val);
+                    oBox.innerHTML = findText.join('<span style="color:' + color[i] + ';">' + val + '</span>');
+                }
+                setTimeout("findwarter()", 1000); //间隔一秒重复执行
             }
-            setTimeout("findwarter()", 1000); //间隔一秒重复执行
         }
     </script>
 
