@@ -157,10 +157,7 @@
             document.getElementById('hide').style.visibility = "hidden";
         }
 
-        function drawmap() { //画地图
-            if (map[x_old][y_old] != "炸" && map[x_old][y_old] != "土") { //如果没被爆炸波及
-                map[x_old][y_old] = block_old; //上一步所在的方块
-            }
+        function drawmap_base() {
             map[x][y] = '人';
             if (boom_x != -1 && boom_y != -1) { //有人放了炸弹
                 map[boom_x][boom_y] = "&#128163";
@@ -191,6 +188,13 @@
             }
         }
 
+        function drawmap() { //画地图
+            if (map[x_old][y_old] != "炸" && map[x_old][y_old] != "土") { //如果没被爆炸波及
+                map[x_old][y_old] = block_old; //上一步所在的方块
+            }
+            drawmap_base();
+        }
+
         // 判断元素是否在数组内的函数，使用方法：contains(Array，元素)，返回true或false
         function contains(arr, obj) {
             var i = arr.length;
@@ -218,26 +222,7 @@
             x = 0; //“人”回到初始位置
             y = 0;
 
-            map[x][y] = '人';
-            block = map_input[x_old][y_old];
-            //画地图
-            document.getElementById("map").innerHTML = "";
-            for (i = 0; i < map.length; i++) {
-                var line = "";
-                for (j = 0; j < map[i].length; j++) {
-                    line += map[i][j];
-                }
-                document.getElementById("map").innerHTML += line + "<br>";
-            }
-
-            //地图着色
-            for (i = 0; i < word.length; i++) {
-                var oBox = document.getElementById("map");
-                var oContent = oBox.innerHTML;
-                var val = word[i];
-                var findText = oContent.split(val);
-                oBox.innerHTML = findText.join('<span style="color:' + color[i] + ';">' + val + '</span>');
-            }
+            drawmap_base();
         }
 
         // 移动
@@ -295,7 +280,7 @@
                 document.getElementById("boom").disabled = true;
                 setTimeout("explode()", 3000); //延时3秒爆炸
             }
-            drawmap();
+            drawmap_base();
         }
 
         // 爆炸特效（周围一圈“炸”）
@@ -344,33 +329,8 @@
                         }
                     }
                 }
-                map[x][y] = '人';
-                if (boom_x != -1 && boom_y != -1) { //有人放了炸弹
-                    map[boom_x][boom_y] = "&#128163";
-                }
-                //画地图
-                document.getElementById("map").innerHTML = "";
-                for (i = 0; i < map.length; i++) {
-                    var line = "";
-                    for (j = 0; j < map[i].length; j++) {
-                        if (map[i][j] != "水_new") {
-                            line += map[i][j];
-                        } else { //新生成的水变成普通的水，"水_new"是为了防止水蔓延的时候一次刷新多格（新手保护？）
-                            line += "水";
-                            map[i][j] = "水";
-                        }
-                    }
-                    document.getElementById("map").innerHTML += line + "<br>";
-                }
+                drawmap_base();
 
-                //地图着色
-                for (i = 0; i < word.length; i++) {
-                    var oBox = document.getElementById("map");
-                    var oContent = oBox.innerHTML;
-                    var val = word[i];
-                    var findText = oContent.split(val);
-                    oBox.innerHTML = findText.join('<span style="color:' + color[i] + ';">' + val + '</span>');
-                }
                 setTimeout("findwarter()", 1000); //间隔一秒重复执行
             }
         }
