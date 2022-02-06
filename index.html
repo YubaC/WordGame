@@ -64,6 +64,7 @@
     <a href="javascript:void(0);" onClick="show()" id="show">显示地图组件</a><br>
 
     <div id="hide">
+        <hr>
         <textarea id="in" placeholder="导入地图" rows="15" cols="30"></textarea>
         <a href="javascript:void(0);" onClick="process()" id="do_process">加载地图</a><br>
         <a href="mapbuilder.html" id="show">编辑地图</a><br>
@@ -148,13 +149,13 @@
         }
 
         function show() { //显示地图组件
-            document.getElementById('show').style.visibility = "hidden";
-            document.getElementById('hide').style.visibility = "visible";
+            document.getElementById('show').style.display = "none";
+            document.getElementById('hide').style.display = "block";
         }
 
         function hide() { //隐藏地图组件
-            document.getElementById('show').style.visibility = "visible";
-            document.getElementById('hide').style.visibility = "hidden";
+            document.getElementById('show').style.display = "block";
+            document.getElementById('hide').style.display = "none";
         }
 
         function drawmap_base() {
