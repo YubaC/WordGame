@@ -58,14 +58,17 @@
         <button id="boom" onclick="boom()" class="boom">&#128163;</button><br>
     </div>
     <br>
-    <input type="CheckBox" id="waterrun">河水蔓延<br>
-    <div id="leftmain">
-        <input type="CheckBox" onclick="ischeck(this);">惯用左手<br>
-    </div>
-    <input type="CheckBox" id="peace" checked="checked">和平<br>
-    <input type="CheckBox" id="unmatched">无敌<br>
     <div>
-        炸弹威力: <input type="range" id="boom_power" min="0" max="3" onchange="boompowerchange()" value="1"><span id="power">1</span><br>
+        <hr>
+        <input type="CheckBox" id="waterrun">河水蔓延<br>
+        <div id="leftmain">
+            <input type="CheckBox" onclick="ischeck(this);">惯用左手<br>
+        </div>
+        <input type="CheckBox" id="peace" checked="checked">和平<br>
+        <input type="CheckBox" id="unmatched">无敌<br>
+        <div>
+            炸弹威力: <input type="range" id="boom_power" min="0" max="3" onchange="boompowerchange()" value="1"><span id="power">1</span><br>
+        </div>
     </div>
 
     <a href="javascript:void(0);" onClick="show()" id="show">显示地图组件</a><br>
