@@ -42,6 +42,8 @@
         }
     </style>
 
+    <p id="score" style="color: red;">Score:0</p>
+
     <!-- 画布 -->
     <p id="map"></p>
 
@@ -59,6 +61,11 @@
     <input type="CheckBox" id="waterrun">河水蔓延<br>
     <div id="leftmain">
         <input type="CheckBox" onclick="ischeck(this);">惯用左手<br>
+    </div>
+    <input type="CheckBox" id="peace" checked="checked">和平<br>
+    <input type="CheckBox" id="unmatched">无敌<br>
+    <div>
+        炸弹威力: <input type="range" id="boom_power" min="0" max="3" onchange="boompowerchange()" value="1"><span id="power">1</span><br>
     </div>
 
     <a href="javascript:void(0);" onClick="show()" id="show">显示地图组件</a><br>
@@ -83,6 +90,8 @@
     <script>
         var i = 0;
         var j = 0;
+        var x_step;
+        var y_step;
         x = 0;
         y = 0;
         x_old = 1;
@@ -91,6 +100,16 @@
         boom_y = -1;
         block = "草";
         block_old = "草";
+        mob_block = "草";
+        mob_block_old = "草";
+        mob_x = 1;
+        mob_y = 1;
+        mob_x_old = 0;
+        mob_y_old = 0;
+
+        boom_power = 1;
+
+        var score = 0;
 
         map = new Array();
 
@@ -110,13 +129,15 @@
             ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"]
         ];
 
-        word = ["水", "桥", "草", "人"];
-        color = ["blue", "orange", "green", "red"];
-        passable = ["草", "桥", "土"];
+        word = ["水", "桥", "草", "人", "怪"];
+        color = ["blue", "orange", "green", "red", "red"];
+        passable = ["草", "桥", "土", "怪"];
 
         //初始化
         drawmap();
         findwarter();
+        mob_move_prepare();
+        boompowerchange();
 
         map_input = new Array();
 
@@ -156,6 +177,11 @@
         function hide() { //隐藏地图组件
             document.getElementById('show').style.display = "block";
             document.getElementById('hide').style.display = "none";
+        }
+
+        function boompowerchange() {
+            boom_power = Number(document.getElementById("boom_power").value);
+            document.getElementById("power").innerText = boom_power;
         }
 
         function drawmap_base() {
@@ -224,52 +250,169 @@
             y = 0;
 
             block = map_input[0][0];
+            mob_block = map_input[mob_x][mob_y];
 
             drawmap_base();
+        }
+
+        function mob_move_prepare() {
+            mob_direction = Math.floor(Math.random() * 4);
+
+            switch (mob_direction) {
+                case 0:
+                    { //上
+                        if (mob_x - 1 > -1 && (contains(passable, map[mob_x - 1][mob_y]) || map[mob_x - 1][mob_y] == "人" || map[mob_x - 1][mob_y] == "炸")) {
+                            mob_step = Math.floor(Math.random() * map.length);
+                            mob_move(-mob_step, 0);
+                            // console.log("0");
+                        } else {
+                            mob_move_prepare();
+                        }
+                        break;
+                    }
+                case 1:
+                    { //下
+                        if (mob_x + 1 < map.length && (contains(passable, map[mob_x + 1][mob_y]) || map[mob_x + 1][mob_y] == "人" || map[mob_x + 1][mob_y] == "炸")) {
+                            mob_step = Math.floor(Math.random() * map.length);
+                            mob_move(mob_step, 0);
+                            // console.log("1");
+                        } else {
+                            mob_move_prepare();
+                        }
+                        break;
+                    }
+                case 2:
+                    { //左
+                        if (mob_y - 1 > -1 && (contains(passable, map[mob_x][mob_y - 1]) || map[mob_x][mob_y - 1] == "人" || map[mob_x][mob_y - 1] == "炸")) {
+                            mob_step = Math.floor(Math.random() * map[0].length);
+                            mob_move(0, -mob_step);
+                            // console.log("2");
+                        } else {
+                            mob_move_prepare();
+                        }
+                        break;
+                    }
+                case 3:
+                    { //右
+                        if (mob_y + 1 < map.length && (contains(passable, map[mob_x][mob_y + 1]) || map[mob_x][mob_y + 1] == "人" || map[mob_x][mob_y + 1] == "炸")) {
+                            mob_step = Math.floor(Math.random() * map[0].length);
+                            mob_move(0, mob_step);
+                            // console.log("3");
+                        } else {
+                            mob_move_prepare();
+                        }
+                        break;
+                    }
+            }
+            // console.log(mob_direction, mob_step);
+        }
+
+        function mob_move(x_add, y_add) {
+            if (x_add != 0) {
+                x_step = x_add / Math.abs(x_add);
+                y_step = 0;
+            } else {
+                x_step = 0;
+                y_step = y_add / Math.abs(y_add);
+            }
+
+            d = 0;
+
+            do_mob_onmove = setTimeout("mob_onmove()", 1000);
+
+        }
+
+        function mob_onmove() {
+            if (!peace.checked) {
+                if (-1 < mob_x + x_step && mob_x + x_step < map.length && -1 < mob_y + y_step && mob_y + y_step < map[0].length) {
+                    if (contains(passable, map[mob_x + x_step][mob_y + y_step])) {
+                        mob_x_old = mob_x;
+                        mob_y_old = mob_y;
+                        mob_block_old = mob_block;
+                        mob_block = map[mob_x + x_step][mob_y + y_step];
+
+                        // if (map[mob_x_old][mob_y_old] != "炸" && map[x_old][y_old] != "土") { //如果没被爆炸波及
+                        map[mob_x_old][mob_y_old] = mob_block_old; //上一步所在的方块
+                        // }
+
+                        mob_x += x_step;
+                        mob_y += y_step;
+                        map[mob_x][mob_y] = "怪";
+
+                        drawmap_base();
+                    } else if (map[mob_x + x_step][mob_y + y_step] == "人") {
+                        gameover(1);
+                    }
+                }
+            }
+
+            d++;
+
+            if (d < Math.abs(mob_step)) {
+                do_mob_onmove = setTimeout("mob_onmove()", 200);
+            } else {
+                setTimeout("mob_move_prepare()", 200);
+            }
         }
 
         // 移动
         function left() {
             if (y > 0 && contains(passable, map[x][y - 1])) { //如果不会出地图并且前面的方块可以踩上去
-                block_old = block; //block_old更新为当前所在的方块（block：当前所在的方块 block_old：上一个走过的方块）
-                block = map[x][y - 1]; //block更新为即将走到的方块
-                x_old = x;
-                y_old = y;
-                y -= 1;
-                drawmap();
+                if (map[x][y - 1] == "怪") {
+                    gameover(0);
+                } else {
+                    block_old = block; //block_old更新为当前所在的方块（block：当前所在的方块 block_old：上一个走过的方块）
+                    block = map[x][y - 1]; //block更新为即将走到的方块
+                    x_old = x;
+                    y_old = y;
+                    y -= 1;
+                    drawmap();
+                }
             }
         }
 
         function right() {
             if (y < map[x].length - 1 && contains(passable, map[x][y + 1])) {
-                block_old = block;
-                block = map[x][y + 1];
-                x_old = x;
-                y_old = y;
-                y += 1;
-                drawmap();
+                if (map[x][y + 1] == "怪") {
+                    gameover(0);
+                } else {
+                    block_old = block;
+                    block = map[x][y + 1];
+                    x_old = x;
+                    y_old = y;
+                    y += 1;
+                    drawmap();
+                }
             }
         }
 
         function up() {
             if (x > 0 && contains(passable, map[x - 1][y])) {
-                block_old = block;
-                block = map[x - 1][y];
-                x_old = x;
-                y_old = y;
-                x -= 1;
-                drawmap();
+                if (map[x - 1][y] == "怪") {
+                    gameover(0);
+                } else {
+                    block_old = block;
+                    block = map[x - 1][y];
+                    x_old = x;
+                    y_old = y;
+                    x -= 1;
+                    drawmap();
+                }
             }
         }
 
         function down() {
             if (x < map.length - 1 && contains(passable, map[x + 1][y])) {
-                block_old = block;
-                block = map[x + 1][y];
-                x_old = x;
-                y_old = y;
-                x += 1;
-                drawmap();
+                if (map[x + 1][y] == "怪") {
+                    gameover(0);
+                } else {
+                    block_old = block;
+                    block = map[x + 1][y];
+                    x_old = x;
+                    y_old = y;
+                    x += 1;
+                    drawmap();
+                }
             }
         }
 
@@ -288,23 +431,39 @@
 
         // 爆炸特效（周围一圈“炸”）
         function explode() {
-            for (q = -1; q < 2; q++) {
-                for (w = -1; w < 2; w++) {
+            for (q = -1 - boom_power; q < 2 + boom_power; q++) {
+                for (w = -1 - boom_power; w < 2 + boom_power; w++) {
                     if (boom_x + q > -1 && boom_y + w > -1 && boom_x + q < map.length && boom_y + w < map[boom_x].length) {
+                        if (map[boom_x + q][boom_y + w] == "人") {
+                            var over = true;
+                        } else if (map[boom_x + q][boom_y + w] == "怪") {
+                            score += 1;
+                            document.getElementById("score").innerHTML = "Score:" + score;
+                            new_mob_x = Math.floor(Math.random() * map.length);
+                            new_mob_y = Math.floor(Math.random() * map[0].length);
+                            if (contains(passable, map[new_mob_x][new_mob_y])) {
+                                mob_x = new_mob_x;
+                                mob_y = new_mob_y;
+                                mob_block = map[mob_x][mob_y];
+                            }
+                        }
                         map[boom_x + q][boom_y + w] = "炸";
                     }
                 }
             }
             boom_x = -1; //清除炸弹
             boom_y = -1;
+            if (over) {
+                gameover(1);
+            }
             drawmap();
             setTimeout("replace()", 1000); //过一秒后清除特效，替换为“土”
         }
 
         // 清除特效，替换为“土”
         function replace() {
-            for (e = -1; e < 2; e++) {
-                for (r = -1; r < 2; r++) {
+            for (e = -1 - boom_power; e < 2 + boom_power; e++) {
+                for (r = -1 - boom_power; r < 2 + boom_power; r++) {
                     if (boom_x_old + e > -1 && boom_y_old + r > -1 && boom_x_old + e < map.length && boom_y_old + r < map[boom_x_old].length) {
                         map[boom_x_old + e][boom_y_old + r] = "土";
                     }
@@ -336,6 +495,43 @@
 
             }
             setTimeout("findwarter()", 1000); //间隔一秒重复执行
+        }
+
+        function gameover(reason) { //0：碰到mob 1：被炸死
+            if (!unmatched.checked) {
+                if (reason == 0) {
+                    map[x][y] = '<span style="color: red;">怪</span>';
+                }
+
+
+                //画地图
+                document.getElementById("map").innerHTML = "";
+                for (i = 0; i < map.length; i++) {
+                    var line = "";
+                    for (j = 0; j < map[i].length; j++) {
+                        if (map[i][j] != "水_new") {
+                            line += map[i][j];
+                        } else { //新生成的水变成普通的水，"水_new"是为了防止水蔓延的时候一次刷新多格（新手保护？）
+                            line += "水";
+                            map[i][j] = "水";
+                        }
+                    }
+                    document.getElementById("map").innerHTML += line + "<br>";
+
+                }
+
+                //地图着色
+                for (i = 0; i < word.length; i++) {
+                    var oBox = document.getElementById("map");
+                    var oContent = oBox.innerHTML;
+                    var val = word[i];
+                    var findText = oContent.split(val);
+                    oBox.innerHTML = findText.join('<span style="color:' + color[i] + ';">' + val + '</span>');
+                }
+
+                alert("游戏结束！");
+                location.reload();
+            }
         }
     </script>
 
