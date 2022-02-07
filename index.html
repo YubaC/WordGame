@@ -113,6 +113,9 @@
 
         map = new Array();
 
+        var find_direction_times = 0;
+        var find_place_times = 0;
+
         //定义地图
         map = [
             ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
@@ -186,6 +189,7 @@
 
         function drawmap_base() {
             map[x][y] = '人';
+            map[mob_x][mob_y] = "怪";
             if (boom_x != -1 && boom_y != -1) { //有人放了炸弹
                 map[boom_x][boom_y] = "&#128163";
             }
@@ -256,53 +260,82 @@
         }
 
         function mob_move_prepare() {
-            mob_direction = Math.floor(Math.random() * 4);
+            if (find_direction_times < 10) {
+                mob_direction = Math.floor(Math.random() * 4);
 
-            switch (mob_direction) {
-                case 0:
-                    { //上
-                        if (mob_x - 1 > -1 && (contains(passable, map[mob_x - 1][mob_y]) || map[mob_x - 1][mob_y] == "人" || map[mob_x - 1][mob_y] == "炸")) {
-                            mob_step = Math.floor(Math.random() * map.length);
-                            mob_move(-mob_step, 0);
-                            // console.log("0");
-                        } else {
-                            mob_move_prepare();
+                switch (mob_direction) {
+                    case 0:
+                        { //上
+                            if (mob_x - 1 > -1 && (contains(passable, map[mob_x - 1][mob_y]) || map[mob_x - 1][mob_y] == "人" || map[mob_x - 1][mob_y] == "炸")) {
+                                mob_step = Math.floor(Math.random() * map.length);
+                                mob_move(-mob_step, 0);
+                                // console.log("0");
+                                find_direction_times = 0;
+                            } else {
+                                find_direction_times += 1;
+                                mob_move_prepare();
+                            }
+                            break;
                         }
-                        break;
-                    }
-                case 1:
-                    { //下
-                        if (mob_x + 1 < map.length && (contains(passable, map[mob_x + 1][mob_y]) || map[mob_x + 1][mob_y] == "人" || map[mob_x + 1][mob_y] == "炸")) {
-                            mob_step = Math.floor(Math.random() * map.length);
-                            mob_move(mob_step, 0);
-                            // console.log("1");
-                        } else {
-                            mob_move_prepare();
+                    case 1:
+                        { //下
+                            if (mob_x + 1 < map.length && (contains(passable, map[mob_x + 1][mob_y]) || map[mob_x + 1][mob_y] == "人" || map[mob_x + 1][mob_y] == "炸")) {
+                                mob_step = Math.floor(Math.random() * map.length);
+                                mob_move(mob_step, 0);
+                                // console.log("1");
+                                find_direction_times = 0;
+                            } else {
+                                find_direction_times += 1;
+                                mob_move_prepare();
+                            }
+                            break;
                         }
-                        break;
-                    }
-                case 2:
-                    { //左
-                        if (mob_y - 1 > -1 && (contains(passable, map[mob_x][mob_y - 1]) || map[mob_x][mob_y - 1] == "人" || map[mob_x][mob_y - 1] == "炸")) {
-                            mob_step = Math.floor(Math.random() * map[0].length);
-                            mob_move(0, -mob_step);
-                            // console.log("2");
-                        } else {
-                            mob_move_prepare();
+                    case 2:
+                        { //左
+                            if (mob_y - 1 > -1 && (contains(passable, map[mob_x][mob_y - 1]) || map[mob_x][mob_y - 1] == "人" || map[mob_x][mob_y - 1] == "炸")) {
+                                mob_step = Math.floor(Math.random() * map[0].length);
+                                mob_move(0, -mob_step);
+                                // console.log("2");
+                                find_direction_times = 0;
+                            } else {
+                                find_direction_times += 1;
+                                mob_move_prepare();
+                            }
+                            break;
                         }
-                        break;
-                    }
-                case 3:
-                    { //右
-                        if (mob_y + 1 < map.length && (contains(passable, map[mob_x][mob_y + 1]) || map[mob_x][mob_y + 1] == "人" || map[mob_x][mob_y + 1] == "炸")) {
-                            mob_step = Math.floor(Math.random() * map[0].length);
-                            mob_move(0, mob_step);
-                            // console.log("3");
-                        } else {
-                            mob_move_prepare();
+                    case 3:
+                        { //右
+                            if (mob_y + 1 < map.length && (contains(passable, map[mob_x][mob_y + 1]) || map[mob_x][mob_y + 1] == "人" || map[mob_x][mob_y + 1] == "炸")) {
+                                mob_step = Math.floor(Math.random() * map[0].length);
+                                mob_move(0, mob_step);
+                                // console.log("3");
+                                find_direction_times = 0;
+                            } else {
+                                find_direction_times += 1;
+                                mob_move_prepare();
+
+                            }
+                            break;
                         }
-                        break;
-                    }
+                }
+                console.log(1);
+            } else {
+                if (mob_x - 1 > -1 && (contains(passable, map[mob_x - 1][mob_y]) || map[mob_x - 1][mob_y] == "人" || map[mob_x - 1][mob_y] == "炸")) {
+                    mob_step = Math.floor(Math.random() * map.length);
+                    mob_move(-mob_step, 0);
+                } else if (mob_x + 1 < map.length && (contains(passable, map[mob_x + 1][mob_y]) || map[mob_x + 1][mob_y] == "人" || map[mob_x + 1][mob_y] == "炸")) {
+                    mob_step = Math.floor(Math.random() * map.length);
+                    mob_move(mob_step, 0);
+                } else if (mob_y - 1 > -1 && (contains(passable, map[mob_x][mob_y - 1]) || map[mob_x][mob_y - 1] == "人" || map[mob_x][mob_y - 1] == "炸")) {
+                    mob_step = Math.floor(Math.random() * map[0].length);
+                    mob_move(0, -mob_step);
+                } else if (mob_y + 1 < map.length && (contains(passable, map[mob_x][mob_y + 1]) || map[mob_x][mob_y + 1] == "人" || map[mob_x][mob_y + 1] == "炸")) {
+                    mob_step = Math.floor(Math.random() * map[0].length);
+                    mob_move(0, mob_step);
+                } else {
+                    console.log("sleep");
+                    setTimeout("mob_move_prepare()", 1000);
+                }
             }
             // console.log(mob_direction, mob_step);
         }
@@ -331,13 +364,10 @@
                         mob_block_old = mob_block;
                         mob_block = map[mob_x + x_step][mob_y + y_step];
 
-                        // if (map[mob_x_old][mob_y_old] != "炸" && map[x_old][y_old] != "土") { //如果没被爆炸波及
                         map[mob_x_old][mob_y_old] = mob_block_old; //上一步所在的方块
-                        // }
 
                         mob_x += x_step;
                         mob_y += y_step;
-                        map[mob_x][mob_y] = "怪";
 
                         drawmap_base();
                     } else if (map[mob_x + x_step][mob_y + y_step] == "人") {
@@ -437,15 +467,21 @@
                         if (map[boom_x + q][boom_y + w] == "人") {
                             var over = true;
                         } else if (map[boom_x + q][boom_y + w] == "怪") {
+                            find_place_times = 0;
                             score += 1;
                             document.getElementById("score").innerHTML = "Score:" + score;
-                            new_mob_x = Math.floor(Math.random() * map.length);
-                            new_mob_y = Math.floor(Math.random() * map[0].length);
-                            if (contains(passable, map[new_mob_x][new_mob_y])) {
-                                mob_x = new_mob_x;
-                                mob_y = new_mob_y;
-                                mob_block = map[mob_x][mob_y];
-                            }
+                            do {
+                                new_mob_x = Math.floor(Math.random() * map.length);
+                                new_mob_y = Math.floor(Math.random() * map[0].length);
+                                find_place_times += 1;
+                                if (find_place_times < 10) {
+                                    break;
+                                }
+                            } while (contains(passable, map[new_mob_x][new_mob_y]));
+
+                            mob_x = new_mob_x;
+                            mob_y = new_mob_y;
+                            mob_block = map[mob_x][mob_y];
                         }
                         map[boom_x + q][boom_y + w] = "炸";
                     }
