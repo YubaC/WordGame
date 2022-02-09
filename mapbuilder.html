@@ -25,7 +25,8 @@
         <p>输出内容（请全部复制并粘贴到游戏的地图组件的输入栏里）：</p>
         <a href="explain.html" id="show">说明</a><br>
         <div class="border">
-            <p id="result"></p>
+            <p id="result">
+            </p>
         </div>
 
     </div>
@@ -40,6 +41,19 @@
         word = new Array();
         color = new Array();
         passable = new Array();
+
+        function copyText(id) {
+            s = document.getElementById(id).parentElement.id;
+            var Url2 = document.getElementById(s).innerText;
+            var oInput = document.createElement('input');
+            oInput.value = Url2;
+            document.body.appendChild(oInput);
+            oInput.select();
+            document.execCommand("Copy");
+            oInput.className = 'oInput';
+            oInput.style.display = 'none';
+            alert('复制成功');
+        }
 
         // 判断元素是否在数组内的函数，使用方法：contains(Array，元素)，返回true或false
         function contains(arr, obj) {
@@ -119,7 +133,7 @@
             map_output[map_length + 3] = passable;
 
             document.getElementById("result").innerHTML = map_output.join(";");
-
+            document.getElementById("result").innerHTML += '<br><input type="button" id="copy3" value="复制" onclick="copyText(this.id)" />';
         }
 
         function show() {
