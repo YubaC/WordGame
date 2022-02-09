@@ -10,7 +10,15 @@
 
 <body>
     <style>
-        button {
+        #read {
+            margin-left: 50px;
+        }
+        
+        .up,
+        .down,
+        .left,
+        .right,
+        .boom {
             width: 50px;
             height: 50px;
             font-size: 24px;
@@ -60,10 +68,15 @@
     <br>
     <div>
         <hr>
+        <button id="save" onclick="save()">保存</button>
+        <button id="read" onclick="read()">读取</button><br>
+    </div>
+    <div>
+        <hr>
         <input type="CheckBox" id="waterrun">河水蔓延<br>
         <input type="CheckBox" id="grassrun">草地蔓延<br>
         <div id="leftmain">
-            <input type="CheckBox" onclick="ischeck(this);">惯用左手<br>
+            <input type="CheckBox" onclick="ischeck(this);" id="left_main">惯用左手<br>
         </div>
         <input type="CheckBox" id="peace" checked="checked">和平<br>
         <input type="CheckBox" id="unmatched">无敌<br>
@@ -150,6 +163,7 @@
         boompowerchange();
 
         map_input = new Array();
+        settings = new Array();
 
         hide(); //隐藏地图组件
 
@@ -209,8 +223,112 @@
         }
 
         function boompowerchange() {
-            boom_power = Number(document.getElementById("boom_power").value);
+            boom_power = Number(document.getElementById("boom_power").value) + 1;
             document.getElementById("power").innerText = boom_power;
+        }
+
+        function setCookie(cname, cvalue, exdays) {
+            var d = new Date();
+            d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+            var expires = "expires=" + d.toGMTString();
+            document.cookie = cname + "=" + cvalue + "; " + expires;
+        }
+
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i].trim();
+                if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                }
+            }
+            return "";
+        }
+
+        function checkCookie() {
+            var user = getCookie("username");
+            if (user != "") {
+                alert("欢迎 " + user + " 再次访问");
+            } else {
+                user = prompt("请输入你的名字:", "");
+                if (user != "" && user != null) {
+                    setCookie("username", user, 30);
+                }
+            }
+        }
+
+        function save() {
+            map_length = map.length - 1;
+            map_output = [];
+            map_output = JSON.parse(JSON.stringify(map)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
+            map_output[x][y] = block;
+            if (!peace.checked) {
+                map_output[mob_x][mob_y] = mob_block;
+            }
+            map_output[map_length + 1] = word;
+            map_output[map_length + 2] = color;
+            map_output[map_length + 3] = passable;
+
+            settings = [];
+            settings[0] = [x, y, x_old, y_old, block, block_old];
+            settings[1] = [mob_x, mob_y, mob_x_old, mob_y_old, mob_block, mob_block_old];
+            settings[2] = score;
+            settings[3] = ["waterrun", "grassrun", "left_main", "peace", "unmatched", "boom_power"]
+            settings[4] = [waterrun.checked, grassrun.checked, left_main.checked, peace.checked, unmatched.checked, Number(document.getElementById("boom_power").value)];
+            save_output = btoa(unescape(encodeURIComponent(map_output.join(";")))); //https://www.itdaan.com/blog/2014/04/22/34c1a969a1dadf56cf6767d4ae48e402.html
+            save_output_settings = btoa(unescape(encodeURIComponent(settings.join(";"))));
+            // window.alert(save_output);
+            setCookie("world", save_output, 30 * 365);
+            setCookie("world_settings", save_output_settings, 30 * 365);
+        }
+
+        function read() {
+            settings_input = decodeURIComponent(escape(window.atob(getCookie("world_settings")))).split(";");
+            for (i = 0; i < settings_input.length; i++) {
+                settings_input[i] = settings_input[i].split(","); //沿","分割
+            }
+            for (ch = 0; ch < settings_input[3].length - 1; ch++) {
+                document.getElementById(settings_input[3][ch]).checked = eval(settings_input[4][ch]);
+            }
+            boom_power = Number(settings_input[4][settings_input[4].length - 1]);
+            document.getElementById("boom_power").value = boom_power;
+            document.getElementById("power").innerText = boom_power + 1;
+
+            if (IsPc()) {
+                document.getElementById('leftmain').style.display = "block";
+                document.getElementById("button").style.cssFloat = "right";
+            }
+            document.getElementById("in").value = decodeURIComponent(escape(window.atob(getCookie("world"))));
+            var ee = document.getElementById("in");
+            var lines = ee.value.split(";"); //沿";"分割
+            for (i = 0; i < lines.length; i++) {
+                map_input[i] = lines[i].split(","); //沿","分割
+            }
+            for (g = 0; g < map_input.length - 3; g++) { //除去最后三行，剩下的赋值给map数组
+                map[g] = map_input[g];
+            }
+            word = map_input[map_input.length - 3]; //倒数第三行是新的word数组
+            color = map_input[map_input.length - 2]; //倒数第二行是新的color数组
+            passable = map_input[map_input.length - 1]; //倒数第一行是新的passable数组
+
+            map[x][y] = map_input[x][y];
+            // map[0][0] = map_input[0][0];
+            x = Number(settings_input[0][0]);
+            y = Number(settings_input[0][1]);
+            x_old = Number(settings_input[0][2]);
+            y_old = Number(settings_input[0][3]);
+            block = settings_input[0][4];
+            block_old = settings_input[0][5];
+            mob_x = Number(settings_input[1][0]);
+            mob_y = Number(settings_input[1][1]);
+            mob_x_old = Number(settings_input[1][2]);
+            mob_y_old = Number(settings_input[1][3]);
+            mob_block = settings_input[1][4];
+            mob_block_old = settings_input[1][5];
+            score = Number(settings_input[2]);
+            document.getElementById("score").innerHTML = "Score:" + score;
+            drawmap();
         }
 
         function drawmap_base() {
@@ -408,7 +526,7 @@
 
                         drawmap_base();
                     } else if (map[mob_x + x_step][mob_y + y_step] == "人") { //如果下一步碰到了"人"
-                        gameover(1);
+                        gameover(0);
                     }
                 }
             }
