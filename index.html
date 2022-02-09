@@ -110,6 +110,8 @@
         mob_x_old = 0;
         mob_y_old = 0;
 
+        var booming;
+
         boom_power = 1;
 
         var score = 0;
@@ -192,7 +194,9 @@
 
         function drawmap_base() {
             map[x][y] = '人';
-            map[mob_x][mob_y] = "怪";
+            if (!peace.checked && !booming) {
+                map[mob_x][mob_y] = "怪";
+            }
             if (boom_x != -1 && boom_y != -1) { //有人放了炸弹
                 map[boom_x][boom_y] = "&#128163";
             }
@@ -201,11 +205,13 @@
             for (i = 0; i < map.length; i++) {
                 var line = "";
                 for (j = 0; j < map[i].length; j++) {
-                    if (map[i][j] != "水_new") {
-                        line += map[i][j];
-                    } else { //新生成的水变成普通的水，"水_new"是为了防止水蔓延的时候一次刷新多格（新手保护？）
+                    if (map[i][j] == "水_new") { //新生成的水变成普通的水，"水_new"是为了防止水蔓延的时候一次刷新多格（新手保护？）
                         line += "水";
                         map[i][j] = "水";
+                    } else if ((peace.checked || booming) && map[i][j] == "怪") {
+                        line += "土";
+                    } else {
+                        line += map[i][j];
                     }
                 }
                 document.getElementById("map").innerHTML += line + "<br>";
@@ -388,6 +394,41 @@
             }
         }
 
+        function mobrestart() {
+            booming = false;
+            find_place_times = 0;
+            score += 1;
+            document.getElementById("score").innerHTML = "Score:" + score;
+
+            do {
+                new_mob_x = Math.floor(Math.random() * map.length);
+                new_mob_y = Math.floor(Math.random() * map[0].length);
+                find_place_times += 1;
+                if (find_place_times < 10) {
+                    break;
+                    find_place_times = 0;
+                }
+            } while (contains(passable, map[new_mob_x][new_mob_y]));
+            outer:
+                if (find_place_times != 0) {
+                    for (f = map.length - 1; f > -1; f--) {
+                        console.log(f);
+                        for (s = map[0].length - 1; s > -1; s--) {
+                            console.log(s);
+                            if (contains(passable, map[f][s])) {
+                                new_mob_x = f;
+                                new_mob_y = s;
+                                break outer;
+                            }
+                        }
+                    }
+                }
+
+            mob_x = new_mob_x;
+            mob_y = new_mob_y;
+            mob_block = map[mob_x][mob_y];
+        }
+
         // 移动
         function left() {
             if (y > 0 && contains(passable, map[x][y - 1])) { //如果不会出地图并且前面的方块可以踩上去
@@ -470,21 +511,8 @@
                         if (map[boom_x + q][boom_y + w] == "人") {
                             var over = true;
                         } else if (map[boom_x + q][boom_y + w] == "怪") {
-                            find_place_times = 0;
-                            score += 1;
-                            document.getElementById("score").innerHTML = "Score:" + score;
-                            do {
-                                new_mob_x = Math.floor(Math.random() * map.length);
-                                new_mob_y = Math.floor(Math.random() * map[0].length);
-                                find_place_times += 1;
-                                if (find_place_times < 10) {
-                                    break;
-                                }
-                            } while (contains(passable, map[new_mob_x][new_mob_y]));
-
-                            mob_x = new_mob_x;
-                            mob_y = new_mob_y;
-                            mob_block = map[mob_x][mob_y];
+                            booming = true;
+                            setTimeout("mobrestart()", 3000);
                         }
                         map[boom_x + q][boom_y + w] = "炸";
                     }
