@@ -32,7 +32,7 @@
     </div>
 
     <script>
-        document.getElementById('output').style.visibility = "hidden";
+        document.getElementById('output').style.visibility = "hidden"; //隐藏output部分
 
         var num;
         var map_length;
@@ -42,6 +42,7 @@
         color = new Array();
         passable = new Array();
 
+        //一键复制
         function copyText(id) {
             s = document.getElementById(id).parentElement.id;
             var Url2 = document.getElementById(s).innerText;
@@ -66,7 +67,9 @@
             return false;
         }
 
+        //处理输入的地图底稿
         function clicka() {
+            //将地图拆分成数组map
             var aa = document.getElementById("text");
             var lines = aa.value.split("\n");
             for (i = 0; i < lines.length; i++) {
@@ -77,6 +80,7 @@
             word[0] = "人";
             color[0] = "red";
 
+            // 提取地图中出现过的字(方块)，并放入word数组中
             for (i = 0; i < map.length; i++) {
                 for (j = 0; j < map[i].length; j++) {
                     if (!contains(word, map[i][j])) {
@@ -86,6 +90,8 @@
                     }
                 }
             }
+
+            // 显示
             drawmap();
             passable = word;
             document.getElementById("word").innerHTML = word;
@@ -116,11 +122,12 @@
             }
         }
 
+        // 导出地图
         function reload() {
-            color_get = document.getElementById("color").value;
-            color = color_get.split(",");
-            passable_get = document.getElementById("passable").value;
-            passable = passable_get.split(",");
+            color_get = document.getElementById("color").value; //获取调整后的color
+            color = color_get.split(","); //拆分成数组
+            passable_get = document.getElementById("passable").value; //获取调整后的passable
+            passable = passable_get.split(","); //拆分成数组
             drawmap();
             map_length = map.length - 1;
             map_output = [];
@@ -132,7 +139,7 @@
             map_output[map_length + 2] = color;
             map_output[map_length + 3] = passable;
 
-            document.getElementById("result").innerHTML = map_output.join(";");
+            document.getElementById("result").innerHTML = map_output.join(";"); //数组转字符串，元素间用";"连接
             document.getElementById("result").innerHTML += '<br><input type="button" id="copy3" value="复制" onclick="copyText(this.id)" />';
         }
 
