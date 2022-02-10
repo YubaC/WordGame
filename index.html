@@ -223,8 +223,8 @@
         }
 
         function boompowerchange() {
-            boom_power = Number(document.getElementById("boom_power").value) + 1;
-            document.getElementById("power").innerText = boom_power;
+            boom_power = Number(document.getElementById("boom_power").value);
+            document.getElementById("power").innerText = boom_power + 1;
         }
 
         function setCookie(cname, cvalue, exdays) {
@@ -244,18 +244,6 @@
                 }
             }
             return "";
-        }
-
-        function checkCookie() {
-            var user = getCookie("username");
-            if (user != "") {
-                alert("欢迎 " + user + " 再次访问");
-            } else {
-                user = prompt("请输入你的名字:", "");
-                if (user != "" && user != null) {
-                    setCookie("username", user, 30);
-                }
-            }
         }
 
         function save() {
