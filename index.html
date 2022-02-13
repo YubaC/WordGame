@@ -10,8 +10,13 @@
 
 <body>
     <style>
-        #read {
-            margin-left: 50px;
+        #save {
+            padding: 10px;
+            margin: 10px;
+        }
+        
+        li {
+            margin: 5px;
         }
         
         .up,
@@ -68,8 +73,10 @@
     <br>
     <div>
         <hr>
-        <button id="save" onclick="save()">保存</button>
-        <button id="read" onclick="read()">读取</button><br>
+        <button id="save" onclick="save()">保存</button><br>
+        <a href="javascript:void(0);" onClick="map_list_hide()" id="map_list_hide">隐藏地图列表</a>
+        <a href="javascript:void(0);" onClick="map_list_show()" id="map_list_show">显示地图列表</a><br>
+        <ul id="maplist"></ul>
     </div>
     <div>
         <hr>
@@ -135,6 +142,15 @@
         var find_direction_times = 0;
         var find_place_times = 0;
 
+        saved_before = false;
+
+        map_list = new Array;
+        map_list_input = new Array;
+        map_id = new Array;
+        map_id_input = new Array;
+        map_order = new Array;
+        map_order_input = new Array;
+
         //定义地图
         map = [
             ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
@@ -161,11 +177,39 @@
         findgrass();
         mob_move_prepare();
         boompowerchange();
+        map_list_hide();
+        window.onload = setlist(map_list, map_id, map_order);
 
         map_input = new Array();
         settings = new Array();
 
         hide(); //隐藏地图组件
+
+        if (getCookie("map_list") == "") {
+            map_list_input = [];
+        } else {
+            map_list_input = decodeURIComponent(escape(window.atob(getCookie("map_list")))).split(",");
+            map_list = JSON.parse(JSON.stringify(map_list_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
+        }
+
+        if (getCookie("map_id") == "") {
+            map_id_input = [];
+        } else {
+            map_id_input = decodeURIComponent(escape(window.atob(getCookie("map_id")))).split(",");
+            map_id = JSON.parse(JSON.stringify(map_id_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
+        }
+
+        if (getCookie("map_order") == "") {
+            map_order_input = [];
+        } else {
+            map_order_input = decodeURIComponent(escape(window.atob(getCookie("map_order")))).split(",");
+            map_order = JSON.parse(JSON.stringify(map_order_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
+        }
+
+        // map_list = ["2", "1", "5", "3", "4"];
+        // map_id = ["1", "0", "4", "2", "3"];
+        // map_order = ["0", "1", "2", "3", "4"];
+
 
         if (!IsPc()) { //是PC端
             document.getElementById("boom").style.marginTop = '10px';
@@ -174,6 +218,37 @@
         } else { //是移动端
             document.getElementById('leftmain').style.display = "block";
             document.getElementById("button").style.cssFloat = "right";
+        }
+
+        setlist(map_list, map_id, map_order);
+
+        function getmap(value) {
+            var os = getOs(); //获取浏览器信息
+            if (os == 'FF' || os == 'SF') { //FireFox、谷歌浏览器用这个
+                confirm_text = map_list[map_id.indexOf(value)] + "\n读取这个地图？\n请确保您已经保存好了当前地图！"
+                confirm_text = map_list[map_id.indexOf(value)] + "\r\n读取这个地图？\r\n请确保您已经保存好了当前地图！";
+            }
+            if (confirm(confirm_text)) {
+                read(value);
+            }
+        }
+
+        function setlist(list_input, id_input, order_input) {
+            maplist.innerHTML = "";
+            for (i = 0; i < list_input.length; i++) {
+                //在ul中添加标签
+                //获取ul标签
+                let maplist = document.getElementById('maplist');
+                //添加li元素
+                let liObj = document.createElement('li');
+                //设置标签样式，当然也可以设置其他的属性值
+                // liObj.setAttribute('id', '01');
+                //设置标签的文本信息
+                liObj.innerHTML = '<a name="' + id_input[id_input.indexOf(order_input[i])] + '" href="javascript:void(0);" onclick="getmap(this.name)">' + list_input[id_input.indexOf(order_input[i])] + '</a>';
+                // 把js新建的li放到ul下
+                maplist.appendChild(liObj);
+
+            }
         }
 
         function IsPc() { //是PC→false，是移动端→true
@@ -210,6 +285,18 @@
             } else {
                 document.getElementById("button").style.cssFloat = "right";
             }
+        }
+
+        function map_list_show() {
+            document.getElementById('maplist').style.display = "block";
+            document.getElementById('map_list_show').style.display = "none";
+            document.getElementById('map_list_hide').style.display = "block";
+        }
+
+        function map_list_hide() {
+            document.getElementById('maplist').style.display = "none";
+            document.getElementById('map_list_show').style.display = "block";
+            document.getElementById('map_list_hide').style.display = "none";
         }
 
         function show() { //显示地图组件
@@ -267,12 +354,61 @@
             save_output = btoa(unescape(encodeURIComponent(map_output.join(";")))); //https://www.itdaan.com/blog/2014/04/22/34c1a969a1dadf56cf6767d4ae48e402.html
             save_output_settings = btoa(unescape(encodeURIComponent(settings.join(";"))));
             // window.alert(save_output);
-            setCookie("world", save_output, 30 * 365);
-            setCookie("world_settings", save_output_settings, 30 * 365);
+            if (!saved_before) {
+                worldname = prompt("请输入地图名称", "World");
+                if (worldname != null) {
+                    this_map_id = map_id.length;
+                    map_id[map_id.length] = this_map_id.toString();
+                    map_order.unshift(this_map_id.toString());
+
+                    map_list[map_list.length] = worldname;
+                    saved_before = true;
+                    map_list_output = btoa(unescape(encodeURIComponent(map_list.join(","))));
+                    setCookie("map_list", map_list_output, 30 * 365);
+                    map_id_output = btoa(unescape(encodeURIComponent(map_id.join(","))));
+                    setCookie("map_id", map_id_output, 30 * 365);
+                    map_order_output = btoa(unescape(encodeURIComponent(map_order.join(","))));
+                    setCookie("map_order", map_order_output, 30 * 365);
+
+                    setCookie(this_map_id, save_output, 30 * 365);
+                    setCookie(this_map_id + "_settings", save_output_settings, 30 * 365);
+
+                    setlist(map_list, map_id, map_order);
+                }
+            } else {
+                map_order.forEach(function(item, index, arr) {
+                    if (item === this_map_id.toString()) {
+                        arr.splice(index, 1);
+                    }
+                });
+                map_order.unshift(this_map_id.toString());
+
+                map_list_output = btoa(unescape(encodeURIComponent(map_list.join(","))));
+                setCookie("map_list", map_list_output, 30 * 365);
+                map_id_output = btoa(unescape(encodeURIComponent(map_id.join(","))));
+                setCookie("map_id", map_id_output, 30 * 365);
+                map_order_output = btoa(unescape(encodeURIComponent(map_order.join(","))));
+                setCookie("map_order", map_order_output, 30 * 365);
+
+                setCookie(this_map_id, save_output, 30 * 365);
+                setCookie(this_map_id + "_settings", save_output_settings, 30 * 365);
+
+                setlist(map_list, map_id, map_order);
+            }
         }
 
-        function read() {
-            settings_input = decodeURIComponent(escape(window.atob(getCookie("world_settings")))).split(";");
+        function read(map_id_input) {
+            settings_input = decodeURIComponent(escape(window.atob(getCookie(map_id_input + "_settings")))).split(";");
+
+            map_order.forEach(function(item, index, arr) {
+                if (item === map_id_input.toString()) {
+                    arr.splice(index, 1);
+                }
+            });
+            map_order.unshift(map_id_input.toString());
+
+            setlist(map_list, map_id, map_order);
+
             for (i = 0; i < settings_input.length; i++) {
                 settings_input[i] = settings_input[i].split(","); //沿","分割
             }
@@ -287,7 +423,7 @@
                 document.getElementById('leftmain').style.display = "block";
                 document.getElementById("button").style.cssFloat = "right";
             }
-            document.getElementById("in").value = decodeURIComponent(escape(window.atob(getCookie("world"))));
+            document.getElementById("in").value = decodeURIComponent(escape(window.atob(getCookie(map_id_input))));
             var ee = document.getElementById("in");
             var lines = ee.value.split(";"); //沿";"分割
             for (i = 0; i < lines.length; i++) {
@@ -317,6 +453,9 @@
             score = Number(settings_input[2]);
             document.getElementById("score").innerHTML = "Score:" + score;
             drawmap();
+
+            map_order_output = btoa(unescape(encodeURIComponent(map_order.join(","))));
+            setCookie("map_order", map_order_output, 30 * 365);
         }
 
         function drawmap_base() {
