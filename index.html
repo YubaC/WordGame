@@ -466,6 +466,9 @@
         function read(map_id_input) {
             settings_input = decodeURIComponent(escape(window.atob(getCookie(map_id_input + "_settings")))).split(";");
 
+            document.getElementById('edit').style.display = "block";
+            document.getElementById('exit_editing').style.display = "none";
+
             map_order.forEach(function(item, index, arr) {
                 if (item === map_id_input.toString()) {
                     arr.splice(index, 1);
