@@ -466,6 +466,9 @@
         function read(map_id_input) {
             settings_input = decodeURIComponent(escape(window.atob(getCookie(map_id_input + "_settings")))).split(";");
 
+            this_map_id = Number(map_id_input);
+            saved_before = true;
+
             document.getElementById('edit').style.display = "block";
             document.getElementById('exit_editing').style.display = "none";
 
