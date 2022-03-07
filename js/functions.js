@@ -1,3 +1,12 @@
+function IsPc() { //是PC→false，是移动端→true
+    let userAgent = navigator.userAgent,
+        Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
+    console.log('userAgent:', userAgent)
+    return Agents.some((i) => {
+        return userAgent.includes(i)
+    })
+}
+
 // 判断元素是否在数组内的函数，使用方法：contains(Array，元素)，返回true或false
 function contains(arr, obj) {
     var i = arr.length;

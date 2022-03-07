@@ -77,15 +77,6 @@ function exit_editing() {
     document.getElementById('exit_editing').style.display = "none";
 }
 
-function IsPc() { //是PC→false，是移动端→true
-    let userAgent = navigator.userAgent,
-        Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
-    console.log('userAgent:', userAgent)
-    return Agents.some((i) => {
-        return userAgent.includes(i)
-    })
-}
-
 function rename(rename_map_id) {
     new_worldname = prompt("请输入新的地图名称", "World");
     if (new_worldname != null) {
