@@ -1,3 +1,79 @@
+// document.onkeydown = function(event) {
+//     undefined
+
+//     var e = event || window.event || arguments.callee.caller.arguments[0];
+
+//     if (e) {
+//         switch (e.keyCode) {
+//             case 87: //w→up
+//                 up();
+//                 break;
+
+//             case 65: //a→left
+//                 left();
+//                 break;
+
+//             case 83: //s→down
+//                 down();
+//                 break;
+
+//             case 68: //d→right
+//                 right();
+//                 break;
+
+//             case 32: //space→boom
+//                 boom();
+//                 break;
+
+//             case 16: //shift→boom
+//                 boom();
+//                 break;
+//         }
+//     }
+// };
+
+document.addEventListener('keypress', function(event) {
+    //keyboardEvent= event
+    console.log(event.key)
+    switch (event.key) {
+        case 'w': //w→up
+            up();
+            break;
+
+        case 'a': //a→left
+            left();
+            break;
+
+        case 's': //s→down
+            down();
+            break;
+
+        case 'd': //d→right
+            right();
+            break;
+
+        case ' ': //space→boom
+            event.preventDefault();
+            if (!boom_exist) {
+                boom();
+            }
+            break;
+
+        default:
+            break
+    }
+
+})
+
+// document.body.onkeydown = function(event) {
+//     var e = window.event || event;
+//     if (e.preventDefault) {
+//         e.preventDefault();
+//     } else {
+//         window.event.returnValue = false;
+//     }
+// }
+
 // 移动
 function left() {
     if (y > 0 && contains(passable, map[x][y - 1])) { //如果不会出地图并且前面的方块可以踩上去

@@ -6,6 +6,7 @@ function boom() {
         boom_x_old = x;
         boom_y_old = y;
         document.getElementById("boom").disabled = true;
+        boom_exist = true;
         setTimeout("explode()", 3000); //延时3秒爆炸
     }
     drawmap_base();
@@ -47,6 +48,7 @@ function replace() {
         }
     }
     drawmap();
+    boom_exist = false;
     document.getElementById("boom").disabled = false;
 }
 
