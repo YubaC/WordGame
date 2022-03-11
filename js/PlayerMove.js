@@ -1,37 +1,3 @@
-// document.onkeydown = function(event) {
-//     undefined
-
-//     var e = event || window.event || arguments.callee.caller.arguments[0];
-
-//     if (e) {
-//         switch (e.keyCode) {
-//             case 87: //w→up
-//                 up();
-//                 break;
-
-//             case 65: //a→left
-//                 left();
-//                 break;
-
-//             case 83: //s→down
-//                 down();
-//                 break;
-
-//             case 68: //d→right
-//                 right();
-//                 break;
-
-//             case 32: //space→boom
-//                 boom();
-//                 break;
-
-//             case 16: //shift→boom
-//                 boom();
-//                 break;
-//         }
-//     }
-// };
-
 document.addEventListener('keypress', function(event) {
     //keyboardEvent= event
     console.log(event.key)
@@ -77,7 +43,8 @@ document.addEventListener('keypress', function(event) {
 // 移动
 function left() {
     if (y > 0 && contains(passable, map[x][y - 1])) { //如果不会出地图并且前面的方块可以踩上去
-        if (map[x][y - 1] == "怪") {
+        // if (map[x][y - 1] == "怪") {
+        if (x == mob_x && y - 1 == mob_y && !peace.checked) {
             gameover(0);
         } else {
             block_old = block; //block_old更新为当前所在的方块（block：当前所在的方块 block_old：上一个走过的方块）
@@ -92,7 +59,8 @@ function left() {
 
 function right() {
     if (y < map[x].length - 1 && contains(passable, map[x][y + 1])) {
-        if (map[x][y + 1] == "怪") {
+        // if (map[x][y + 1] == "怪") {
+        if (x == mob_x && y + 1 == mob_y && !peace.checked) {
             gameover(0);
         } else {
             block_old = block;
@@ -107,7 +75,8 @@ function right() {
 
 function up() {
     if (x > 0 && contains(passable, map[x - 1][y])) {
-        if (map[x - 1][y] == "怪") {
+        // if (map[x - 1][y] == "怪") {
+        if (x - 1 == mob_x && y == mob_y && !peace.checked) {
             gameover(0);
         } else {
             block_old = block;
@@ -122,7 +91,8 @@ function up() {
 
 function down() {
     if (x < map.length - 1 && contains(passable, map[x + 1][y])) {
-        if (map[x + 1][y] == "怪") {
+        // if (map[x + 1][y] == "怪") {
+        if (x + 1 == mob_x && y == mob_y && !peace.checked) {
             gameover(0);
         } else {
             block_old = block;

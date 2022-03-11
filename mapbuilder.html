@@ -93,7 +93,10 @@
 
             // 显示
             drawmap();
+            word[word.length] = "怪";
+            color[color.length] = "red";
             passable = word;
+
             document.getElementById("word").innerHTML = word;
             document.getElementById("color").value = color;
             document.getElementById("passable").value = passable;

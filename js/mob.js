@@ -5,7 +5,7 @@ function mob_move_prepare() { //怪物移动的方向与步数确定
         switch (mob_direction) {
             case 0:
                 { //上
-                    if (mob_x - 1 > -1 && (contains(passable, map[mob_x - 1][mob_y]) || map[mob_x - 1][mob_y] == "人" || map[mob_x - 1][mob_y] == "炸")) {
+                    if (mob_x - 1 > -1 && (contains(passable, map[mob_x - 1][mob_y]))) {
                         mob_step = Math.floor(Math.random() * map.length);
                         mob_move(-mob_step, 0);
                         // console.log("0");
@@ -18,7 +18,7 @@ function mob_move_prepare() { //怪物移动的方向与步数确定
                 }
             case 1:
                 { //下
-                    if (mob_x + 1 < map.length && (contains(passable, map[mob_x + 1][mob_y]) || map[mob_x + 1][mob_y] == "人" || map[mob_x + 1][mob_y] == "炸")) {
+                    if (mob_x + 1 < map.length && (contains(passable, map[mob_x + 1][mob_y]))) {
                         mob_step = Math.floor(Math.random() * map.length);
                         mob_move(mob_step, 0);
                         // console.log("1");
@@ -31,7 +31,7 @@ function mob_move_prepare() { //怪物移动的方向与步数确定
                 }
             case 2:
                 { //左
-                    if (mob_y - 1 > -1 && (contains(passable, map[mob_x][mob_y - 1]) || map[mob_x][mob_y - 1] == "人" || map[mob_x][mob_y - 1] == "炸")) {
+                    if (mob_y - 1 > -1 && (contains(passable, map[mob_x][mob_y - 1]))) {
                         mob_step = Math.floor(Math.random() * map[0].length);
                         mob_move(0, -mob_step);
                         // console.log("2");
@@ -44,7 +44,7 @@ function mob_move_prepare() { //怪物移动的方向与步数确定
                 }
             case 3:
                 { //右
-                    if (mob_y + 1 < map.length && (contains(passable, map[mob_x][mob_y + 1]) || map[mob_x][mob_y + 1] == "人" || map[mob_x][mob_y + 1] == "炸")) {
+                    if (mob_y + 1 < map.length && (contains(passable, map[mob_x][mob_y + 1]))) {
                         mob_step = Math.floor(Math.random() * map[0].length);
                         mob_move(0, mob_step);
                         // console.log("3");
@@ -60,16 +60,16 @@ function mob_move_prepare() { //怪物移动的方向与步数确定
         console.log(1);
     } else { //10次都没找到能走的方向(运气不佳)
         //依次将上下左右检测一遍
-        if (mob_x - 1 > -1 && (contains(passable, map[mob_x - 1][mob_y]) || map[mob_x - 1][mob_y] == "人" || map[mob_x - 1][mob_y] == "炸")) {
+        if (mob_x - 1 > -1 && (contains(passable, map[mob_x - 1][mob_y]))) {
             mob_step = Math.floor(Math.random() * map.length);
             mob_move(-mob_step, 0);
-        } else if (mob_x + 1 < map.length && (contains(passable, map[mob_x + 1][mob_y]) || map[mob_x + 1][mob_y] == "人" || map[mob_x + 1][mob_y] == "炸")) {
+        } else if (mob_x + 1 < map.length && (contains(passable, map[mob_x + 1][mob_y]))) {
             mob_step = Math.floor(Math.random() * map.length);
             mob_move(mob_step, 0);
-        } else if (mob_y - 1 > -1 && (contains(passable, map[mob_x][mob_y - 1]) || map[mob_x][mob_y - 1] == "人" || map[mob_x][mob_y - 1] == "炸")) {
+        } else if (mob_y - 1 > -1 && (contains(passable, map[mob_x][mob_y - 1]))) {
             mob_step = Math.floor(Math.random() * map[0].length);
             mob_move(0, -mob_step);
-        } else if (mob_y + 1 < map.length && (contains(passable, map[mob_x][mob_y + 1]) || map[mob_x][mob_y + 1] == "人" || map[mob_x][mob_y + 1] == "炸")) {
+        } else if (mob_y + 1 < map.length && (contains(passable, map[mob_x][mob_y + 1]))) {
             mob_step = Math.floor(Math.random() * map[0].length);
             mob_move(0, mob_step);
         } else { //上下左右都走不了(不是运气的事了)
@@ -111,9 +111,11 @@ function mob_onmove() { //怪物运动绘图
                 mob_x += x_step;
                 mob_y += y_step;
 
+                if (mob_x == x && mob_y == y) { //如果下一步碰到了"人"
+                    gameover(0);
+                }
+
                 drawmap_base();
-            } else if (map[mob_x + x_step][mob_y + y_step] == "人") { //如果下一步碰到了"人"
-                gameover(0);
             }
         }
     }
@@ -137,7 +139,6 @@ function mobrestart() { //mob被击杀后刷新
         find_place_times += 1;
         if (find_place_times < 10) {
             break;
-            find_place_times = 0;
         }
     } while (contains(passable, map[new_mob_x][new_mob_y]));
     outer:

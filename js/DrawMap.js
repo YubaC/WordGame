@@ -1,27 +1,31 @@
 function drawmap_base() {
-    map[x][y] = '人';
+    map_print = JSON.parse(JSON.stringify(map));
+
+    map_print[x][y] = '人';
     if (!peace.checked && !booming) {
-        map[mob_x][mob_y] = "怪";
+        map_print[mob_x][mob_y] = "怪";
     }
     if (boom_x != -1 && boom_y != -1) { //有人放了炸弹
-        map[boom_x][boom_y] = "&#128163";
+        map_print[boom_x][boom_y] = "&#128163";
     }
     //画地图
     document.getElementById("map").innerHTML = "";
     for (i = 0; i < map.length; i++) {
         var line = "";
         for (j = 0; j < map[i].length; j++) {
-            if (map[i][j] == "水_new") { //新生成的水变成普通的水，"水_new"是为了防止水蔓延的时候一次刷新多格（新手保护？）
+            if (map_print[i][j] == "水_new") { //新生成的水变成普通的水，"水_new"是为了防止水蔓延的时候一次刷新多格（新手保护？）
                 line += "水";
+                map_print[i][j] = "水";
                 map[i][j] = "水";
-            } else if (map[i][j] == "草_new") { //新生成的草变成普通的草，"草_new"是为了防止草蔓延的时候一次刷新多格（新手保护？）
+            } else if (map_print[i][j] == "草_new") { //新生成的草变成普通的草，"草_new"是为了防止草蔓延的时候一次刷新多格（新手保护？）
                 line += "草";
+                map_print[i][j] = "草";
                 map[i][j] = "草";
-            } else if ((peace.checked || booming) && map[i][j] == "怪") {
+            } else if ((peace.checked || booming) && map_print[i][j] == "怪") {
                 line += "土";
-                map[i][j] = "土";
+                map_print[i][j] = "土";
             } else {
-                line += map[i][j];
+                line += map_print[i][j];
             }
         }
         document.getElementById("map").innerHTML += line + "<br>";

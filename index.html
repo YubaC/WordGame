@@ -152,6 +152,7 @@
         var score = 0;
 
         map = new Array();
+        map_print = new Array();
 
         var find_direction_times = 0;
         var find_place_times = 0;
@@ -181,9 +182,11 @@
             ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"]
         ];
 
+        map_print = JSON.parse(JSON.stringify(map));
+
         word = ["水", "桥", "草", "人", "怪", "土"];
         color = ["blue", "orange", "green", "red", "red", "Sienna"];
-        passable = ["草", "桥", "土", "怪"];
+        passable = ["草", "桥", "土", "怪", "人"];
 
         //初始化
         drawmap();
@@ -199,10 +202,6 @@
         settings = new Array();
 
         hide(); //隐藏地图组件
-
-        // map_list = ["2", "1", "5", "3", "4"];
-        // map_id = ["1", "0", "4", "2", "3"];
-        // map_order = ["0", "1", "2", "3", "4"];
 
         setlist(map_list, map_id, map_order);
     </script>

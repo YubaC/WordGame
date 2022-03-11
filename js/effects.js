@@ -17,9 +17,9 @@ function explode() {
     for (q = -1 - boom_power; q < 2 + boom_power; q++) {
         for (w = -1 - boom_power; w < 2 + boom_power; w++) {
             if (boom_x + q > -1 && boom_y + w > -1 && boom_x + q < map.length && boom_y + w < map[boom_x].length) {
-                if (map[boom_x + q][boom_y + w] == "人") {
+                if (boom_x + q == x && boom_y + w == y) {
                     var over = true;
-                } else if (map[boom_x + q][boom_y + w] == "怪") {
+                } else if (boom_x + q == mob_x && boom_y + w == mob_y && !peace.checked) {
                     booming = true;
                     score += 1;
                     document.getElementById("score").innerHTML = "Score:" + score;
