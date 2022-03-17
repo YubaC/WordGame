@@ -53,6 +53,10 @@
         input {
             float: none;
         }
+        
+        span:hover {
+            background-color: yellow;
+        }
     </style>
 
     <p id="score" style="color: red;">Score:0</p>
@@ -62,10 +66,10 @@
 
     <!-- 操作 -->
     <div class="button1" id="button">
-        <button onclick="up()" class="up">↑</button><br>
-        <button onclick="left()" class="left">←</button>
-        <button onclick="right()" class="right">→</button><br>
-        <button id="down" onclick="down()" class="down">↓</button>
+        <button onclick="button_up()" class="up">↑</button><br>
+        <button onclick="button_left()" class="left">←</button>
+        <button onclick="button_right()" class="right">→</button><br>
+        <button id="down" onclick="button_down()" class="down">↓</button>
     </div>
     <div class="button2" id="button">
         <button id="boom" onclick="boom()" class="boom">&#128163;</button><br>
@@ -184,8 +188,18 @@
 
         map_print = JSON.parse(JSON.stringify(map));
 
-        word = ["水", "桥", "草", "人", "怪", "土"];
-        color = ["blue", "orange", "green", "red", "red", "Sienna"];
+        var map2d = Array2D(map.length, map[0].length);
+        // map2d
+        map2d.data = JSON.parse(JSON.stringify(map));
+
+        pathList = new Array;
+        clickplace = [];
+        movepath_x = new Array;
+        movepath_y = new Array;
+        moving = false;
+
+        word = ["水", "桥", "草", "人", "怪", "土", "炸"];
+        color = ["blue", "orange", "green", "red", "red", "Sienna", "black"];
         passable = ["草", "桥", "土", "怪", "人"];
 
         //初始化

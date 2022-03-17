@@ -13,19 +13,28 @@ function drawmap_base() {
     for (i = 0; i < map.length; i++) {
         var line = "";
         for (j = 0; j < map[i].length; j++) {
+            if (clickplace[0] == i && clickplace[1] == j && moving) {
+                t = j + '" style="background-color:yellow; text-decoration:none';
+            } else {
+                t = j + '" style="text-decoration:none';
+            }
             if (map_print[i][j] == "水_new") { //新生成的水变成普通的水，"水_new"是为了防止水蔓延的时候一次刷新多格（新手保护？）
-                line += "水";
+                // line += "水";
+                line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + '水' + '</a>';
                 map_print[i][j] = "水";
                 map[i][j] = "水";
             } else if (map_print[i][j] == "草_new") { //新生成的草变成普通的草，"草_new"是为了防止草蔓延的时候一次刷新多格（新手保护？）
-                line += "草";
+                // line += "草";
+                line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + '草' + '</a>';
                 map_print[i][j] = "草";
                 map[i][j] = "草";
             } else if ((peace.checked || booming) && map_print[i][j] == "怪") {
-                line += "土";
+                // line += "土";
+                line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + '土' + '</a>';
                 map_print[i][j] = "土";
             } else {
-                line += map_print[i][j];
+                // line += map_print[i][j];
+                line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + map_print[i][j] + '</a>';
             }
         }
         document.getElementById("map").innerHTML += line + "<br>";
@@ -43,8 +52,8 @@ function drawmap_base() {
 }
 
 function drawmap() { //画地图
-    if (map[x_old][y_old] != "炸" && map[x_old][y_old] != "土") { //如果没被爆炸波及
-        map[x_old][y_old] = block_old; //上一步所在的方块
-    }
+    // if (map[x_old][y_old] != "炸" && map[x_old][y_old] != "土") { //如果没被爆炸波及
+    //     map[x_old][y_old] = block_old; //上一步所在的方块
+    // }
     drawmap_base();
 }
