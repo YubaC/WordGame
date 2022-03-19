@@ -5,6 +5,10 @@ var btn_right = document.getElementById("right");
 var btn_up = document.getElementById("up");
 var btn_down = document.getElementById("down");
 
+document.oncontextmenu = function(e) {
+    e.preventDefault();
+};
+
 function run(key) {
     switch (key) {
         case 87: //w→up
