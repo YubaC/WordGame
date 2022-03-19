@@ -13,28 +13,44 @@ function drawmap_base() {
     for (i = 0; i < map.length; i++) {
         var line = "";
         for (j = 0; j < map[i].length; j++) {
-            if (clickplace[0] == i && clickplace[1] == j && moving) {
+            if (clickplace[0] == i && clickplace[1] == j && moving && mousemove.checked) {
                 t = j + '" style="background-color:yellow; text-decoration:none';
             } else {
                 t = j + '" style="text-decoration:none';
             }
             if (map_print[i][j] == "水_new") { //新生成的水变成普通的水，"水_new"是为了防止水蔓延的时候一次刷新多格（新手保护？）
                 // line += "水";
-                line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + '水' + '</a>';
+                if (mousemove.checked) {
+                    line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + '水' + '</a>';
+                } else {
+                    line += "水";
+                }
                 map_print[i][j] = "水";
                 map[i][j] = "水";
             } else if (map_print[i][j] == "草_new") { //新生成的草变成普通的草，"草_new"是为了防止草蔓延的时候一次刷新多格（新手保护？）
                 // line += "草";
-                line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + '草' + '</a>';
+                if (mousemove.checked) {
+                    line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + '草' + '</a>';
+                } else {
+                    line += "草";
+                }
                 map_print[i][j] = "草";
                 map[i][j] = "草";
             } else if ((peace.checked || booming) && map_print[i][j] == "怪") {
                 // line += "土";
-                line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + '土' + '</a>';
+                if (mousemove.checked) {
+                    line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + '土' + '</a>';
+                } else {
+                    line += "土";
+                }
                 map_print[i][j] = "土";
             } else {
                 // line += map_print[i][j];
-                line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + map_print[i][j] + '</a>';
+                if (mousemove.checked) {
+                    line += '<a name="' + i + ',' + t + '" href="javascript:void(0);" onclick="returnplace(this.name)">' + map_print[i][j] + '</a>';
+                } else {
+                    line += map_print[i][j];
+                }
             }
         }
         document.getElementById("map").innerHTML += line + "<br>";

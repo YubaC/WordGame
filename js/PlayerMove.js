@@ -284,7 +284,7 @@ function move() {
         // if (n < 18) {
         if (n < movepath_x.length) {
             // drawmap_base();
-            setTimeout("move()", 200);
+            setTimeout("move()", T);
 
         } else {
             movepath_x = [];
