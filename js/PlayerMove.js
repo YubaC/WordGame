@@ -1,24 +1,29 @@
-document.addEventListener('keypress', function(event) {
-    //keyboardEvent= event
-    console.log(event.key)
-    switch (event.key) {
-        case 'w': //w→up
+T = 180;
+
+var btn_left = document.getElementById("left");
+var btn_right = document.getElementById("right");
+var btn_up = document.getElementById("up");
+var btn_down = document.getElementById("down");
+
+function run(key) {
+    switch (key) {
+        case 87: //w→up
             button_up();
             break;
 
-        case 'a': //a→left
+        case 65: //a→left
             button_left();
             break;
 
-        case 's': //s→down
+        case 83: //s→down
             button_down();
             break;
 
-        case 'd': //d→right
+        case 68: //d→right
             button_right();
             break;
 
-        case ' ': //space→boom
+        case 32: //space→boom
             event.preventDefault();
             if (!boom_exist) {
                 boom();
@@ -29,16 +34,99 @@ document.addEventListener('keypress', function(event) {
             break
     }
 
-})
+};
 
-// document.body.onkeydown = function(event) {
-//     var e = window.event || event;
-//     if (e.preventDefault) {
-//         e.preventDefault();
-//     } else {
-//         window.event.returnValue = false;
-//     }
-// }
+var date, debug = document.getElementById('debug');
+
+document.onkeydown = function(event) {
+    var key = event || window.event || arguments.callee.caller.arguments[0],
+        // var key = event ? event.charCode : window.event.keyCode,
+
+        _date = new Date().getTime();
+
+    key = key.keyCode;
+    if (!date) {
+        run(key);
+        date = _date;
+
+    } else if (_date >= date + T) {
+
+        run(key);
+        console.log(key);
+
+        date = _date;
+
+    }
+
+}
+
+document.onkeyup = function() {
+    date = 0;
+}
+
+//left按钮事件--鼠标按下
+btn_left.onmousedown = function() {
+    var i = 0; //变量i
+    mouseTime = setInterval(function() { //setInterval可一直执行内部函数
+        button_left();
+        i++ //若过T，执行一次i++
+    }, T);
+    if (i == 0) { //i=0时证明无长按事件为单击事件
+        button_left();
+    }
+}
+
+btn_left.onmouseup = function() { //鼠标抬起，执行清除
+    clearInterval(mouseTime); //清除setInterval的时间
+}
+
+//right按钮事件（内容基本同上，不予注释）    
+btn_right.onmousedown = function() {
+    var i = 0;
+    mouseTime = setInterval(function() {
+        button_right();
+        i++ //i=0时证明无长按事件为单击事件
+    }, T);
+    if (i == 0) {
+        button_right();
+    }
+}
+
+btn_right.onmouseup = function() {
+    clearInterval(mouseTime);
+}
+
+//up按钮事件（内容基本同上，不予注释）    
+btn_up.onmousedown = function() {
+    var i = 0;
+    mouseTime = setInterval(function() {
+        button_up();
+        i++ //i=0时证明无长按事件为单击事件
+    }, T);
+    if (i == 0) {
+        button_up();
+    }
+}
+
+btn_up.onmouseup = function() {
+    clearInterval(mouseTime);
+}
+
+//down按钮事件（内容基本同上，不予注释）    
+btn_down.onmousedown = function() {
+    var i = 0;
+    mouseTime = setInterval(function() {
+        button_down();
+        i++ //i=0时证明无长按事件为单击事件
+    }, T);
+    if (i == 0) {
+        button_down();
+    }
+}
+
+btn_down.onmouseup = function() {
+    clearInterval(mouseTime);
+}
 
 function button_up() {
     moving = false;
