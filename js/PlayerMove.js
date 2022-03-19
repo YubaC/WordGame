@@ -136,6 +136,10 @@ btn_down.onmouseup = function() {
 //left按钮事件--touch
 var touch_left = document.getElementById('left');
 touch_left.addEventListener('touchstart', function() {
+    // document.getElementById("left").disabled = true;
+    document.getElementById("right").disabled = true;
+    document.getElementById("up").disabled = true;
+    document.getElementById("down").disabled = true;
     var i = 0; //变量i
     mouseTime = setInterval(function() { //setInterval可一直执行内部函数
         button_left();
@@ -149,11 +153,19 @@ touch_left.addEventListener('touchstart', function() {
 var end_left = document.getElementById('left');
 end_left.addEventListener('touchend', function() { //抬起，执行清除
     clearInterval(mouseTime); //清除setInterval的时间
+    document.getElementById("left").disabled = false;
+    document.getElementById("right").disabled = false;
+    document.getElementById("up").disabled = false;
+    document.getElementById("down").disabled = false;
 }, false);
 
 //right
 var touch_right = document.getElementById('right');
 touch_right.addEventListener('touchstart', function() {
+    document.getElementById("left").disabled = true;
+    //  document.getElementById("right").disabled = true;
+    document.getElementById("up").disabled = true;
+    document.getElementById("down").disabled = true;
     var i = 0; //变量i
     mouseTime = setInterval(function() { //setInterval可一直执行内部函数
         button_right();
@@ -167,11 +179,19 @@ touch_right.addEventListener('touchstart', function() {
 var end_right = document.getElementById('right');
 end_right.addEventListener('touchend', function() { //鼠标抬起，执行清除
     clearInterval(mouseTime); //清除setInterval的时间
+    document.getElementById("left").disabled = false;
+    document.getElementById("right").disabled = false;
+    document.getElementById("up").disabled = false;
+    document.getElementById("down").disabled = false;
 }, false);
 
 // up
 var touch_up = document.getElementById('up');
 touch_up.addEventListener('touchstart', function() {
+    document.getElementById("left").disabled = true;
+    document.getElementById("right").disabled = true;
+    //  document.getElementById("up").disabled = true;
+    document.getElementById("down").disabled = true;
     var i = 0; //变量i
     mouseTime = setInterval(function() { //setInterval可一直执行内部函数
         button_up();
@@ -185,11 +205,19 @@ touch_up.addEventListener('touchstart', function() {
 var end_up = document.getElementById('up');
 end_up.addEventListener('touchend', function() { //鼠标抬起，执行清除
     clearInterval(mouseTime); //清除setInterval的时间
+    document.getElementById("left").disabled = false;
+    document.getElementById("right").disabled = false;
+    document.getElementById("up").disabled = false;
+    document.getElementById("down").disabled = false;
 }, false);
 
 //down
 var touch_down = document.getElementById('down');
 touch_down.addEventListener('touchstart', function() {
+    document.getElementById("left").disabled = true;
+    document.getElementById("right").disabled = true;
+    document.getElementById("up").disabled = true;
+    //  document.getElementById("down").disabled = true;
     var i = 0; //变量i
     mouseTime = setInterval(function() { //setInterval可一直执行内部函数
         button_down();
@@ -203,6 +231,10 @@ touch_down.addEventListener('touchstart', function() {
 var end_down = document.getElementById('down');
 end_down.addEventListener('touchend', function() { //鼠标抬起，执行清除
     clearInterval(mouseTime); //清除setInterval的时间
+    document.getElementById("left").disabled = false;
+    document.getElementById("right").disabled = false;
+    document.getElementById("up").disabled = false;
+    document.getElementById("down").disabled = false;
 }, false);
 
 function button_up() {
