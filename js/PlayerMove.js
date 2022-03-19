@@ -128,6 +128,79 @@ btn_down.onmouseup = function() {
     clearInterval(mouseTime);
 }
 
+//移动端适配
+//left按钮事件--touch
+var touch_left = document.getElementById('left');
+touch_left.addEventListener('touchstart', function() {
+    var i = 0; //变量i
+    mouseTime = setInterval(function() { //setInterval可一直执行内部函数
+        button_left();
+        i++ //若过T，执行一次i++
+    }, T);
+    if (i == 0) { //i=0时证明无长按事件为单击事件
+        // button_left();
+    }
+}, false);
+
+var end_left = document.getElementById('left');
+end_left.addEventListener('touchend', function() { //抬起，执行清除
+    clearInterval(mouseTime); //清除setInterval的时间
+}, false);
+
+//right
+var touch_right = document.getElementById('right');
+touch_right.addEventListener('touchstart', function() {
+    var i = 0; //变量i
+    mouseTime = setInterval(function() { //setInterval可一直执行内部函数
+        button_right();
+        i++ //若过T，执行一次i++
+    }, T);
+    if (i == 0) { //i=0时证明无长按事件为单击事件
+        // button_right();
+    }
+}, false);
+
+var end_right = document.getElementById('right');
+end_right.addEventListener('touchend', function() { //鼠标抬起，执行清除
+    clearInterval(mouseTime); //清除setInterval的时间
+}, false);
+
+// up
+var touch_up = document.getElementById('up');
+touch_up.addEventListener('touchstart', function() {
+    var i = 0; //变量i
+    mouseTime = setInterval(function() { //setInterval可一直执行内部函数
+        button_up();
+        i++ //若过T，执行一次i++
+    }, T);
+    if (i == 0) { //i=0时证明无长按事件为单击事件
+        // button_up();
+    }
+}, false);
+
+var end_up = document.getElementById('up');
+end_up.addEventListener('touchend', function() { //鼠标抬起，执行清除
+    clearInterval(mouseTime); //清除setInterval的时间
+}, false);
+
+//down
+var touch_down = document.getElementById('down');
+touch_down.addEventListener('touchstart', function() {
+    var i = 0; //变量i
+    mouseTime = setInterval(function() { //setInterval可一直执行内部函数
+        button_down();
+        i++ //若过T，执行一次i++
+    }, T);
+    if (i == 0) { //i=0时证明无长按事件为单击事件
+        // button_down();
+    }
+}, false);
+
+var end_down = document.getElementById('down');
+end_down.addEventListener('touchend', function() { //鼠标抬起，执行清除
+    clearInterval(mouseTime); //清除setInterval的时间
+}, false);
+
 function button_up() {
     moving = false;
     up();
