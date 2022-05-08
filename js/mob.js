@@ -100,7 +100,7 @@ function mob_move(x_add, y_add) {
 function mob_onmove() { //怪物运动绘图
     if (!peace.checked) { //如果不是和平模式
         if (-1 < mob_x + x_step && mob_x + x_step < map.length && -1 < mob_y + y_step && mob_y + y_step < map[0].length) { //如果能走
-            if (contains(passable, map[mob_x + x_step][mob_y + y_step])) {
+            if (contains(passable, map[mob_x + x_step][mob_y + y_step]) && mob_x + x_step != boom_x && mob_y + y_step != boom_y) {
                 mob_x_old = mob_x;
                 mob_y_old = mob_y;
                 mob_block_old = mob_block; //下一步将要走到的方块
