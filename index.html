@@ -112,7 +112,10 @@
         <input type="CheckBox" id="peace" checked="checked">和平<br>
         <input type="CheckBox" id="unmatched">无敌<br>
         <div>
-            炸弹威力: <input type="range" id="boom_power" min="0" max="3" onchange="boompowerchange()" value="1"><span id="power">1</span><br>
+            炸弹威力: <input type="range" id="boom_power" min="0" max="5" onchange="boompowerchange()" value="1"><span id="power">1</span><br>
+        </div>
+        <div>
+            移动时间间隔(ms): <input type="number" id="player_speed" min="10" max="1000" onchange="speedchange()" value="180"><br>
         </div>
     </div>
 

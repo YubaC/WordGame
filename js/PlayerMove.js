@@ -1,5 +1,3 @@
-T = 180;
-
 var btn_left = document.getElementById("left");
 var btn_right = document.getElementById("right");
 var btn_up = document.getElementById("up");

@@ -1,5 +1,7 @@
 document.getElementById('exit_editing').style.display = "none";
 
+T = Number(document.getElementById("player_speed").value);
+
 if (!IsPc()) { //是PC端
     document.getElementById("boom").style.marginTop = '10px';
     document.getElementById("down").style.marginBottom = '10px';
@@ -42,4 +44,8 @@ function hide() { //隐藏地图组件
 function boompowerchange() {
     boom_power = Number(document.getElementById("boom_power").value);
     document.getElementById("power").innerText = boom_power + 1;
+}
+
+function speedchange() {
+    T = Number(document.getElementById("player_speed").value);
 }
