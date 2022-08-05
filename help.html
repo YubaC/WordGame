@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh_cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文字游戏</title>
+</head>
+
+<body>
+    <div id="teach">
+        <div id="show0" align="center" style="margin:auto">
+            <h1>欢迎来到WordGame！</h1>
+            <h2><a href="javascript:void(0);" onClick="map_show(-1)">目录</a></h2>
+            <h2><a href="javascript:void(0);" onclick="map_show(1)">开始旅程</a></h2>
+        </div>
+        <div id="show-1" align="center" style="margin:auto;display: none;">
+            <h1>目录</h1>
+            <ul>
+                <li><a href="javascript:void(0);" onClick="map_show(0)">欢迎</a></li>
+                <li><a href="javascript:void(0);" onClick="map_show(1)">移动(1)</a></li>
+                <li><a href="javascript:void(0);" onClick="map_show(2)">移动(2)</a></li>
+                <li><a href="javascript:void(0);" onClick="map_show(3)">爆炸</a></li>
+                <li><a href="javascript:void(0);" onClick="map_show(4)">保存</a></li>
+                <li><a href="javascript:void(0);" onClick="map_show(5)">选项</a></li>
+                <li><a href="javascript:void(0);" onClick="map_show(6)">怪物</a></li>
+                <li><a href="javascript:void(0);" onClick="map_show(7)">地图操作</a></li>
+            </ul>
+        </div>
+        <div id="show1" align="center" style="margin:auto;display: none;">
+            <h1>移动(1)</h1>
+            <p><a href="javascript:void(0);" onClick="map_show(0)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(2)">next</a></p>
+        </div>
+        <div id="show2" align="center" style="margin:auto;display: none;">
+            <h1>移动(2)</h1>
+            <p><a href="javascript:void(0);" onClick="map_show(1)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(3)">next</a></p>
+        </div>
+        <div id="show3" align="center" style="margin:auto;display: none;">
+            <h1>爆炸</h1>
+            <p><a href="javascript:void(0);" onClick="map_show(2)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(4)">next</a></p>
+        </div>
+        <div id="show4" align="center" style="margin:auto;display: none;">
+            <h1>保存</h1>
+            <p><a href="javascript:void(0);" onClick="map_show(3)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(5)">next</a></p>
+        </div>
+        <div id="show5" align="center" style="margin:auto;display: none;">
+            <h1>选项</h1>
+            <p><a href="javascript:void(0);" onClick="map_show(4)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(6)">next</a></p>
+        </div>
+        <div id="show6" align="center" style="margin:auto;display: none;">
+            <h1>怪物</h1>
+            <p><a href="javascript:void(0);" onClick="map_show(5)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(7)">next</a></p>
+        </div>
+        <div id="show7" align="center" style="margin:auto;display: none;">
+            <h1>地图操作</h1>
+            <p><a href="javascript:void(0);" onClick="map_show(6)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a></p>
+        </div>
+    </div>
+
+    <div id="text">
+        <div id="text0" style="margin:auto;display: none;"></div>
+        <div id="text-1" style="margin:auto;display: none;"></div>
+        <div id="text1" style="margin:auto;display: none;">
+            <p align="left">
+                通过<b>单击按钮</b>或按动键盘上的<b>WASD</b>以进行上下左右的<b>单格</b>移动。 <br>试一试吧！
+                <b>单击按钮</b>，或按动键盘上的<b>WASD</b>。
+            </p>
+            <meter min="0" max="10">您的设备不支持meter标签。</meter>
+            <p id="done1" style="display: none;"><b>太棒了！我们进行</b>
+                <a href="javascript:void(0);" onClick="map_show(2)">下一步</a><b>的教学吧。</b></p>
+            <script>
+                keys = ["w", "a", "s", "d", "W", "A", "S", "D"];
+                key = 0;
+                allow_move_to_add = [1, 2]
+                document.onkeypress = function(event) {
+                    // var key = event || window.event || arguments.callee.caller.arguments[0],
+                    //     key = key.keyCode;
+                    key = event.key;
+                    console.log(event);
+                }
+                window.onkeyup = function() {
+                    console.log(key);
+                    if (keys.indexOf(key) != -1 && allow_move_to_add.indexOf(now_at) != -1) {
+                        score_add();
+                    }
+                }
+
+                function button_onclick() {
+                    if (allow_move_to_add.indexOf(now_at) != -1) {
+                        score_add();
+                    }
+                }
+            </script>
+        </div>
+        <div id="text2" style="margin:auto;display: none;">
+            <p align="left">
+                通过<b>长按按钮</b>或长按键盘上的<b>WASD</b>以进行上下左右的<b>连续</b>移动。 <br>试一试吧！
+                <b>长按按钮</b>，或长按键盘上的<b>WASD</b>。
+            </p>
+            <meter min="0" max="3">您的设备不支持meter标签。</meter>
+            <p id="done2" style="display: none;"><b>太棒了！我们进行</b>
+                <a href="javascript:void(0);" onClick="map_show(3)">下一步</a><b>的教学吧。</b></p>
+        </div>
+        <div id="text3" style="margin:auto;display: none;">
+            <p align="left">
+                通过单击<b>炸弹&#128163按钮</b>或键盘上的<b>空格键</b>以放下炸弹。<b>炸弹三秒后爆炸。</b><br>试一试吧！
+                <b>单击炸弹&#128163按钮</b>，或按下键盘上的<b>空格键</b>。
+            </p>
+            <meter min="0" max="2">您的设备不支持meter标签。</meter>
+            <p id="done3" style="display: none;"><b>太棒了！我们进行</b>
+                <a href="javascript:void(0);" onClick="map_show(4)">下一步</a><b>的教学吧。</b></p>
+            <script>
+                function boom2() {
+                    boom();
+                    if (now_at == 3) {
+                        score_add();
+                    }
+                }
+            </script>
+        </div>
+        <div id="text4" style="margin:auto;display: none;">
+            <p align="left">
+                看到下面的保存键了吗？往下翻一下，对，就在那。它可以把你的地图保存到浏览器的Cookies里。
+                <br><b>请不要清除浏览器的Cookies，这样会导致地图的丢失。</b>
+                <br>点击<b>显示地图列表</b>可以显示出所有你保存了的地图。<b>编辑</b>按钮允许你重命名它们，或者删除它们。单击地图名称可以加载它。
+                <br>试一试吧！<b>点击保存按钮</b>。
+            </p>
+            <meter min="0" max="2">您的设备不支持meter标签。</meter>
+            <p id="done4" style="display: none;"><b>太棒了！我们进行</b>
+                <a href="javascript:void(0);" onClick="map_show(5)">下一步</a><b>的教学吧。</b></p>
+            <script>
+                function save2() {
+                    save();
+                    if (now_at == 4) {
+                        score_add();
+                    }
+                }
+            </script>
+        </div>
+        <div id="text5" style="margin:auto;display: none;">
+            <p align="left">
+                选项可以为您提供更加丰富的玩法。
+                <ul>
+                    <li><b>鼠标点击移动</b>将允许您通过使用鼠标点击地图的方式来控制移动。</li>
+                    <li><b>河水蔓延</b>将允许临近的<span style="color:blue;">水</span>扩散到爆炸产生的<span style="color:Sienna;">土</span>上。</li>
+                    <li><b>草地蔓延</b>同理，不过扩散较慢。</li>
+                    <li><b>惯用左手（仅移动端）</b>允许您便捷地通过左手来操作。</li>
+                    <li>取消勾选<b>和平</b>将放出一只怪物。（详情请参考下一章节）</li>
+                    <li><b>无敌</b>将使得您不会受到炸弹或怪物的伤害。</li>
+                    <li><b>炸弹威力</b>是炸弹爆炸的半径。默认为2（即爆炸范围5x5)。</li>
+                    <li><b>移动时间间隔(ms)</b>是您长按移动时的速度，移动时间间隔越小移动越快。</li>
+                </ul>
+            </p>
+        </div>
+        <div id="text6" style="margin:auto;display: none;">
+            <p align="left">
+                取消勾选<b>和平</b>将放出一只怪物。
+                <br>怪物将会随机向各个方向移动。
+                <br>您可以通过用炸弹击败怪物的方式来增加分数。怪物将会在被击败三秒后复苏。
+                <br><b>请注意！您被怪物碰到后游戏就结束了。无敌选项可以避免这一问题。</b>
+                <br>试一试吧！<b>取消勾选和平，并且用炸弹击败一次怪物</b>。
+            </p>
+            <meter min="0" max="2">您的设备不支持meter标签。</meter>
+            <p id="done6" style="display: none;"><b>太棒了！我们进行</b>
+                <a href="javascript:void(0);" onClick="map_show(7)">下一步</a><b>的教学吧。</b></p>
+            <script>
+                checked_peace = false;
+
+                function check_peace() {
+                    if (now_at == 6 && !peace.checked && !checked_peace) {
+                        score_add();
+                        mob_kiled();
+                        checked_peace = true;
+                    }
+                }
+
+                function mob_kiled() {
+                    console.log("mmm")
+                    if (score == 0) {
+                        setTimeout("mob_kiled()", 100);
+                    } else if (score == 1) {
+                        score_add();
+                        score_add();
+                    }
+                }
+            </script>
+        </div>
+        <div id="text7" style="margin:auto;display: none;">
+            <p align="left">
+                <b>地图组件</b>允许您更换多种多样的地图。
+                <br>点击<b>显示地图组件</b>以展开地图组件。
+                <br>我们提供了一些预设地图，请点击<b>说明</b>以查看它们。
+                <br>点击<b>复制</b>按钮复制这个地图，把它粘贴到地图组件的输入框内，然后点击<b>加载地图</b>以加载这个地图。
+                <br>试一试吧！<b>复制一个地图，并加载它。</b>
+            </p>
+            <meter min="0" max="2">您的设备不支持meter标签。</meter>
+            <p id="done7" style="display: none;"><b>太棒了！您已经完全熟悉了这个游戏。去</b>
+                <a href="https://yubac.github.io/WordGame">试试吧</a><b>！</b></p>
+            <script>
+                checked1 = false;
+                checked2 = false;
+
+                function show2() {
+                    show();
+                    if (now_at == 7 && !checked1) {
+                        score_add();
+                        checked1 = true;
+                    }
+                }
+
+                function process2() {
+                    process();
+                    if (now_at == 7 && !checked2) {
+                        score_add();
+                        score_add();
+                        checked2 = true;
+                    }
+                }
+            </script>
+        </div>
+    </div>
+
+    <script>
+        function arrChange(a, b) {
+            for (var i = 0; i < b.length; i++) {
+                for (var j = 0; j < a.length; j++) {
+                    if (a[j] == b[i]) {
+                        a.splice(j, 1);
+                        j = j - 1;
+                    }
+                }
+            }
+            return a;
+        }
+
+        /* 包含：
+        iBase.Id('score').style.display = "none";
+        iBase.Id('map').style.display = "none";
+        iBase.Id('buttons').style.display = "none";
+        iBase.Id('options').style.display = "none";
+        iBase.Id('map_builders').style.display = "none";
+        iBase.Id('saves').style.display = "none";
+        */
+
+        need_to_show = [
+            [],
+            ['map', 'buttons'],
+            ['map', 'buttons'],
+            ['map', 'buttons'],
+            ['map', 'buttons', 'saves'],
+            ['map', 'buttons', 'options'],
+            ['map', 'buttons', 'options', 'score'],
+            ['map', 'buttons', 'map_builders']
+
+        ];
+
+        now_at = 0;
+        showing = [];
+        all_to_show = ['score', 'map', 'buttons', 'options', 'map_builders', 'saves'];
+
+        function map_show(name) {
+            name = Number(name);
+            if (name != -1) {
+                now_to_show = need_to_show[name];
+            } else {
+                now_to_show = [];
+            }
+            var hided = [];
+            to_hide = JSON.parse(JSON.stringify(showing));
+            console.log(to_hide);
+            arrChange(to_hide, now_to_show);
+
+            for (i of to_hide) {
+                console.log(i);
+                fadeOut(iBase.Id(i), 40, 0);
+                hided.unshift(i);
+                // showing.splice(showing.indexOf(i), 1);
+            }
+            arrChange(showing, hided);
+            fadeOut(iBase.Id('show' + String(now_at)), 40, 0);
+            fadeOut(iBase.Id('text' + String(now_at)), 40, 0);
+
+            to_show = JSON.parse(JSON.stringify(now_to_show));
+            arrChange(to_show, showing);
+
+            for (i of to_show) {
+                setTimeout(fadeIn, 800, iBase.Id(i), 40, 100);
+                showing.unshift(i)
+            }
+            console.log(now_at);
+            setTimeout(fadeIn, 800, iBase.Id('show' + String(name)), 40, 100);
+            setTimeout(fadeIn, 800, iBase.Id('text' + String(name)), 40, 100);
+
+            now_at = name;
+
+            allow_add = true;
+
+            try {
+                setTimeout(function() {
+                    iBase.Id("text" + now_at).getElementsByTagName("meter")[0].value = 0
+                });
+            } catch (err) {}
+        }
+
+        // https://www.jb51.net/article/74424.htm
+        //底层共用 
+        iBase = {
+                Id: function(name) {
+                    return document.getElementById(name);
+                },
+                //设置元素透明度,透明度值按IE规则计,即0~100 
+                SetOpacity: function(ev, v) {
+                    ev.filters ? ev.style.filter = 'alpha(opacity=' + v + ')' : ev.style.opacity = v / 100;
+                }
+            }
+            //淡入效果(含淡入到指定透明度) 
+        function fadeIn(elem, speed, opacity) {
+            /* 
+             * 参数说明 
+             * elem==>需要淡入的元素 
+             * speed==>淡入速度,正整数(可选) 
+             * opacity==>淡入到指定的透明度,0~100(可选) 
+             */
+            speedspeed = speed || 20;
+            opacityopacity = opacity || 100;
+            //显示元素,并将元素值为0透明度(不可见) 
+            elem.style.display = 'block';
+            iBase.SetOpacity(elem, 0);
+            //初始化透明度变化值为0 
+            var val = 0;
+            //循环将透明值以5递增,即淡入效果 
+            (function() {
+                iBase.SetOpacity(elem, val);
+                val += 5;
+                if (val <= opacity) {
+                    setTimeout(arguments.callee, speed)
+                }
+            })();
+        }
+
+        //淡出效果(含淡出到指定透明度) 
+        function fadeOut(elem, speed, opacity) {
+            /* 
+             * 参数说明 
+             * elem==>需要淡入的元素 
+             * speed==>淡入速度,正整数(可选) 
+             * opacity==>淡入到指定的透明度,0~100(可选) 
+             */
+            speedspeed = speed || 20;
+            opacityopacity = opacity || 0;
+            //初始化透明度变化值为0 
+            var val = 100;
+            //循环将透明值以5递减,即淡出效果 
+            (function() {
+                iBase.SetOpacity(elem, val);
+                val -= 5;
+                if (val >= opacity) {
+                    setTimeout(arguments.callee, speed);
+                } else if (val < 0) {
+                    //元素透明度为0后隐藏元素 
+                    elem.style.display = 'none';
+                }
+            })();
+        }
+
+        function start() {
+            fadeOut(iBase.Id('show0'), 40, 0);
+        }
+
+        function score_add() {
+            value = iBase.Id("text" + now_at).getElementsByTagName("meter")[0].value;
+            if (value < iBase.Id("text" + now_at).getElementsByTagName("meter")[0].max && allow_add) {
+                iBase.Id("text" + now_at).getElementsByTagName("meter")[0].value += 1;
+            } else if (value == iBase.Id("text" + now_at).getElementsByTagName("meter")[0].max && allow_add) {
+                fadeOut(iBase.Id("text" + now_at).getElementsByTagName("meter")[0], 40, 0);
+                // try {
+                // console.log(now_at);
+                setTimeout(fadeIn, 800, iBase.Id('done' + now_at), 40, 100);
+                // } catch (err) {}
+                allow_add = false;
+            }
+        }
+    </script>
+
+    <div id="game">
+        <p id="score" style="color: red;">Score:0</p>
+
+        <!-- 画布 -->
+        <p id="map"></p>
+
+        <div id="buttons">
+            <!-- 操作 -->
+            <div class="button1" id="button">
+                <button class="up" id="up" onclick="button_onclick()">↑</button><br>
+                <button class="left" id="left" onclick="button_onclick()">←</button>
+                <button class="right" id="right" onclick="button_onclick()">→</button><br>
+                <button class="down" id="down" onclick="button_onclick()">↓</button>
+            </div>
+            <div class="button2" id="button">
+                <button id="boom" onclick="boom2()" class="boom">&#128163;</button><br>
+            </div>
+        </div>
+        <div id="saves">
+            <br>
+            <div>
+                <hr>
+                <button id="save" onclick="save2()">保存</button><br>
+                <a href="javascript:void(0);" onClick="map_list_hide()" id="map_list_hide">隐藏地图列表</a>
+                <a href="javascript:void(0);" onClick="map_list_show()" id="map_list_show">显示地图列表</a><br>
+                <div id="editor">
+                    <a href="javascript:void(0);" onClick="edit(map_list, map_id, map_order)" id="edit">编辑</a>
+                    <a href="javascript:void(0);" onClick="exit_editing()" id="exit_editing">退出编辑</a><br>
+                    <ul id="maplist"></ul>
+                </div>
+            </div>
+        </div>
+        <div id="options">
+            <hr>
+            <input type="CheckBox" id="mousemove" onclick="drawmap_base()">鼠标点击移动<br>
+            <input type="CheckBox" id="waterrun">河水蔓延<br>
+            <input type="CheckBox" id="grassrun">草地蔓延<br>
+            <div id="leftmain">
+                <input type="CheckBox" onclick="ischeck(this);" id="left_main">惯用左手<br>
+            </div>
+            <input type="CheckBox" id="peace" checked="checked" onclick="check_peace()">和平<br>
+            <input type="CheckBox" id="unmatched" checked="true">无敌<br>
+            <div>
+                炸弹威力: <input type="range" id="boom_power" min="0" max="5" onchange="boompowerchange()" value="1"><span id="power">1</span><br>
+            </div>
+            <div>
+                移动时间间隔(ms): <input type="number" id="player_speed" min="10" max="1000" onchange="speedchange()" value="180"><br>
+            </div>
+        </div>
+
+        <div id="map_builders">
+            <hr>
+            <a href="javascript:void(0);" onClick="show2()" id="show">显示地图组件</a><br>
+
+            <div id="hide">
+                <textarea id="in" placeholder="导入地图" rows="15" cols="30"></textarea>
+                <a href="javascript:void(0);" onClick="process2()" id="do_process">加载地图</a><br>
+                <a href="mapbuilder.html" id="show">编辑地图</a><br>
+                <a href="explain.html" id="show" target="_black">说明</a><br>
+                <a href="javascript:void(0);" onClick="hide()" id="hide">隐藏地图组件</a>
+            </div>
+        </div>
+    </div>
+    <!--  
+----------------→y
+|
+|
+|
+|
+|
+|
+↓x -->
+    <script src="js/DrawMap.js"></script>
+    <script src="js/effects.js"></script>
+    <script src="js/functions.js"></script>
+    <script src="js/HideandShow.js"></script>
+    <script src="js/judge.js"></script>
+    <script src="js/Maps.js"></script>
+    <script src="js/mob.js"></script>
+    <script src="js/PlayerMove.js"></script>
+    <script>
+        if (!IsPc()) {
+            document.getElementById("up").style.marginLeft = '0px';
+            document.getElementById("down").style.marginLeft = '0px';
+            document.getElementById("boom").style.marginLeft = '0px';
+        } else {
+            document.getElementById("map").style.float = "none";
+            document.getElementById("game").style.width = "100%";
+            document.getElementById("buttons").style.float = "none";
+            document.getElementById("text").style.float = "none";
+            document.getElementById("text").style.width = "100%";
+            document.getElementById("up").style.marginRight = "45px";
+            document.getElementById("down").style.marginRight = "45px";
+        }
+
+        var i = 0;
+        var j = 0;
+        var x_step;
+        var y_step;
+        x = 0;
+        y = 0;
+        x_old = 1;
+        y_old = 1;
+        boom_x = -1;
+        boom_y = -1;
+        block = "草";
+        block_old = "草";
+        mob_block = "草";
+        mob_block_old = "草";
+        mob_x = 1;
+        mob_y = 1;
+        mob_x_old = 0;
+        mob_y_old = 0;
+
+        boom_exist = false;
+
+        var booming;
+
+        boom_power = 1;
+
+        var score = 0;
+
+        map = new Array();
+        map_print = new Array();
+
+        var find_direction_times = 0;
+        var find_place_times = 0;
+
+        saved_before = false;
+
+        map_list = new Array;
+        map_list_input = new Array;
+        map_id = new Array;
+        map_id_input = new Array;
+        map_order = new Array;
+        map_order_input = new Array;
+
+        //定义地图
+        map = [
+            ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
+            ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
+            ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
+            ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
+            ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
+            ["草", "草", "水", "水", "水", "水", "水", "水", "桥", "桥", "水", "水"],
+            ["草", "草", "水", "水", "水", "水", "水", "水", "桥", "桥", "水", "水"],
+            ["草", "草", "水", "水", "水", "水", "水", "水", "桥", "桥", "水", "水"],
+            ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"],
+            ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"],
+            ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"],
+            ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"]
+        ];
+
+        map_print = JSON.parse(JSON.stringify(map));
+
+        var map2d = Array2D(map.length, map[0].length);
+        // map2d
+        map2d.data = JSON.parse(JSON.stringify(map));
+
+        pathList = new Array;
+        clickplace = [];
+        movepath_x = new Array;
+        movepath_y = new Array;
+        moving = false;
+
+        word = ["水", "桥", "草", "人", "怪", "土", "炸"];
+        color = ["blue", "orange", "green", "red", "red", "Sienna", "black"];
+        passable = ["草", "桥", "土", "怪", "人"];
+
+        //初始化
+        drawmap();
+        findwarter();
+        findgrass();
+        mob_move_prepare();
+        boompowerchange();
+        map_list_hide();
+        browser_alert()
+        window.onload = setlist(map_list, map_id, map_order);
+
+        map_input = new Array();
+        settings = new Array();
+
+        hide(); //隐藏地图组件
+
+        setlist(map_list, map_id, map_order);
+
+        iBase.Id('score').style.display = "none";
+        iBase.Id('map').style.display = "none";
+        iBase.Id('buttons').style.display = "none";
+        iBase.Id('options').style.display = "none";
+        iBase.Id('map_builders').style.display = "none";
+        iBase.Id('saves').style.display = "none";
+    </script>
+
+    <style>
+        #game,
+        #text {
+            width: 49%;
+            float: right;
+            text-align: center;
+        }
+        
+        #teach {
+            display: flex;
+            /* align-items: center; */
+            height: 100%;
+        }
+        
+        #show0,
+        #show-1 {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        #show-1 {
+            letter-spacing: 5px;
+        }
+        
+        #map {
+            letter-spacing: 3px;
+        }
+        
+        #save {
+            padding: 10px;
+            margin: 10px;
+        }
+        
+        li {
+            margin: 5px;
+        }
+        
+        .up,
+        .down,
+        .left,
+        .right,
+        .boom {
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+        }
+        
+        .up,
+        .right,
+        .down,
+        .boom {
+            margin-left: 50px;
+        }
+        
+        .up,
+        .right,
+        .down {
+            margin-top: 10px;
+        }
+        
+        .boom {
+            margin-top: 50px;
+        }
+        
+        .down {
+            margin-bottom: 50px;
+        }
+        
+        input {
+            float: none;
+        }
+        
+        span:hover {
+            background-color: yellow;
+        }
+        
+        body {
+            -webkit-touch-callout: none;
+            /*系统默认菜单被禁用*/
+            -webkit-user-select: none;
+            /*webkit浏览器*/
+            -khtml-user-select: none;
+            /*早起浏览器*/
+            -moz-user-select: none;
+            /*火狐浏览器*/
+            -ms-user-select: none;
+            /*IE浏览器*/
+            user-select: none;
+            /*用户是否能够选中文本*/
+        }
+    </style>
+
+</body>
+
+</html>
