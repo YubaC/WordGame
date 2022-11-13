@@ -1,24 +1,3 @@
-if (getCookie("map_list") == "") {
-    map_list_input = [];
-} else {
-    map_list_input = decodeURIComponent(escape(window.atob(getCookie("map_list")))).split(",");
-    map_list = JSON.parse(JSON.stringify(map_list_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
-}
-
-if (getCookie("map_id") == "") {
-    map_id_input = [];
-} else {
-    map_id_input = decodeURIComponent(escape(window.atob(getCookie("map_id")))).split(",");
-    map_id = JSON.parse(JSON.stringify(map_id_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
-}
-
-if (getCookie("map_order") == "") {
-    map_order_input = [];
-} else {
-    map_order_input = decodeURIComponent(escape(window.atob(getCookie("map_order")))).split(",");
-    map_order = JSON.parse(JSON.stringify(map_order_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
-}
-
 function getmap(value) {
     var os = getOs(); //获取浏览器信息
     if (os == 'FF' || os == 'SF') { //FireFox、谷歌浏览器用这个
@@ -81,7 +60,7 @@ function rename(rename_map_id) {
     new_worldname = prompt("请输入新的地图名称", "World");
     if (new_worldname != null) {
         map_list[map_id.indexOf(rename_map_id)] = new_worldname;
-        map_list_output = btoa(unescape(encodeURIComponent(map_list.join(","))));
+        map_list_output = btoa(encodeURIComponent(map_list.join(",")));
         setCookie("map_list", map_list_output, 30 * 365);
 
         edit(map_list, map_id, map_order);
@@ -94,11 +73,11 @@ function delete_map(delete_id) {
         map_id.splice(map_id.indexOf(delete_id), 1);
         map_order.splice(map_order.indexOf(delete_id), 1);
 
-        map_list_output = btoa(unescape(encodeURIComponent(map_list.join(","))));
+        map_list_output = btoa(encodeURIComponent(map_list.join(",")));
         setCookie("map_list", map_list_output, 30 * 365);
-        map_id_output = btoa(unescape(encodeURIComponent(map_id.join(","))));
+        map_id_output = btoa(encodeURIComponent(map_id.join(",")));
         setCookie("map_id", map_id_output, 30 * 365);
-        map_order_output = btoa(unescape(encodeURIComponent(map_order.join(","))));
+        map_order_output = btoa(encodeURIComponent(map_order.join(",")));
         setCookie("map_order", map_order_output, 30 * 365);
 
         setCookie(delete_id, map_order_output, -1);
@@ -126,8 +105,8 @@ function save() {
     settings[2] = score;
     settings[3] = ["waterrun", "grassrun", "left_main", "peace", "unmatched", "boom_power"]
     settings[4] = [waterrun.checked, grassrun.checked, left_main.checked, peace.checked, unmatched.checked, Number(document.getElementById("boom_power").value)];
-    save_output = btoa(unescape(encodeURIComponent(map_output.join(";")))); //https://www.itdaan.com/blog/2014/04/22/34c1a969a1dadf56cf6767d4ae48e402.html
-    save_output_settings = btoa(unescape(encodeURIComponent(settings.join(";"))));
+    save_output = btoa(encodeURIComponent(map_output.join(";"))); //https://www.itdaan.com/blog/2014/04/22/34c1a969a1dadf56cf6767d4ae48e402.html
+    save_output_settings = btoa(encodeURIComponent(settings.join(";")));
     // window.alert(save_output);
     if (!saved_before) {
         worldname = prompt("请输入地图名称", "World");
@@ -138,11 +117,11 @@ function save() {
 
             map_list[map_list.length] = worldname;
             saved_before = true;
-            map_list_output = btoa(unescape(encodeURIComponent(map_list.join(","))));
+            map_list_output = btoa(encodeURIComponent(map_list.join(",")));
             setCookie("map_list", map_list_output, 30 * 365);
-            map_id_output = btoa(unescape(encodeURIComponent(map_id.join(","))));
+            map_id_output = btoa(encodeURIComponent(map_id.join(",")));
             setCookie("map_id", map_id_output, 30 * 365);
-            map_order_output = btoa(unescape(encodeURIComponent(map_order.join(","))));
+            map_order_output = btoa(encodeURIComponent(map_order.join(",")));
             setCookie("map_order", map_order_output, 30 * 365);
 
             setCookie(this_map_id, save_output, 30 * 365);
@@ -158,11 +137,11 @@ function save() {
         });
         map_order.unshift(this_map_id.toString());
 
-        map_list_output = btoa(unescape(encodeURIComponent(map_list.join(","))));
+        map_list_output = btoa(encodeURIComponent(map_list.join(",")));
         setCookie("map_list", map_list_output, 30 * 365);
-        map_id_output = btoa(unescape(encodeURIComponent(map_id.join(","))));
+        map_id_output = btoa(encodeURIComponent(map_id.join(",")));
         setCookie("map_id", map_id_output, 30 * 365);
-        map_order_output = btoa(unescape(encodeURIComponent(map_order.join(","))));
+        map_order_output = btoa(encodeURIComponent(map_order.join(",")));
         setCookie("map_order", map_order_output, 30 * 365);
 
         setCookie(this_map_id, save_output, 30 * 365);
@@ -173,7 +152,7 @@ function save() {
 }
 
 function read(map_id_input) {
-    settings_input = decodeURIComponent(escape(window.atob(getCookie(map_id_input + "_settings")))).split(";");
+    settings_input = decodeURIComponent(window.atob(getCookie(map_id_input + "_settings"))).split(";");
 
     this_map_id = Number(map_id_input);
     saved_before = true;
@@ -204,7 +183,7 @@ function read(map_id_input) {
         document.getElementById('leftmain').style.display = "block";
         document.getElementById("button").style.cssFloat = "right";
     }
-    document.getElementById("in").value = decodeURIComponent(escape(window.atob(getCookie(map_id_input))));
+    document.getElementById("in").value = decodeURIComponent(window.atob(getCookie(map_id_input)));
     var ee = document.getElementById("in");
     var lines = ee.value.split(";"); //沿";"分割
     for (i = 0; i < lines.length; i++) {
@@ -235,7 +214,7 @@ function read(map_id_input) {
     document.getElementById("score").innerHTML = "Score:" + score;
     drawmap();
 
-    map_order_output = btoa(unescape(encodeURIComponent(map_order.join(","))));
+    map_order_output = btoa(encodeURIComponent(map_order.join(",")));
     setCookie("map_order", map_order_output, 30 * 365);
 }
 

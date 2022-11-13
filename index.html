@@ -264,15 +264,34 @@
         mob_move_prepare();
         boompowerchange();
         map_list_hide();
-        browser_alert()
+        browser_alert();
+
+        if (getCookie("map_list") == "") {
+            map_list_input = [];
+        } else {
+            map_list_input = decodeURIComponent(window.atob(getCookie("map_list"))).split(",");
+            map_list = JSON.parse(JSON.stringify(map_list_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
+        }
+
+        if (getCookie("map_id") == "") {
+            map_id_input = [];
+        } else {
+            map_id_input = decodeURIComponent(window.atob(getCookie("map_id"))).split(",");
+            map_id = JSON.parse(JSON.stringify(map_id_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
+        }
+
+        if (getCookie("map_order") == "") {
+            map_order_input = [];
+        } else {
+            map_order_input = decodeURIComponent(window.atob(getCookie("map_order"))).split(",");
+            map_order = JSON.parse(JSON.stringify(map_order_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
+        }
         window.onload = setlist(map_list, map_id, map_order);
 
         map_input = new Array();
         settings = new Array();
 
         hide(); //隐藏地图组件
-
-        setlist(map_list, map_id, map_order);
     </script>
 
 </body>
