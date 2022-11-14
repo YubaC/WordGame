@@ -137,12 +137,12 @@ function mobrestart() { //mob被击杀后刷新
         new_mob_x = Math.floor(Math.random() * map.length);
         new_mob_y = Math.floor(Math.random() * map[0].length);
         find_place_times += 1;
-        if (find_place_times < 10) {
+        if (find_place_times > 10) {
             break;
         }
-    } while (contains(passable, map[new_mob_x][new_mob_y]));
+    } while (!contains(passable, map[new_mob_x][new_mob_y]));
     outer:
-        if (find_place_times != 0) { //运气不好，10次都没找到可以落脚的方块
+        if (find_place_times > 10) { //运气不好，10次都没找到可以落脚的方块
             for (f = map.length - 1; f > -1; f--) { //把整个地图都检查一遍，寻找可以落脚的方块
                 for (s = map[0].length - 1; s > -1; s--) {
                     if (contains(passable, map[f][s])) { //找到了就在这里落脚
