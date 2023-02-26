@@ -16,7 +16,7 @@
             position: relative;
             top: 0%;
         }
-        
+
         .label {
             font-size: 13px;
             line-height: 32px;
@@ -34,20 +34,20 @@
             transform: translate(29.29%, -100%) rotate(45deg);
             text-indent: 0;
         }
-        
+
         #map {
             letter-spacing: 3px;
         }
-        
+
         #save {
             padding: 10px;
             margin: 10px;
         }
-        
+
         li {
             margin: 5px;
         }
-        
+
         .up,
         .down,
         .left,
@@ -57,36 +57,36 @@
             height: 50px;
             font-size: 24px;
         }
-        
+
         .up,
         .right,
         .down,
         .boom {
             margin-left: 50px;
         }
-        
+
         .up,
         .right,
         .down {
             margin-top: 10px;
         }
-        
+
         .boom {
             margin-top: 50px;
         }
-        
+
         .down {
             margin-bottom: 50px;
         }
-        
+
         input {
             float: none;
         }
-        
+
         span:hover {
             background-color: yellow;
         }
-        
+
         body {
             -webkit-touch-callout: none;
             /*系统默认菜单被禁用*/
@@ -139,7 +139,7 @@
     </div>
     <div>
         <hr>
-        <input type="CheckBox" id="mousemove" onclick="drawmap_base()">鼠标点击移动<br>
+        <input type="CheckBox" id="mousemove" onclick="drawmap()">鼠标点击移动<br>
         <input type="CheckBox" id="waterrun">河水蔓延<br>
         <input type="CheckBox" id="grassrun">草地蔓延<br>
         <div id="leftmain">
@@ -148,10 +148,12 @@
         <input type="CheckBox" id="peace" checked="checked">和平<br>
         <input type="CheckBox" id="unmatched">无敌<br>
         <div>
-            炸弹威力: <input type="range" id="boom_power" min="0" max="5" onchange="boompowerchange()" value="1"><span id="power">1</span><br>
+            炸弹威力: <input type="range" id="boom_power" min="0" max="5" onchange="boompowerchange()" value="1"><span
+                id="power">1</span><br>
         </div>
         <div>
-            移动时间间隔(ms): <input type="number" id="player_speed" min="10" max="1000" onchange="speedchange()" value="180"><br>
+            移动时间间隔(ms): <input type="number" id="player_speed" min="10" max="1000" onchange="speedchange()"
+                value="180"><br>
         </div>
     </div>
 
@@ -259,8 +261,8 @@
 
         //初始化
         drawmap();
-        findwarter();
-        findgrass();
+        findWater();
+        findGrass();
         mob_move_prepare();
         boompowerchange();
         map_list_hide();

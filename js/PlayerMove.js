@@ -3,7 +3,7 @@ var btn_right = document.getElementById("right");
 var btn_up = document.getElementById("up");
 var btn_down = document.getElementById("down");
 
-document.oncontextmenu = function(e) {
+document.oncontextmenu = function (e) {
     e.preventDefault();
 };
 
@@ -33,14 +33,14 @@ function run(key) {
             break;
 
         default:
-            break
+            break;
     }
+}
 
-};
+var date,
+    debug = document.getElementById("debug");
 
-var date, debug = document.getElementById('debug');
-
-document.onkeydown = function(event) {
+document.onkeydown = function (event) {
     var key = event || window.event || arguments.callee.caller.arguments[0],
         // var key = event ? event.charCode : window.event.keyCode,
 
@@ -50,190 +50,233 @@ document.onkeydown = function(event) {
     if (!date) {
         run(key);
         date = _date;
-
     } else if (_date >= date + T) {
-
         run(key);
         console.log(key);
 
         date = _date;
-
     }
+};
 
-}
-
-document.onkeyup = function() {
+document.onkeyup = function () {
     date = 0;
-}
+};
 
 //left按钮事件--鼠标按下
-btn_left.onmousedown = function() {
+btn_left.onmousedown = function () {
     var i = 0; //变量i
-    mouseTime = setInterval(function() { //setInterval可一直执行内部函数
+    mouseTime = setInterval(function () {
+        //setInterval可一直执行内部函数
         button_left();
-        i++ //若过T，执行一次i++
+        i++; //若过T，执行一次i++
     }, T);
-    if (i == 0) { //i=0时证明无长按事件为单击事件
+    if (i == 0) {
+        //i=0时证明无长按事件为单击事件
         button_left();
     }
-}
+};
 
-btn_left.onmouseup = function() { //鼠标抬起，执行清除
+btn_left.onmouseup = function () {
+    //鼠标抬起，执行清除
     clearInterval(mouseTime); //清除setInterval的时间
-}
+};
 
-//right按钮事件（内容基本同上，不予注释）    
-btn_right.onmousedown = function() {
+//right按钮事件（内容基本同上，不予注释）
+btn_right.onmousedown = function () {
     var i = 0;
-    mouseTime = setInterval(function() {
+    mouseTime = setInterval(function () {
         button_right();
-        i++ //i=0时证明无长按事件为单击事件
+        i++; //i=0时证明无长按事件为单击事件
     }, T);
     if (i == 0) {
         button_right();
     }
-}
+};
 
-btn_right.onmouseup = function() {
+btn_right.onmouseup = function () {
     clearInterval(mouseTime);
-}
+};
 
-//up按钮事件（内容基本同上，不予注释）    
-btn_up.onmousedown = function() {
+//up按钮事件（内容基本同上，不予注释）
+btn_up.onmousedown = function () {
     var i = 0;
-    mouseTime = setInterval(function() {
+    mouseTime = setInterval(function () {
         button_up();
-        i++ //i=0时证明无长按事件为单击事件
+        i++; //i=0时证明无长按事件为单击事件
     }, T);
     if (i == 0) {
         button_up();
     }
-}
+};
 
-btn_up.onmouseup = function() {
+btn_up.onmouseup = function () {
     clearInterval(mouseTime);
-}
+};
 
-//down按钮事件（内容基本同上，不予注释）    
-btn_down.onmousedown = function() {
+//down按钮事件（内容基本同上，不予注释）
+btn_down.onmousedown = function () {
     var i = 0;
-    mouseTime = setInterval(function() {
+    mouseTime = setInterval(function () {
         button_down();
-        i++ //i=0时证明无长按事件为单击事件
+        i++; //i=0时证明无长按事件为单击事件
     }, T);
     if (i == 0) {
         button_down();
     }
-}
+};
 
-btn_down.onmouseup = function() {
+btn_down.onmouseup = function () {
     clearInterval(mouseTime);
-}
+};
 
 //移动端适配
 //left按钮事件--touch
-var touch_left = document.getElementById('left');
-touch_left.addEventListener('touchstart', function() {
-    // document.getElementById("left").disabled = true;
-    document.getElementById("right").disabled = true;
-    document.getElementById("up").disabled = true;
-    document.getElementById("down").disabled = true;
-    var i = 0; //变量i
-    mouseTime = setInterval(function() { //setInterval可一直执行内部函数
-        button_left();
-        i++ //若过T，执行一次i++
-    }, T);
-    if (i == 0) { //i=0时证明无长按事件为单击事件
-        // button_left();
-    }
-}, false);
+var touch_left = document.getElementById("left");
+touch_left.addEventListener(
+    "touchstart",
+    function () {
+        // document.getElementById("left").disabled = true;
+        document.getElementById("right").disabled = true;
+        document.getElementById("up").disabled = true;
+        document.getElementById("down").disabled = true;
+        var i = 0; //变量i
+        mouseTime = setInterval(function () {
+            //setInterval可一直执行内部函数
+            button_left();
+            i++; //若过T，执行一次i++
+        }, T);
+        if (i == 0) {
+            //i=0时证明无长按事件为单击事件
+            // button_left();
+        }
+    },
+    false
+);
 
-var end_left = document.getElementById('left');
-end_left.addEventListener('touchend', function() { //抬起，执行清除
-    clearInterval(mouseTime); //清除setInterval的时间
-    document.getElementById("left").disabled = false;
-    document.getElementById("right").disabled = false;
-    document.getElementById("up").disabled = false;
-    document.getElementById("down").disabled = false;
-}, false);
+var end_left = document.getElementById("left");
+end_left.addEventListener(
+    "touchend",
+    function () {
+        //抬起，执行清除
+        clearInterval(mouseTime); //清除setInterval的时间
+        document.getElementById("left").disabled = false;
+        document.getElementById("right").disabled = false;
+        document.getElementById("up").disabled = false;
+        document.getElementById("down").disabled = false;
+    },
+    false
+);
 
 //right
-var touch_right = document.getElementById('right');
-touch_right.addEventListener('touchstart', function() {
-    document.getElementById("left").disabled = true;
-    //  document.getElementById("right").disabled = true;
-    document.getElementById("up").disabled = true;
-    document.getElementById("down").disabled = true;
-    var i = 0; //变量i
-    mouseTime = setInterval(function() { //setInterval可一直执行内部函数
-        button_right();
-        i++ //若过T，执行一次i++
-    }, T);
-    if (i == 0) { //i=0时证明无长按事件为单击事件
-        // button_right();
-    }
-}, false);
+var touch_right = document.getElementById("right");
+touch_right.addEventListener(
+    "touchstart",
+    function () {
+        document.getElementById("left").disabled = true;
+        //  document.getElementById("right").disabled = true;
+        document.getElementById("up").disabled = true;
+        document.getElementById("down").disabled = true;
+        var i = 0; //变量i
+        mouseTime = setInterval(function () {
+            //setInterval可一直执行内部函数
+            button_right();
+            i++; //若过T，执行一次i++
+        }, T);
+        if (i == 0) {
+            //i=0时证明无长按事件为单击事件
+            // button_right();
+        }
+    },
+    false
+);
 
-var end_right = document.getElementById('right');
-end_right.addEventListener('touchend', function() { //鼠标抬起，执行清除
-    clearInterval(mouseTime); //清除setInterval的时间
-    document.getElementById("left").disabled = false;
-    document.getElementById("right").disabled = false;
-    document.getElementById("up").disabled = false;
-    document.getElementById("down").disabled = false;
-}, false);
+var end_right = document.getElementById("right");
+end_right.addEventListener(
+    "touchend",
+    function () {
+        //鼠标抬起，执行清除
+        clearInterval(mouseTime); //清除setInterval的时间
+        document.getElementById("left").disabled = false;
+        document.getElementById("right").disabled = false;
+        document.getElementById("up").disabled = false;
+        document.getElementById("down").disabled = false;
+    },
+    false
+);
 
 // up
-var touch_up = document.getElementById('up');
-touch_up.addEventListener('touchstart', function() {
-    document.getElementById("left").disabled = true;
-    document.getElementById("right").disabled = true;
-    //  document.getElementById("up").disabled = true;
-    document.getElementById("down").disabled = true;
-    var i = 0; //变量i
-    mouseTime = setInterval(function() { //setInterval可一直执行内部函数
-        button_up();
-        i++ //若过T，执行一次i++
-    }, T);
-    if (i == 0) { //i=0时证明无长按事件为单击事件
-        // button_up();
-    }
-}, false);
+var touch_up = document.getElementById("up");
+touch_up.addEventListener(
+    "touchstart",
+    function () {
+        document.getElementById("left").disabled = true;
+        document.getElementById("right").disabled = true;
+        //  document.getElementById("up").disabled = true;
+        document.getElementById("down").disabled = true;
+        var i = 0; //变量i
+        mouseTime = setInterval(function () {
+            //setInterval可一直执行内部函数
+            button_up();
+            i++; //若过T，执行一次i++
+        }, T);
+        if (i == 0) {
+            //i=0时证明无长按事件为单击事件
+            // button_up();
+        }
+    },
+    false
+);
 
-var end_up = document.getElementById('up');
-end_up.addEventListener('touchend', function() { //鼠标抬起，执行清除
-    clearInterval(mouseTime); //清除setInterval的时间
-    document.getElementById("left").disabled = false;
-    document.getElementById("right").disabled = false;
-    document.getElementById("up").disabled = false;
-    document.getElementById("down").disabled = false;
-}, false);
+var end_up = document.getElementById("up");
+end_up.addEventListener(
+    "touchend",
+    function () {
+        //鼠标抬起，执行清除
+        clearInterval(mouseTime); //清除setInterval的时间
+        document.getElementById("left").disabled = false;
+        document.getElementById("right").disabled = false;
+        document.getElementById("up").disabled = false;
+        document.getElementById("down").disabled = false;
+    },
+    false
+);
 
 //down
-var touch_down = document.getElementById('down');
-touch_down.addEventListener('touchstart', function() {
-    document.getElementById("left").disabled = true;
-    document.getElementById("right").disabled = true;
-    document.getElementById("up").disabled = true;
-    //  document.getElementById("down").disabled = true;
-    var i = 0; //变量i
-    mouseTime = setInterval(function() { //setInterval可一直执行内部函数
-        button_down();
-        i++ //若过T，执行一次i++
-    }, T);
-    if (i == 0) { //i=0时证明无长按事件为单击事件
-        // button_down();
-    }
-}, false);
+var touch_down = document.getElementById("down");
+touch_down.addEventListener(
+    "touchstart",
+    function () {
+        document.getElementById("left").disabled = true;
+        document.getElementById("right").disabled = true;
+        document.getElementById("up").disabled = true;
+        //  document.getElementById("down").disabled = true;
+        var i = 0; //变量i
+        mouseTime = setInterval(function () {
+            //setInterval可一直执行内部函数
+            button_down();
+            i++; //若过T，执行一次i++
+        }, T);
+        if (i == 0) {
+            //i=0时证明无长按事件为单击事件
+            // button_down();
+        }
+    },
+    false
+);
 
-var end_down = document.getElementById('down');
-end_down.addEventListener('touchend', function() { //鼠标抬起，执行清除
-    clearInterval(mouseTime); //清除setInterval的时间
-    document.getElementById("left").disabled = false;
-    document.getElementById("right").disabled = false;
-    document.getElementById("up").disabled = false;
-    document.getElementById("down").disabled = false;
-}, false);
+var end_down = document.getElementById("down");
+end_down.addEventListener(
+    "touchend",
+    function () {
+        //鼠标抬起，执行清除
+        clearInterval(mouseTime); //清除setInterval的时间
+        document.getElementById("left").disabled = false;
+        document.getElementById("right").disabled = false;
+        document.getElementById("up").disabled = false;
+        document.getElementById("down").disabled = false;
+    },
+    false
+);
 
 function button_up() {
     moving = false;
@@ -257,7 +300,8 @@ function button_right() {
 
 // 移动
 function left() {
-    if (y > 0 && contains(passable, map[x][y - 1])) { //如果不会出地图并且前面的方块可以踩上去
+    if (y > 0 && contains(passable, map[x][y - 1])) {
+        //如果不会出地图并且前面的方块可以踩上去
         // if (map[x][y - 1] == "怪") {
         if (x == mob_x && y - 1 == mob_y && !peace.checked) {
             gameover(0);
@@ -320,7 +364,8 @@ function down() {
     }
 }
 
-function returnplace(name) { //接收点击的坐标
+function returnplace(name) {
+    //接收点击的坐标
     // alert(name);
 
     position = name.split(",");
@@ -329,7 +374,6 @@ function returnplace(name) { //接收点击的坐标
     // function returnplace(name) { //接收点击的坐标
     // alert(name);
     // map2d
-
 
     input_x = Number(position[0]);
     input_y = Number(position[1]);
@@ -360,10 +404,9 @@ function returnplace(name) { //接收点击的坐标
             moving = true;
             move();
         }
-
     } else {
         console.log("none");
-        console.log(0)
+        console.log(0);
     }
 }
 
@@ -373,16 +416,16 @@ function move() {
         console.log(Number(movepath_y[n]) - y);
         if (Number(movepath_x[n]) - x == 1) {
             down();
-            console.log('down');
+            console.log("down");
         } else if (Number(movepath_x[n]) - x == -1) {
             up();
-            console.log('up');
+            console.log("up");
         } else if (Number(movepath_y[n]) - y == 1) {
             right();
-            console.log('right');
+            console.log("right");
         } else if (Number(movepath_y[n]) - y == -1) {
             left();
-            console.log('left');
+            console.log("left");
         }
         n++;
         // // x_add = movepath_x[n] - x;
@@ -390,14 +433,13 @@ function move() {
 
         // if (n < 18) {
         if (n < movepath_x.length) {
-            // drawmap_base();
+            // drawmap();
             setTimeout("move()", T);
-
         } else {
             movepath_x = [];
             movepath_y = [];
             clickplace = [];
-            drawmap_base();
+            drawmap();
             moving = false;
         }
     }
@@ -411,7 +453,7 @@ function Array2D(w, h, num) {
         w: w,
         h: h,
         data: data,
-    }
+    };
 }
 
 //点
@@ -419,10 +461,10 @@ function Point(x, y) {
     return {
         x: x,
         y: y,
-        eq: function(other) {
+        eq: function (other) {
             return this.x === other.x && this.y === other.y;
-        }
-    }
+        },
+    };
 }
 
 /*
@@ -437,14 +479,18 @@ function Point(x, y) {
 function AStar(map2d, startPoint, endPoint, passTag) {
     var tag = passTag || 0;
 
-    var Node = function(point, endPoint, g) { //描述AStar中的节点
+    var Node = function (point, endPoint, g) {
+        //描述AStar中的节点
         var tG = g || 0;
         return {
             point: point, //节点的坐标
             father: null, //父节点
             g: tG, //G值，g值在用到的时候会重新算
-            h: (Math.abs(endPoint.x - point.x) + Math.abs(endPoint.y - point.y)) * 10 //计算H值
-        }
+            h:
+                (Math.abs(endPoint.x - point.x) +
+                    Math.abs(endPoint.y - point.y)) *
+                10, //计算H值
+        };
     };
 
     return {
@@ -456,7 +502,7 @@ function AStar(map2d, startPoint, endPoint, passTag) {
         closeList: [], //关闭表
 
         //获得openList中F值最小的节点
-        getMinNode: function() {
+        getMinNode: function () {
             var currentNode = this.openList[0];
             for (var node of this.openList) {
                 if (node.g + node.h < currentNode.g + currentNode.h)
@@ -466,35 +512,37 @@ function AStar(map2d, startPoint, endPoint, passTag) {
         },
 
         //判断point是否在关闭表中
-        pointInCloseList: function(point) {
+        pointInCloseList: function (point) {
             for (var node of this.closeList) {
-                if (node.point.eq(point))
-                    return true;
+                if (node.point.eq(point)) return true;
             }
             return false;
         },
 
         //判断point是否在开启表中
-        pointInOpenList: function(point) {
+        pointInOpenList: function (point) {
             for (var node of this.openList) {
-                if (node.point.eq(point))
-                    return node;
+                if (node.point.eq(point)) return node;
             }
             return null;
         },
 
         //判断终点是否在关闭表中
-        endPointInCloseList: function() {
+        endPointInCloseList: function () {
             for (var node of this.closeList) {
-                if (node.point.eq(this.endPoint))
-                    return node;
+                if (node.point.eq(this.endPoint)) return node;
             }
             return null;
         },
         //搜索节点周围的点
-        searchNear: function(minF, offsetX, offsetY) {
+        searchNear: function (minF, offsetX, offsetY) {
             //越界检测
-            if (minF.point.x + offsetX < 0 || minF.point.x + offsetX > this.map2d.w - 1 || minF.point.y + offsetY < 0 || minF.point.y + offsetY > this.map2d.h - 1)
+            if (
+                minF.point.x + offsetX < 0 ||
+                minF.point.x + offsetX > this.map2d.w - 1 ||
+                minF.point.y + offsetY < 0 ||
+                minF.point.y + offsetY > this.map2d.h - 1
+            )
                 return null;
             //如果是障碍就忽略
             // if (this.map2d.data[minF.point.x + offsetX][minF.point.y + offsetY] !== this.passTag) {
@@ -504,18 +552,25 @@ function AStar(map2d, startPoint, endPoint, passTag) {
             //     return null;
             // }
 
-            if (!contains(passable, this.map2d.data[minF.point.x + offsetX][minF.point.y + offsetY]))
+            if (
+                !contains(
+                    passable,
+                    this.map2d.data[minF.point.x + offsetX][
+                        minF.point.y + offsetY
+                    ]
+                )
+            )
                 return null;
             //如果在关闭表中就忽略
-            var currentPoint = Point(minF.point.x + offsetX, minF.point.y + offsetY);
-            if (this.pointInCloseList(currentPoint))
-                return null;
+            var currentPoint = Point(
+                minF.point.x + offsetX,
+                minF.point.y + offsetY
+            );
+            if (this.pointInCloseList(currentPoint)) return null;
             //设置单位花费
             var step = 0;
-            if (offsetX === 0 || offsetY === 0)
-                step = 10;
-            else
-                step = 14;
+            if (offsetX === 0 || offsetY === 0) step = 10;
+            else step = 14;
             //如果不在openList中，就把它加入openList
             var currentNode = this.pointInOpenList(currentPoint);
             if (currentNode == null) {
@@ -529,11 +584,10 @@ function AStar(map2d, startPoint, endPoint, passTag) {
                 currentNode.g = minF + step;
                 currentNode.father = minF;
             }
-
         },
 
         //开始寻路
-        start: function() {
+        start: function () {
             //1.将起点放入开启列表
             var startNode = Node(this.startPoint, this.endPoint);
             this.openList.push(startNode);
@@ -552,7 +606,8 @@ function AStar(map2d, startPoint, endPoint, passTag) {
                 this.searchNear(minF, 1, 0);
                 // 判断是否终止
                 var point = this.endPointInCloseList();
-                if (point) { //如果终点在关闭表中，就返回结果
+                if (point) {
+                    //如果终点在关闭表中，就返回结果
                     var cPoint = point;
                     var pathList = [];
                     while (true) {
@@ -565,9 +620,8 @@ function AStar(map2d, startPoint, endPoint, passTag) {
                     }
                 }
                 //开启表为空
-                if (this.openList.length === 0)
-                    return null;
+                if (this.openList.length === 0) return null;
             }
-        }
-    }
+        },
+    };
 }

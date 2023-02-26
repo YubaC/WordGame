@@ -1,17 +1,20 @@
-document.getElementById('exit_editing').style.display = "none";
+document.getElementById("exit_editing").style.display = "none";
 
 T = Number(document.getElementById("player_speed").value);
 
-if (!IsPc()) { //是PC端
-    document.getElementById("boom").style.marginTop = '10px';
-    document.getElementById("down").style.marginBottom = '10px';
-    document.getElementById('leftmain').style.display = "none";
-} else { //是移动端
-    document.getElementById('leftmain').style.display = "block";
+if (!IsPc()) {
+    //是PC端
+    document.getElementById("boom").style.marginTop = "10px";
+    document.getElementById("down").style.marginBottom = "10px";
+    document.getElementById("leftmain").style.display = "none";
+} else {
+    //是移动端
+    document.getElementById("leftmain").style.display = "block";
     document.getElementById("button").style.cssFloat = "right";
 }
 
-function ischeck(e) { //惯用左手
+function ischeck(e) {
+    //惯用左手
     if (e.checked) {
         document.getElementById("button").style.cssFloat = "left";
     } else {
@@ -20,25 +23,27 @@ function ischeck(e) { //惯用左手
 }
 
 function map_list_show() {
-    document.getElementById('editor').style.display = "block";
-    document.getElementById('map_list_show').style.display = "none";
-    document.getElementById('map_list_hide').style.display = "block";
+    document.getElementById("editor").style.display = "block";
+    document.getElementById("map_list_show").style.display = "none";
+    document.getElementById("map_list_hide").style.display = "block";
 }
 
 function map_list_hide() {
-    document.getElementById('editor').style.display = "none";
-    document.getElementById('map_list_show').style.display = "block";
-    document.getElementById('map_list_hide').style.display = "none";
+    document.getElementById("editor").style.display = "none";
+    document.getElementById("map_list_show").style.display = "block";
+    document.getElementById("map_list_hide").style.display = "none";
 }
 
-function show() { //显示地图组件
-    document.getElementById('show').style.display = "none";
-    document.getElementById('hide').style.display = "block";
+function show() {
+    //显示地图组件
+    document.getElementById("show").style.display = "none";
+    document.getElementById("hide").style.display = "block";
 }
 
-function hide() { //隐藏地图组件
-    document.getElementById('show').style.display = "block";
-    document.getElementById('hide').style.display = "none";
+function hide() {
+    //隐藏地图组件
+    document.getElementById("show").style.display = "block";
+    document.getElementById("hide").style.display = "none";
 }
 
 function boompowerchange() {

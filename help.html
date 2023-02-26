@@ -30,31 +30,44 @@
         </div>
         <div id="show1" align="center" style="margin:auto;display: none;">
             <h1>移动(1)</h1>
-            <p><a href="javascript:void(0);" onClick="map_show(0)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(2)">next</a></p>
+            <p><a href="javascript:void(0);" onClick="map_show(0)">back</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(2)">next</a></p>
         </div>
         <div id="show2" align="center" style="margin:auto;display: none;">
             <h1>移动(2)</h1>
-            <p><a href="javascript:void(0);" onClick="map_show(1)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(3)">next</a></p>
+            <p><a href="javascript:void(0);" onClick="map_show(1)">back</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(3)">next</a></p>
         </div>
         <div id="show3" align="center" style="margin:auto;display: none;">
             <h1>爆炸</h1>
-            <p><a href="javascript:void(0);" onClick="map_show(2)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(4)">next</a></p>
+            <p><a href="javascript:void(0);" onClick="map_show(2)">back</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(4)">next</a></p>
         </div>
         <div id="show4" align="center" style="margin:auto;display: none;">
             <h1>保存</h1>
-            <p><a href="javascript:void(0);" onClick="map_show(3)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(5)">next</a></p>
+            <p><a href="javascript:void(0);" onClick="map_show(3)">back</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(5)">next</a></p>
         </div>
         <div id="show5" align="center" style="margin:auto;display: none;">
             <h1>选项</h1>
-            <p><a href="javascript:void(0);" onClick="map_show(4)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(6)">next</a></p>
+            <p><a href="javascript:void(0);" onClick="map_show(4)">back</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(6)">next</a></p>
         </div>
         <div id="show6" align="center" style="margin:auto;display: none;">
             <h1>怪物</h1>
-            <p><a href="javascript:void(0);" onClick="map_show(5)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(7)">next</a></p>
+            <p><a href="javascript:void(0);" onClick="map_show(5)">back</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(-1)">index</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(7)">next</a></p>
         </div>
         <div id="show7" align="center" style="margin:auto;display: none;">
             <h1>地图操作</h1>
-            <p><a href="javascript:void(0);" onClick="map_show(6)">back</a>&emsp;&emsp;&emsp;<a href="javascript:void(0);" onClick="map_show(-1)">index</a></p>
+            <p><a href="javascript:void(0);" onClick="map_show(6)">back</a>&emsp;&emsp;&emsp;<a
+                    href="javascript:void(0);" onClick="map_show(-1)">index</a></p>
         </div>
     </div>
 
@@ -68,18 +81,19 @@
             </p>
             <meter min="0" max="10">您的设备不支持meter标签。</meter>
             <p id="done1" style="display: none;"><b>太棒了！我们进行</b>
-                <a href="javascript:void(0);" onClick="map_show(2)">下一步</a><b>的教学吧。</b></p>
+                <a href="javascript:void(0);" onClick="map_show(2)">下一步</a><b>的教学吧。</b>
+            </p>
             <script>
                 keys = ["w", "a", "s", "d", "W", "A", "S", "D"];
                 key = 0;
                 allow_move_to_add = [1, 2]
-                document.onkeypress = function(event) {
+                document.onkeypress = function (event) {
                     // var key = event || window.event || arguments.callee.caller.arguments[0],
                     //     key = key.keyCode;
                     key = event.key;
                     console.log(event);
                 }
-                window.onkeyup = function() {
+                window.onkeyup = function () {
                     console.log(key);
                     if (keys.indexOf(key) != -1 && allow_move_to_add.indexOf(now_at) != -1) {
                         score_add();
@@ -100,7 +114,8 @@
             </p>
             <meter min="0" max="3">您的设备不支持meter标签。</meter>
             <p id="done2" style="display: none;"><b>太棒了！我们进行</b>
-                <a href="javascript:void(0);" onClick="map_show(3)">下一步</a><b>的教学吧。</b></p>
+                <a href="javascript:void(0);" onClick="map_show(3)">下一步</a><b>的教学吧。</b>
+            </p>
         </div>
         <div id="text3" style="margin:auto;display: none;">
             <p align="left">
@@ -109,7 +124,8 @@
             </p>
             <meter min="0" max="2">您的设备不支持meter标签。</meter>
             <p id="done3" style="display: none;"><b>太棒了！我们进行</b>
-                <a href="javascript:void(0);" onClick="map_show(4)">下一步</a><b>的教学吧。</b></p>
+                <a href="javascript:void(0);" onClick="map_show(4)">下一步</a><b>的教学吧。</b>
+            </p>
             <script>
                 function boom2() {
                     boom();
@@ -128,7 +144,8 @@
             </p>
             <meter min="0" max="2">您的设备不支持meter标签。</meter>
             <p id="done4" style="display: none;"><b>太棒了！我们进行</b>
-                <a href="javascript:void(0);" onClick="map_show(5)">下一步</a><b>的教学吧。</b></p>
+                <a href="javascript:void(0);" onClick="map_show(5)">下一步</a><b>的教学吧。</b>
+            </p>
             <script>
                 function save2() {
                     save();
@@ -141,16 +158,17 @@
         <div id="text5" style="margin:auto;display: none;">
             <p align="left">
                 选项可以为您提供更加丰富的玩法。
-                <ul>
-                    <li><b>鼠标点击移动</b>将允许您通过使用鼠标点击地图的方式来控制移动。</li>
-                    <li><b>河水蔓延</b>将允许临近的<span style="color:blue;">水</span>扩散到爆炸产生的<span style="color:Sienna;">土</span>上。</li>
-                    <li><b>草地蔓延</b>同理，不过扩散较慢。</li>
-                    <li><b>惯用左手（仅移动端）</b>允许您便捷地通过左手来操作。</li>
-                    <li>取消勾选<b>和平</b>将放出一只怪物。（详情请参考下一章节）</li>
-                    <li><b>无敌</b>将使得您不会受到炸弹或怪物的伤害。</li>
-                    <li><b>炸弹威力</b>是炸弹爆炸的半径。默认为2（即爆炸范围5x5)。</li>
-                    <li><b>移动时间间隔(ms)</b>是您长按移动时的速度，移动时间间隔越小移动越快。</li>
-                </ul>
+            <ul>
+                <li><b>鼠标点击移动</b>将允许您通过使用鼠标点击地图的方式来控制移动。</li>
+                <li><b>河水蔓延</b>将允许临近的<span style="color:blue;">水</span>扩散到爆炸产生的<span style="color:Sienna;">土</span>上。
+                </li>
+                <li><b>草地蔓延</b>同理，不过扩散较慢。</li>
+                <li><b>惯用左手（仅移动端）</b>允许您便捷地通过左手来操作。</li>
+                <li>取消勾选<b>和平</b>将放出一只怪物。（详情请参考下一章节）</li>
+                <li><b>无敌</b>将使得您不会受到炸弹或怪物的伤害。</li>
+                <li><b>炸弹威力</b>是炸弹爆炸的半径。默认为2（即爆炸范围5x5)。</li>
+                <li><b>移动时间间隔(ms)</b>是您长按移动时的速度，移动时间间隔越小移动越快。</li>
+            </ul>
             </p>
         </div>
         <div id="text6" style="margin:auto;display: none;">
@@ -163,7 +181,8 @@
             </p>
             <meter min="0" max="2">您的设备不支持meter标签。</meter>
             <p id="done6" style="display: none;"><b>太棒了！我们进行</b>
-                <a href="javascript:void(0);" onClick="map_show(7)">下一步</a><b>的教学吧。</b></p>
+                <a href="javascript:void(0);" onClick="map_show(7)">下一步</a><b>的教学吧。</b>
+            </p>
             <script>
                 checked_peace = false;
 
@@ -196,7 +215,8 @@
             </p>
             <meter min="0" max="2">您的设备不支持meter标签。</meter>
             <p id="done7" style="display: none;"><b>太棒了！您已经完全熟悉了这个游戏。去</b>
-                <a href="https://yubac.github.io/WordGame">试试吧</a><b>！</b></p>
+                <a href="https://yubac.github.io/WordGame">试试吧</a><b>！</b>
+            </p>
             <script>
                 checked1 = false;
                 checked2 = false;
@@ -297,24 +317,24 @@
             allow_add = true;
 
             try {
-                setTimeout(function() {
+                setTimeout(function () {
                     iBase.Id("text" + now_at).getElementsByTagName("meter")[0].value = 0
                 });
-            } catch (err) {}
+            } catch (err) { }
         }
 
         // https://www.jb51.net/article/74424.htm
         //底层共用 
         iBase = {
-                Id: function(name) {
-                    return document.getElementById(name);
-                },
-                //设置元素透明度,透明度值按IE规则计,即0~100 
-                SetOpacity: function(ev, v) {
-                    ev.filters ? ev.style.filter = 'alpha(opacity=' + v + ')' : ev.style.opacity = v / 100;
-                }
+            Id: function (name) {
+                return document.getElementById(name);
+            },
+            //设置元素透明度,透明度值按IE规则计,即0~100 
+            SetOpacity: function (ev, v) {
+                ev.filters ? ev.style.filter = 'alpha(opacity=' + v + ')' : ev.style.opacity = v / 100;
             }
-            //淡入效果(含淡入到指定透明度) 
+        }
+        //淡入效果(含淡入到指定透明度) 
         function fadeIn(elem, speed, opacity) {
             /* 
              * 参数说明 
@@ -330,7 +350,7 @@
             //初始化透明度变化值为0 
             var val = 0;
             //循环将透明值以5递增,即淡入效果 
-            (function() {
+            (function () {
                 iBase.SetOpacity(elem, val);
                 val += 5;
                 if (val <= opacity) {
@@ -352,7 +372,7 @@
             //初始化透明度变化值为0 
             var val = 100;
             //循环将透明值以5递减,即淡出效果 
-            (function() {
+            (function () {
                 iBase.SetOpacity(elem, val);
                 val -= 5;
                 if (val >= opacity) {
@@ -417,7 +437,7 @@
         </div>
         <div id="options">
             <hr>
-            <input type="CheckBox" id="mousemove" onclick="drawmap_base()">鼠标点击移动<br>
+            <input type="CheckBox" id="mousemove" onclick="drawmap()">鼠标点击移动<br>
             <input type="CheckBox" id="waterrun">河水蔓延<br>
             <input type="CheckBox" id="grassrun">草地蔓延<br>
             <div id="leftmain">
@@ -426,10 +446,12 @@
             <input type="CheckBox" id="peace" checked="checked" onclick="check_peace()">和平<br>
             <input type="CheckBox" id="unmatched" checked="true">无敌<br>
             <div>
-                炸弹威力: <input type="range" id="boom_power" min="0" max="5" onchange="boompowerchange()" value="1"><span id="power">1</span><br>
+                炸弹威力: <input type="range" id="boom_power" min="0" max="5" onchange="boompowerchange()" value="1"><span
+                    id="power">1</span><br>
             </div>
             <div>
-                移动时间间隔(ms): <input type="number" id="player_speed" min="10" max="1000" onchange="speedchange()" value="180"><br>
+                移动时间间隔(ms): <input type="number" id="player_speed" min="10" max="1000" onchange="speedchange()"
+                    value="180"><br>
             </div>
         </div>
 
@@ -554,8 +576,8 @@
 
         //初始化
         drawmap();
-        findwarter();
-        findgrass();
+        findWater();
+        findGrass();
         mob_move_prepare();
         boompowerchange();
         map_list_hide();
@@ -584,13 +606,13 @@
             float: right;
             text-align: center;
         }
-        
+
         #teach {
             display: flex;
             /* align-items: center; */
             height: 100%;
         }
-        
+
         #show0,
         #show-1 {
             position: absolute;
@@ -598,24 +620,24 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
-        
+
         #show-1 {
             letter-spacing: 5px;
         }
-        
+
         #map {
             letter-spacing: 3px;
         }
-        
+
         #save {
             padding: 10px;
             margin: 10px;
         }
-        
+
         li {
             margin: 5px;
         }
-        
+
         .up,
         .down,
         .left,
@@ -625,36 +647,36 @@
             height: 50px;
             font-size: 24px;
         }
-        
+
         .up,
         .right,
         .down,
         .boom {
             margin-left: 50px;
         }
-        
+
         .up,
         .right,
         .down {
             margin-top: 10px;
         }
-        
+
         .boom {
             margin-top: 50px;
         }
-        
+
         .down {
             margin-bottom: 50px;
         }
-        
+
         input {
             float: none;
         }
-        
+
         span:hover {
             background-color: yellow;
         }
-        
+
         body {
             -webkit-touch-callout: none;
             /*系统默认菜单被禁用*/
