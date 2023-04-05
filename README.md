@@ -14,4 +14,4 @@
 
 ## 游戏教程 
 
-请移步至[这里]()。
+请移步至[这里](https://yubac.github.io/WordGame/help.html)。
