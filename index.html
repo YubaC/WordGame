@@ -21,7 +21,7 @@
         #map {
             letter-spacing: 0.2em;
             line-height: 1.4em;
-            margin-top: 50px;
+            margin-top: 20px;
         }
 
         #map p {
@@ -34,12 +34,14 @@
 
         #game-Inventory {
             width: calc(100% - 40px);
+            height: 50px;
             margin: 20px;
-            padding: 2px;
+            padding: 0px;
             background-color: #e9e9ed;
             border-radius: 5px;
             list-style: none;
             overflow-x: auto;
+            overflow-y: hidden;
         }
 
         #game-Inventory li {
@@ -165,7 +167,7 @@
                 display: inline-flex;
                 flex-direction: row-reverse;
                 width: 100%;
-                margin-top: 50px;
+                margin-top: 10px;
             }
 
             .control-btns {
@@ -395,19 +397,19 @@
         let game = {
             stopped: false,
         }
-        // // 在当前标签页失焦时，暂停游戏
-        // window.onblur = function () {
-        //     ticker.stop();
-        //     game.stopped = true;
-        //     // 唤起模态框
-        //     $('#game-stopped-modal').modal('show');
-        //     $('#game-stopped-modal').on('hidden.bs.modal', function (e) {
-        //         if (game.stopped) {
-        //             ticker.start();
-        //             game.stopped = false;
-        //         }
-        //     })
-        // }
+        // 在当前标签页失焦时，暂停游戏
+        window.onblur = function () {
+            ticker.stop();
+            game.stopped = true;
+            // 唤起模态框
+            $('#game-stopped-modal').modal('show');
+            $('#game-stopped-modal').on('hidden.bs.modal', function (e) {
+                if (game.stopped) {
+                    ticker.start();
+                    game.stopped = false;
+                }
+            })
+        }
 
     </script>
 
