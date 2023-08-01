@@ -1,66 +1,119 @@
-// 绘制地图
-function drawmap() {
-    // 克隆地图数组
-    map_print = JSON.parse(JSON.stringify(map));
+class MapDrawer {
+    constructor(config) {
+        this.$map = config.map instanceof jQuery ? config.map : $(config.map);
+        this.colorDict = config.colorDict;
 
-    // 在人和怪物的位置上标记图标
-    map_print[x][y] = "人";
-    if (!peace.checked && !booming) {
-        map_print[mob_x][mob_y] = "怪";
+        this.setStyle();
+
+        this.drawMap = this.drawMap.bind(this);
     }
 
-    // 如果有炸弹，则在炸弹的位置上标记炸弹图标
-    if (boom_x != -1 && boom_y != -1) {
-        map_print[boom_x][boom_y] = "&#128163";
+    /**用于判断一个字符是否是Emoji，如果是，则返回true，否则返回false
+     * 可能会有遗漏或误判，但是不影响使用
+     * @returns {boolean} 是否是 Emoji
+     * @memberof MapDrawer
+     */
+    isEmoji(content) {
+        // 1. 本身就是 Emoji 字符，如“😀”
+        if (content.length == 1) {
+            const charCode = content.charCodeAt(0);
+            return charCode >= 0x1f000 && charCode <= 0x1ffff;
+        }
+        // 2. 由两个或多个字符组成，如“🌲”由“🌳”和“🌴”组成，“👨‍👩‍👧‍👦”由“👨”、“👩”、“👧”和“👦”组成
+        if (content.length > 1) {
+            // 使用正则表达式匹配是否由多个 Unicode 字符组成
+            const regex = /[\u{1F000}-\u{1FFFF}]/u;
+            return regex.test(content);
+        }
+        // 3. 是 HTML 实体，如“&#128163;”
+        if (content.startsWith("&#")) {
+            // 将 HTML 实体转换为 Unicode 字符
+            const charCode = parseInt(content.substring(2, content.length - 1));
+            return charCode >= 0x1f000 && charCode <= 0x1ffff;
+        }
+        return false;
     }
 
-    // 生成地图 HTML
-    let mapHtml = "";
-    for (let i = 0; i < map_print.length; i++) {
-        let line = "";
-        for (let j = 0; j < map_print[i].length; j++) {
-            let content = map_print[i][j];
-            // 将“水_new”替换为“水”，将“草_new”替换为“草”，并更新地图数组
-            if (content == "水_new") {
-                content = "水";
-                map_print[i][j] = "水";
-                map[i][j] = "水";
-            } else if (content == "草_new") {
-                content = "草";
-                map_print[i][j] = "草";
-                map[i][j] = "草";
-            } else if ((peace.checked || booming) && content == "怪") {
-                // 如果游戏处于和平模式或正在爆炸，将怪物替换为土，并更新地图数组
-                content = "土";
-                map_print[i][j] = "土";
-            }
-            const coords = `${i},${j}"`;
-            const style = `text-decoration:none`;
-            // 当前坐标是鼠标选中的坐标，且允许鼠标点击移动，则将当前坐标的背景颜色设置为黄色
-            if (
-                clickplace[0] == i &&
-                clickplace[1] == j &&
-                moving &&
-                mousemove.checked
-            ) {
-                line += `<a name="${coords} href="javascript:void(0);" onclick="returnplace(this.name)" style="background-color:yellow;${style}">${content}</a>`;
-            } else {
-                line += `<a name="${coords} href="javascript:void(0);" onclick="returnplace(this.name)" style="${style}">${content}</a>`;
+    /**
+     * 获取 Emoji 字体大小
+     * 在一些浏览器中，Emoji 的字体大小与普通字符不同，因此需要调整
+     * @returns {number} Emoji 字体大小
+     * @memberof MapDrawer
+     */
+    getEmojiFontSize() {
+        const emojiText = "😀";
+        const text = "草";
+        // 添加至body中
+        const span = document.createElement("span");
+        span.style.visibility = "hidden";
+        span.innerText = emojiText;
+        document.body.appendChild(span);
+        // 分别获取两个元素的宽度和高度
+        const emojiWidth = span.offsetWidth;
+        const emojiHeight = span.offsetHeight;
+        span.innerText = text;
+        const textWidth = span.offsetWidth;
+        const textLineHeight = span.offsetHeight;
+        // 移除span
+        document.body.removeChild(span);
+        // 计算字体大小(em)
+        const emojiSize = textWidth / emojiWidth;
+        const emojiLineHeight = textLineHeight / emojiHeight;
+        return Math.min(emojiSize, emojiLineHeight);
+    }
+
+    setStyle() {
+        const $style = $("<style></style>");
+        // Get emoji font size
+        const emojiSize = this.getEmojiFontSize();
+        // Add emoji font size
+        $style.append(`.emoji { font-size: ${emojiSize}em; }`);
+        for (const key in this.colorDict) {
+            if (this.colorDict.hasOwnProperty(key)) {
+                const color = this.colorDict[key];
+                $style.append(`.color-${color} { color: ${color}; }`);
             }
         }
-        mapHtml += line + "<br>";
+        // Add style to head
+        $("head").append($style);
     }
 
-    // 着色
-    for (let i = 0; i < word.length; i++) {
-        const val = word[i];
-        // 将所有匹配到的字符串替换为彩色的 span 标签
-        const findText = mapHtml.split(val);
-        mapHtml = findText.join(
-            `<span style="color:${color[i]};">${val}</span>`
-        );
+    /**
+     * 绘制地图
+     * @param {Array} blocks 地图块的数组
+     * @param {Dict} entities 实体的字典
+     * @returns {void}
+     * @memberof MapDrawer
+     * @todo 优化绘制地图的性能
+     */
+    drawMap(map) {
+        // console.error("Draw map"); //用于查找触发绘制地图的函数
+        // 叠加entities至blocks
+        // 1. 深拷贝blocks
+        let outputMap = JSON.parse(JSON.stringify(map.blocks));
+        outputMap = outputMap.map((line) => line.map((block) => block.name));
+        // TODO: 为大地图截取部分地图
+        // 2. 在人和怪物的位置上标记图标
+        for (const entity of map.entities) {
+            const { x, y, name } = entity;
+            outputMap[x][y] = name ? name : outputMap[x][y];
+        }
+        // 3. 生成地图 HTML
+        let mapHtml = "";
+        for (let y = 0; y < outputMap.length; y++) {
+            let line = "";
+            for (let x = 0; x < outputMap[y].length; x++) {
+                let content = outputMap[y][x];
+                // 如果是 Emoji，则调整字体大小
+                if (this.isEmoji(content)) {
+                    line += `<span class="emoji">${content}</span>`;
+                } else {
+                    line += `<span class="color-${this.colorDict[content]}">${content}</span>`;
+                }
+            }
+            mapHtml += `<p>${line}</p>`;
+        }
+        // 4. 将地图 HTML 添加至页面
+        this.$map.html(mapHtml);
     }
-
-    // 更新地图 HTML
-    document.getElementById("map").innerHTML = mapHtml;
 }

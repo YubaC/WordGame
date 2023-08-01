@@ -1,204 +1,196 @@
-function mob_move_prepare() {
-    //怪物移动的方向与步数确定
-    if (find_direction_times < 10) {
-        //尝试10次寻找方向
-        mob_direction = Math.floor(Math.random() * 4);
+class Mob {
+    constructor(config) {
+        this.x = config.x; // Needs to config
+        this.y = config.y; // Needs to config
+        this.map = config.map; // Needs to config
 
-        switch (mob_direction) {
+        this.name = "怪";
+        this.type = "mob";
+        this.priority = 1;
+        this.finished = false;
+
+        // 移动相关
+        this.probability = config.probability || 0.1; // 想要移动的概率
+        this.maxStep = config.maxStep || 5; // 一次最多移动的步数
+        this.speed = config.speed || 1; // 移动速度，每刻移动的步数
+        this.direction = 0; // 移动方向，0-上，1-右，2-下，3-左
+        this.stepsToMove = 0; // 距离下一次移动还需要的步数
+
+        this.update = this.update.bind(this);
+        this.move = this.move.bind(this);
+    }
+
+    /**
+     * 初始化的函数
+     * @memberof Mob
+     * @returns {void}
+     */
+    setup() {
+        // 向entities中添加自身
+        this.map.entities.push(this);
+    }
+
+    /**
+     * 负责在新的tick中更新状态的函数
+     * @memberof Mob
+     * @returns {boolean} 是否需要更新地图
+     */
+    update() {
+        // 1. 判断是否可以移动
+        // 2. 判断是否想要移动
+        // 3. 移动
+        // 4. 更新地图
+
+        // 如果还有剩余步数，则继续移动
+        if (this.stepsToMove > 0) {
+            return this.move();
+        }
+
+        // 1. 判断是否可以移动
+        // 遍历四周的地块，如果有一个是可通行的，则可以移动
+        const { x, y } = this;
+        const canMove =
+            this.map.isPassable(x - 1, y) ||
+            this.map.isPassable(x, y + 1) ||
+            this.map.isPassable(x + 1, y) ||
+            this.map.isPassable(x, y - 1);
+
+        // 2. 判断是否想要移动
+        // 如果不想移动，则返回false
+        if (!canMove) {
+            return false;
+        } else {
+            // 如果想移动，则以probability的概率移动
+            if (Math.random() > this.probability) {
+                return false;
+            }
+        }
+
+        // console.log("Mob move");
+
+        // 3. 移动
+        // 随机生成移动的步数
+        this.stepsToMove = Math.floor(Math.random() * this.maxStep);
+        // 随机生成移动的方向
+        this.direction = Math.floor(Math.random() * 4);
+        return this.move();
+    }
+
+    /**
+     * 移动
+     * @memberof Mob
+     * @returns {boolean} 是否移动成功
+     */
+    move() {
+        // 移动
+        switch (this.direction) {
             case 0: {
-                //上
-                if (
-                    mob_x - 1 > -1 &&
-                    contains(passable, map[mob_x - 1][mob_y])
-                ) {
-                    mob_step = Math.floor(Math.random() * map.length);
-                    mob_move(-mob_step, 0);
-                    // console.log("0");
-                    find_direction_times = 0;
-                } else {
-                    find_direction_times += 1;
-                    mob_move_prepare();
+                // 上
+                this.stepsToMove -= this.speed;
+                if (this.map.isPassable(this.x - 1, this.y)) {
+                    this.x -= this.speed;
+                    return true;
                 }
-                break;
+                return false;
             }
             case 1: {
-                //下
-                if (
-                    mob_x + 1 < map.length &&
-                    contains(passable, map[mob_x + 1][mob_y])
-                ) {
-                    mob_step = Math.floor(Math.random() * map.length);
-                    mob_move(mob_step, 0);
-                    // console.log("1");
-                    find_direction_times = 0;
-                } else {
-                    find_direction_times += 1;
-                    mob_move_prepare();
+                // 右
+                this.stepsToMove -= this.speed;
+                if (this.map.isPassable(this.x, this.y + 1)) {
+                    this.y += this.speed;
+                    return true;
                 }
-                break;
+                return false;
             }
             case 2: {
-                //左
-                if (
-                    mob_y - 1 > -1 &&
-                    contains(passable, map[mob_x][mob_y - 1])
-                ) {
-                    mob_step = Math.floor(Math.random() * map[0].length);
-                    mob_move(0, -mob_step);
-                    // console.log("2");
-                    find_direction_times = 0;
-                } else {
-                    find_direction_times += 1;
-                    mob_move_prepare();
+                // 下
+                this.stepsToMove -= this.speed;
+                if (this.map.isPassable(this.x + 1, this.y)) {
+                    this.x += this.speed;
+                    return true;
                 }
-                break;
+                return false;
             }
             case 3: {
-                //右
-                if (
-                    mob_y + 1 < map.length &&
-                    contains(passable, map[mob_x][mob_y + 1])
-                ) {
-                    mob_step = Math.floor(Math.random() * map[0].length);
-                    mob_move(0, mob_step);
-                    // console.log("3");
-                    find_direction_times = 0;
-                } else {
-                    find_direction_times += 1;
-                    mob_move_prepare();
+                // 左
+                this.stepsToMove -= this.speed;
+                if (this.map.isPassable(this.x, this.y - 1)) {
+                    this.y -= this.speed;
+                    return true;
                 }
-                break;
+                return false;
             }
         }
-        console.log(1);
-    } else {
-        //10次都没找到能走的方向(运气不佳)
-        //依次将上下左右检测一遍
-        if (mob_x - 1 > -1 && contains(passable, map[mob_x - 1][mob_y])) {
-            mob_step = Math.floor(Math.random() * map.length);
-            mob_move(-mob_step, 0);
-        } else if (
-            mob_x + 1 < map.length &&
-            contains(passable, map[mob_x + 1][mob_y])
-        ) {
-            mob_step = Math.floor(Math.random() * map.length);
-            mob_move(mob_step, 0);
-        } else if (
-            mob_y - 1 > -1 &&
-            contains(passable, map[mob_x][mob_y - 1])
-        ) {
-            mob_step = Math.floor(Math.random() * map[0].length);
-            mob_move(0, -mob_step);
-        } else if (
-            mob_y + 1 < map.length &&
-            contains(passable, map[mob_x][mob_y + 1])
-        ) {
-            mob_step = Math.floor(Math.random() * map[0].length);
-            mob_move(0, mob_step);
-        } else {
-            //上下左右都走不了(不是运气的事了)
-            // 休眠，每隔一秒重新检测一次
-            console.log("sleep");
-            setTimeout("mob_move_prepare()", 1000);
-        }
-    }
-    // console.log(mob_direction, mob_step);
-}
-
-// 怪物运动解算
-function mob_move(x_add, y_add) {
-    if (x_add != 0) {
-        //计算在x轴方向上需要走的步数
-        x_step = x_add / Math.abs(x_add);
-        y_step = 0;
-    } else {
-        //计算在y轴方向上需要走的步数
-        x_step = 0;
-        y_step = y_add / Math.abs(y_add);
     }
 
-    d = 0;
-
-    do_mob_onmove = setTimeout("mob_onmove()", 1000);
+    /**
+     * 清除自身
+     * @memberof Mob
+     * @returns {void}
+     */
+    teardown() {
+        // 从entities中删除自身
+        const index = this.map.entities.indexOf(this);
+        this.map.entities.splice(index, 1);
+    }
 }
 
-function mob_onmove() {
-    //怪物运动绘图
-    if (!peace.checked) {
-        //如果不是和平模式
+// 生成怪物的函数
+class SummonMob {
+    constructor(config) {
+        this.map = config.map; // Needs to config
+        this.ticker = config.ticker; // Needs to config
+        this.maxMob = config.maxMob || 3; // 最大怪物数量
+        this.summonSpeed = config.summonSpeed || 100; // 最大召唤速度，多少刻召唤一次
+        this.summonProbability = config.summonProbability || 0.01; // 召唤的概率
+        this.lastSummoned = 0; // 上一次召唤的距离现在的刻数
+
+        this.setup = this.setup.bind(this);
+        this.update = this.update.bind(this);
+    }
+
+    setup() {
+        // 向ticker中添加自身
+        this.ticker.taskList.push(this);
+    }
+
+    /**
+     * 更新状态的函数
+     * @memberof SummonMob
+     * @returns {boolean} 是否需要更新地图
+     */
+    update() {
+        // 遍历entities，如果怪物数量小于最大怪物数量，则以summonSpeed的概率召唤怪物
+        const { entities } = this.map;
+        const mobs = entities.filter((entity) => entity.type === "mob");
         if (
-            -1 < mob_x + x_step &&
-            mob_x + x_step < map.length &&
-            -1 < mob_y + y_step &&
-            mob_y + y_step < map[0].length
+            mobs.length < this.maxMob &&
+            this.lastSummoned >= this.summonSpeed &&
+            Math.random() < this.summonProbability
         ) {
-            //如果能走
-            if (
-                contains(passable, map[mob_x + x_step][mob_y + y_step]) &&
-                mob_x + x_step != boom_x &&
-                mob_y + y_step != boom_y
-            ) {
-                mob_x_old = mob_x;
-                mob_y_old = mob_y;
-                mob_block_old = mob_block; //下一步将要走到的方块
-                mob_block = map[mob_x + x_step][mob_y + y_step]; //走一步
+            // 获取一个随机的空地块
+            const { blocks } = this.map;
+            const { length: xLength } = blocks;
+            const { length: Ylength } = blocks[0];
 
-                map[mob_x_old][mob_y_old] = mob_block_old; //上一步所在的方块
+            do {
+                var x = Math.floor(Math.random() * xLength);
+                var y = Math.floor(Math.random() * Ylength);
+            } while (!this.map.isPassable(x, y));
 
-                mob_x += x_step;
-                mob_y += y_step;
-
-                if (mob_x == x && mob_y == y) {
-                    //如果下一步碰到了"人"
-                    gameover(0);
-                }
-
-                drawmap();
-            }
+            // 生成怪物
+            const mob = new Mob({
+                x: x,
+                y: y,
+                map: this.map,
+            });
+            mob.setup();
+            this.ticker.taskList.push(mob);
+            this.lastSummoned = 0;
+            return true;
+        } else {
+            this.lastSummoned++;
+            return false;
         }
     }
-
-    d++;
-
-    if (d < Math.abs(mob_step)) {
-        //没走完步数
-        do_mob_onmove = setTimeout("mob_onmove()", 200); //200毫秒后走下一步
-    } else {
-        setTimeout("mob_move_prepare()", 200); //重新走
-    }
-}
-
-function mobrestart() {
-    //mob被击杀后刷新
-    booming = false; //炸完了
-    find_place_times = 0;
-
-    do {
-        //寻找落脚点，最多重复10次
-        new_mob_x = Math.floor(Math.random() * map.length);
-        new_mob_y = Math.floor(Math.random() * map[0].length);
-        find_place_times += 1;
-        if (find_place_times > 10) {
-            break;
-        }
-    } while (!contains(passable, map[new_mob_x][new_mob_y]));
-    outer: if (find_place_times > 10) {
-        //运气不好，10次都没找到可以落脚的方块
-        for (f = map.length - 1; f > -1; f--) {
-            //把整个地图都检查一遍，寻找可以落脚的方块
-            for (s = map[0].length - 1; s > -1; s--) {
-                if (contains(passable, map[f][s])) {
-                    //找到了就在这里落脚
-                    new_mob_x = f;
-                    new_mob_y = s;
-                    break outer;
-                }
-            }
-        }
-    }
-
-    //如果还没找到的话就放弃，直接在随机到的方块上落脚(不是运气的事了)
-    mob_x = new_mob_x;
-    mob_y = new_mob_y;
-    mob_block = map[mob_x][mob_y];
 }

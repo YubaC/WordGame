@@ -6,166 +6,151 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>文字游戏</title>
+
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/5.1.1/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/jquery/js/jquery-3.6.3.min.js"></script>
 </head>
 
 <body>
     <style>
-        .label_master {
-            height: 60px;
-            overflow: hidden;
-            position: relative;
-            top: 0%;
-        }
-
-        .label {
-            font-size: 13px;
-            line-height: 32px;
-            background: orange;
-            position: absolute;
-            right: 0;
-            top: 0;
-            z-Index: 2;
-            padding: 0 2em;
-            -webkit-transform-origin: left bottom;
-            -moz-transform-origin: left bottom;
-            transform-origin: left bottom;
-            -webkit-transform: translate(29.29%, -100%) rotate(45deg);
-            -moz-transform: translate(29.29%, -100%) rotate(45deg);
-            transform: translate(29.29%, -100%) rotate(45deg);
-            text-indent: 0;
+        body {
+            font-family: "Noto Color Emoji", sans-serif;
         }
 
         #map {
-            letter-spacing: 3px;
-        }
-
-        #save {
-            padding: 10px;
-            margin: 10px;
-        }
-
-        li {
-            margin: 5px;
-        }
-
-        .up,
-        .down,
-        .left,
-        .right,
-        .boom {
-            width: 50px;
-            height: 50px;
-            font-size: 24px;
-        }
-
-        .up,
-        .right,
-        .down,
-        .boom {
-            margin-left: 50px;
-        }
-
-        .up,
-        .right,
-        .down {
-            margin-top: 10px;
-        }
-
-        .boom {
+            letter-spacing: 0.2em;
+            line-height: 1.4em;
             margin-top: 50px;
         }
 
-        .down {
-            margin-bottom: 50px;
+        #map p {
+            margin: 0;
         }
 
-        input {
-            float: none;
+        #map span {
+            vertical-align: bottom;
         }
 
-        span:hover {
-            background-color: yellow;
+        button {
+            border-radius: 5px;
+            border: 1px solid #8f8f9d;
+            background-color: #e9e9ed;
         }
 
-        body {
-            -webkit-touch-callout: none;
-            /*系统默认菜单被禁用*/
-            -webkit-user-select: none;
-            /*webkit浏览器*/
-            -khtml-user-select: none;
-            /*早起浏览器*/
-            -moz-user-select: none;
-            /*火狐浏览器*/
-            -ms-user-select: none;
-            /*IE浏览器*/
-            user-select: none;
-            /*用户是否能够选中文本*/
+        button:hover {
+            background-color: #d0d0d7;
+        }
+
+        button:active {
+            background-color: #b1b1b9;
+        }
+
+        button.contron-btn {
+            aspect-ratio: 1;
+            width: 50px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        button.direction-btn {
+            /* display: inline-block; */
+            /* padding: 0; */
+            /* margin: 0; */
+
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 512'%3E%3C!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --%3E%3Cpath d='M88 166.059V468c0 6.627 5.373 12 12 12h56c6.627 0 12-5.373 12-12V166.059h46.059c21.382 0 32.09-25.851 16.971-40.971l-86.059-86.059c-9.373-9.373-24.569-9.373-33.941 0l-86.059 86.059c-15.119 15.119-4.411 40.971 16.971 40.971H88z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 30%;
+            /* color: #fff; */
+            /* transition: background-color 0.2s ease-in-out; */
+        }
+
+        #downBtn {
+            transform: rotate(180deg);
+        }
+
+        #leftBtn {
+            transform: rotate(-90deg);
+        }
+
+        #rightBtn {
+            transform: rotate(90deg);
+        }
+
+        #direction-buttons {
+            max-width: fit-content;
+            max-height: fit-content;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 5px;
+            justify-items: center;
+            align-items: center;
+        }
+
+        #upBtn {
+            grid-column: 2 / 3;
+            grid-row: 1 / 2;
+        }
+
+        #downBtn {
+            grid-column: 2 / 3;
+            grid-row: 3 / 4;
+        }
+
+        #leftBtn {
+            grid-column: 1 / 2;
+            grid-row: 2 / 3;
+        }
+
+        #rightBtn {
+            grid-column: 3 / 4;
+            grid-row: 2 / 3;
+        }
+
+        .control-btns-master {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .control-btns {
+            margin: 20px;
+        }
+
+        /* 移动端 */
+        @media screen and (max-width: 768px) {
+            .control-btns-master {
+                display: inline-flex;
+                flex-direction: row-reverse;
+                width: 100%;
+                margin-top: 50px;
+            }
         }
     </style>
-    <div class="label_master">
-        <a href="help.html">
-            <div class="label">
-                帮助
-            </div>
-        </a>
-    </div>
 
-    <p id="score" style="color: red;">Score:0</p>
 
     <!-- 画布 -->
-    <p id="map"></p>
+    <div id="map" class="text-center"></div>
 
     <!-- 操作 -->
-    <div class="button1" id="button">
-        <button class="up" id="up">↑</button><br>
-        <button class="left" id="left">←</button>
-        <button class="right" id="right">→</button><br>
-        <button class="down" id="down">↓</button>
-    </div>
-    <div class="button2" id="button">
-        <button id="boom" onclick="boom()" class="boom">&#128163;</button><br>
-    </div>
-    <br>
-    <div>
-        <hr>
-        <button id="save" onclick="save()">保存</button><br>
-        <a href="javascript:void(0);" onClick="map_list_hide()" id="map_list_hide">隐藏地图列表</a>
-        <a href="javascript:void(0);" onClick="map_list_show()" id="map_list_show">显示地图列表</a><br>
-        <div id="editor">
-            <a href="javascript:void(0);" onClick="edit(map_list, map_id, map_order)" id="edit">编辑</a>
-            <a href="javascript:void(0);" onClick="exit_editing()" id="exit_editing">退出编辑</a><br>
-            <ul id="maplist"></ul>
+    <div class="control-btns-master">
+        <div id="direction-buttons" class="control-btns">
+            <button id="upBtn" class="contron-btn direction-btn"></button>
+            <button id="downBtn" class="contron-btn direction-btn"></button>
+            <button id="leftBtn" class="contron-btn direction-btn"></button>
+            <button id="rightBtn" class="contron-btn direction-btn"></button>
         </div>
-    </div>
-    <div>
-        <hr>
-        <input type="CheckBox" id="mousemove" onclick="drawmap()">鼠标点击移动<br>
-        <input type="CheckBox" id="waterrun">河水蔓延<br>
-        <input type="CheckBox" id="grassrun">草地蔓延<br>
-        <div id="leftmain">
-            <input type="CheckBox" onclick="ischeck(this);" id="left_main">惯用左手<br>
-        </div>
-        <input type="CheckBox" id="peace" checked="checked">和平<br>
-        <input type="CheckBox" id="unmatched">无敌<br>
-        <div>
-            炸弹威力: <input type="range" id="boom_power" min="0" max="5" onchange="boompowerchange()" value="1"><span
-                id="power">1</span><br>
-        </div>
-        <div>
-            移动时间间隔(ms): <input type="number" id="player_speed" min="10" max="1000" onchange="speedchange()"
-                value="180"><br>
-        </div>
-    </div>
 
-    <a href="javascript:void(0);" onClick="show()" id="show">显示地图组件</a><br>
+        <div class="control-btns">
+            <button id="doBtn" class="contron-btn">&#128163;</button><br>
+        </div>
 
-    <div id="hide">
-        <hr>
-        <textarea id="in" placeholder="导入地图" rows="15" cols="30"></textarea>
-        <a href="javascript:void(0);" onClick="process()" id="do_process">加载地图</a><br>
-        <a href="mapbuilder.html" id="show">编辑地图</a><br>
-        <a href="explain.html" id="show">说明</a><br>
-        <a href="javascript:void(0);" onClick="hide()" id="hide">隐藏地图组件</a>
     </div>
     <!--  
 ----------------→y
@@ -176,59 +161,17 @@
 |
 |
 ↓x -->
-    <script src="js/DrawMap.js"></script>
-    <script src="js/effects.js"></script>
-    <script src="js/functions.js"></script>
-    <script src="js/HideandShow.js"></script>
-    <script src="js/judge.js"></script>
-    <script src="js/Maps.js"></script>
+    <script src="js/tick.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/boom.js"></script>
+    <script src="js/drawMap.js"></script>
     <script src="js/mob.js"></script>
-    <script src="js/PlayerMove.js"></script>
+    <script src="js/ecosystem.js"></script>
+    <script src="js/player.js"></script>
+
     <script>
-        var i = 0;
-        var j = 0;
-        var x_step;
-        var y_step;
-        x = 0;
-        y = 0;
-        x_old = 1;
-        y_old = 1;
-        boom_x = -1;
-        boom_y = -1;
-        block = "草";
-        block_old = "草";
-        mob_block = "草";
-        mob_block_old = "草";
-        mob_x = 1;
-        mob_y = 1;
-        mob_x_old = 0;
-        mob_y_old = 0;
-
-        boom_exist = false;
-
-        var booming;
-
-        boom_power = 1;
-
-        var score = 0;
-
-        map = new Array();
-        map_print = new Array();
-
-        var find_direction_times = 0;
-        var find_place_times = 0;
-
-        saved_before = false;
-
-        map_list = new Array;
-        map_list_input = new Array;
-        map_id = new Array;
-        map_id_input = new Array;
-        map_order = new Array;
-        map_order_input = new Array;
-
         //定义地图
-        map = [
+        blocks = [
             ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
             ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
             ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
@@ -243,57 +186,98 @@
             ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"]
         ];
 
-        map_print = JSON.parse(JSON.stringify(map));
+        // 将每一个block 变为 {name: "xxx"}
+        blocks = blocks.map((row, y) => {
+            return row.map((block, x) => {
+                return {
+                    name: block,
+                    x: x,
+                    y: y,
+                }
+            })
+        })
 
-        var map2d = Array2D(map.length, map[0].length);
-        // map2d
-        map2d.data = JSON.parse(JSON.stringify(map));
+        const colorDict = {
+            "草": "green",
+            "水": "blue",
+            "桥": "orange",
+            "人": "red",
+            "怪": "red",
+            "土": "Sienna",
+            "炸": "black"
+        };
 
-        pathList = new Array;
-        clickplace = [];
-        movepath_x = new Array;
-        movepath_y = new Array;
-        moving = false;
+        const passable = ["草", "桥", "土", "怪", "人"];
 
-        word = ["水", "桥", "草", "人", "怪", "土", "炸"];
-        color = ["blue", "orange", "green", "red", "red", "Sienna", "black"];
-        passable = ["草", "桥", "土", "怪", "人"];
+        var entities = [
+            // {
+            //     name: "人",
+            //     x: 0,
+            //     y: 2,
+            //     type: "player",
+            // }
+        ];
 
-        //初始化
-        drawmap();
-        findWater();
-        findGrass();
-        mob_move_prepare();
-        boompowerchange();
-        map_list_hide();
-        browser_alert();
+        mapDrawer = new MapDrawer({
+            map: "#map",
+            colorDict: colorDict,
+        })
 
-        if (getCookie("map_list") == "") {
-            map_list_input = [];
-        } else {
-            map_list_input = decodeURIComponent(window.atob(getCookie("map_list"))).split(",");
-            map_list = JSON.parse(JSON.stringify(map_list_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
+        map = new Map({
+            blocks: blocks,
+            entities: entities,
+            passable: passable,
+            drawMapFunc: mapDrawer.drawMap,
+        })
+
+        ticker = new Ticker({
+            updateMapFunc: map.drawMap,
+        })
+        ticker.start();
+
+        new SummonMob({
+            map: map,
+            ticker: ticker,
+        }).setup();
+
+        new Eco({
+            map: map,
+            ticker: ticker,
+        }).setup();
+
+        var player = new Player({
+            x: 0,
+            y: 0,
+            map: map,
+            speed: 5,
+        });
+        player.setup();
+
+        var playerController = new PlayerController({
+            player: player,
+            map: map,
+        });
+
+        // 画地图
+        mapDrawer.drawMap(map);
+
+        let game = {
+            stopped: false,
         }
+        // // 在当前标签页失焦时，暂停游戏
+        // window.onblur = function () {
+        //     ticker.stop();
+        //     game.stopped = true;
+        // }
 
-        if (getCookie("map_id") == "") {
-            map_id_input = [];
-        } else {
-            map_id_input = decodeURIComponent(window.atob(getCookie("map_id"))).split(",");
-            map_id = JSON.parse(JSON.stringify(map_id_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
-        }
+        // // 在当前标签页获焦时，继续游戏
+        // window.onfocus = function () {
+        //     if (game.stopped) {
+        //         ticker.start();
+        //         game.stopped = false;
+        //     }
+        // }
 
-        if (getCookie("map_order") == "") {
-            map_order_input = [];
-        } else {
-            map_order_input = decodeURIComponent(window.atob(getCookie("map_order"))).split(",");
-            map_order = JSON.parse(JSON.stringify(map_order_input)); //https://www.cnblogs.com/Blogzlj/p/13031677.html
-        }
-        window.onload = setlist(map_list, map_id, map_order);
-
-        map_input = new Array();
-        settings = new Array();
-
-        hide(); //隐藏地图组件
     </script>
 
 </body>
