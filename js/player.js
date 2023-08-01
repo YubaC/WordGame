@@ -5,6 +5,7 @@ class Player {
         this.name = "人";
         this.x = config.x || 0;
         this.y = config.y || 0;
+        this.do = config.do || (() => {});
         this.map = config.map; // Need to be set
         this.ticker = config.ticker; // Need to be set
         this.speed = config.speed || 5; // 5 block per second
@@ -14,7 +15,6 @@ class Player {
         this.moveDown = this.moveDown.bind(this);
         this.moveLeft = this.moveLeft.bind(this);
         this.moveRight = this.moveRight.bind(this);
-        this.do = this.do.bind(this);
     }
 
     setup() {
@@ -48,18 +48,6 @@ class Player {
             this.y += 1;
             this.map.drawMap();
         }
-    }
-
-    do() {
-        const boom = new Boom({
-            x: this.x,
-            y: this.y,
-            power: 2,
-            map: this.map,
-        });
-        boom.setup();
-        this.ticker.taskList.push(boom);
-        this.map.drawMap();
     }
 }
 

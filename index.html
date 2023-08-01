@@ -32,6 +32,30 @@
             vertical-align: bottom;
         }
 
+        #game-Inventory {
+            width: calc(100% - 40px);
+            margin: 20px;
+            padding: 2px;
+            background-color: #e9e9ed;
+            border-radius: 5px;
+            list-style: none;
+            overflow-x: auto;
+        }
+
+        #game-Inventory li {
+            aspect-ratio: 1/1;
+            height: 50px;
+            line-height: 50px;
+            text-align: center;
+            font-size: larger;
+
+            /* border: 1px solid #8f8f9d; */
+        }
+
+        #game-Inventory li.active {
+            background-color: #bdbdc2;
+        }
+
         button {
             border-radius: 5px;
             border: 1px solid #8f8f9d;
@@ -168,6 +192,8 @@
     <!-- 画布 -->
     <div id="map" class="text-center"></div>
 
+    <ul id="game-Inventory" class="d-inline-flex"></ul>
+
     <!-- 操作 -->
     <div class="control-btns-master">
         <div id="direction-buttons" class="control-btns">
@@ -245,16 +271,53 @@
             "炸": "black"
         };
 
+        const inventory = [
+            {
+                name: "💣",
+                do: function () {
+                    const boom = new Boom({
+                        x: this.x,
+                        y: this.y,
+                        power: 2,
+                        map: this.map,
+                    });
+                    boom.setup();
+                    this.ticker.taskList.push(boom);
+                    this.map.drawMap();
+                }
+            },
+            {
+                name: "草",
+                do: function () {
+                    this.map.blocks[this.x][this.y].name = "草";
+                    this.map.drawMap();
+                }
+            },
+            {
+                name: "桥",
+                do: function () {
+                    this.map.blocks[this.x][this.y].name = "桥";
+                    this.map.drawMap();
+                }
+            },
+            {
+                name: "土",
+                do: function () {
+                    this.map.blocks[this.x][this.y].name = "土";
+                    this.map.drawMap();
+                }
+            }, {
+                name: "水",
+                do: function () {
+                    this.map.blocks[this.x][this.y].name = "水";
+                    this.map.drawMap();
+                }
+            }
+        ]
+
         const passable = ["草", "桥", "土", "怪", "人"];
 
-        var entities = [
-            // {
-            //     name: "人",
-            //     x: 0,
-            //     y: 2,
-            //     type: "player",
-            // }
-        ];
+        var entities = [];
 
         const mapDrawer = new MapDrawer({
             map: "#map",
@@ -300,22 +363,51 @@
         // 画地图
         mapDrawer.drawMap(map);
 
+        // 向#game-inventory中添加物品
+        inventory.forEach((item) => {
+            const li = document.createElement("li");
+            li.innerText = item.name;
+            // 按照map.colorDict中的颜色，给每个方块上色
+            li.style.color = colorDict[item.name];
+
+
+            li.onclick = function () {
+                const active = document.querySelector("#game-Inventory li.active");
+                if (active) {
+                    active.classList.remove("active");
+                }
+                this.classList.add("active");
+                player.inventory = item;
+
+                // 替换player的do方法
+                player.do = function () {
+                    this.inventory.do.call(this);
+                }
+                // 设置doBtn的文字
+                document.querySelector("#doBtn").innerText = item.name;
+            }
+            document.querySelector("#game-Inventory").appendChild(li);
+        });
+
+        // 点击第一个物品
+        document.querySelector("#game-Inventory li").click();
+
         let game = {
             stopped: false,
         }
-        // 在当前标签页失焦时，暂停游戏
-        window.onblur = function () {
-            ticker.stop();
-            game.stopped = true;
-            // 唤起模态框
-            $('#game-stopped-modal').modal('show');
-            $('#game-stopped-modal').on('hidden.bs.modal', function (e) {
-                if (game.stopped) {
-                    ticker.start();
-                    game.stopped = false;
-                }
-            })
-        }
+        // // 在当前标签页失焦时，暂停游戏
+        // window.onblur = function () {
+        //     ticker.stop();
+        //     game.stopped = true;
+        //     // 唤起模态框
+        //     $('#game-stopped-modal').modal('show');
+        //     $('#game-stopped-modal').on('hidden.bs.modal', function (e) {
+        //         if (game.stopped) {
+        //             ticker.start();
+        //             game.stopped = false;
+        //         }
+        //     })
+        // }
 
     </script>
 
