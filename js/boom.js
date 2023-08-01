@@ -112,3 +112,5 @@ class Boom {
         }
     }
 }
+
+export { Boom };

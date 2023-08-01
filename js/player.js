@@ -1,9 +1,12 @@
+import { Boom } from "./boom.js";
+
 class Player {
     constructor(config) {
         this.name = "人";
         this.x = config.x || 0;
         this.y = config.y || 0;
         this.map = config.map; // Need to be set
+        this.ticker = config.ticker; // Need to be set
         this.speed = config.speed || 5; // 5 block per second
 
         this.setup = this.setup.bind(this);
@@ -55,7 +58,7 @@ class Player {
             map: this.map,
         });
         boom.setup();
-        ticker.taskList.push(boom);
+        this.ticker.taskList.push(boom);
         this.map.drawMap();
     }
 }
@@ -229,3 +232,5 @@ class PlayerController {
         }
     }
 }
+
+export { Player, PlayerController };

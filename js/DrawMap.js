@@ -117,3 +117,5 @@ class MapDrawer {
         this.$map.html(mapHtml);
     }
 }
+
+export { MapDrawer };

@@ -123,3 +123,5 @@ class Ticker {
         clearTimeout(this.ticker);
     }
 }
+
+export { Ticker };

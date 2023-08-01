@@ -57,3 +57,5 @@ class Map {
         this.drawMap = undefined;
     }
 }
+
+export { Map };

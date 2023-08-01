@@ -123,17 +123,47 @@
             margin: 20px;
         }
 
+        #game-stopped-modal .modal-body {
+            padding: 100px 50px;
+        }
+
+        #game-stopped-modal [data-bs-dismiss="modal"] {
+            margin-top: 50px;
+        }
+
         /* 移动端 */
         @media screen and (max-width: 768px) {
+            button.contron-btn {
+                width: 70px;
+            }
+
             .control-btns-master {
                 display: inline-flex;
                 flex-direction: row-reverse;
                 width: 100%;
                 margin-top: 50px;
             }
+
+            .control-btns {
+                margin: auto;
+            }
         }
     </style>
 
+    <!-- 游戏暂停的模态框 -->
+    <div class="modal" id="game-stopped-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- 模态框内容 -->
+                <div class="modal-body text-center">
+                    <h1>游戏已暂停</h1>
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-primary btn-block" data-bs-dismiss="modal">继续游戏</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- 画布 -->
     <div id="map" class="text-center"></div>
@@ -161,17 +191,25 @@
 |
 |
 ↓x -->
-    <script src="js/tick.js"></script>
+    <!-- <script src="js/tick.js"></script>
     <script src="js/map.js"></script>
     <script src="js/boom.js"></script>
     <script src="js/DrawMap.js"></script>
     <script src="js/mob.js"></script>
     <script src="js/ecosystem.js"></script>
-    <script src="js/player.js"></script>
+    <script src="js/player.js"></script> -->
 
-    <script>
+    <script type="module">
+        import { Ticker } from "./js/tick.js";
+        import { Map } from "./js/map.js";
+        import { Boom } from "./js/boom.js";
+        import { MapDrawer } from "./js/DrawMap.js";
+        import { SummonMob } from "./js/mob.js";
+        import { Eco } from "./js/ecosystem.js";
+        import { Player, PlayerController } from "./js/player.js";
+        // !注意！这里必须闭包，因为Map类和BootStrap5中的Map类有冲突！
         //定义地图
-        blocks = [
+        let blocks = [
             ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
             ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
             ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
@@ -218,19 +256,19 @@
             // }
         ];
 
-        mapDrawer = new MapDrawer({
+        const mapDrawer = new MapDrawer({
             map: "#map",
             colorDict: colorDict,
         })
 
-        map = new Map({
+        var map = new Map({
             blocks: blocks,
             entities: entities,
             passable: passable,
             drawMapFunc: mapDrawer.drawMap,
         })
 
-        ticker = new Ticker({
+        var ticker = new Ticker({
             updateMapFunc: map.drawMap,
         })
         ticker.start();
@@ -249,6 +287,7 @@
             x: 0,
             y: 0,
             map: map,
+            ticker: ticker,
             speed: 5,
         });
         player.setup();
@@ -264,19 +303,19 @@
         let game = {
             stopped: false,
         }
-        // // 在当前标签页失焦时，暂停游戏
-        // window.onblur = function () {
-        //     ticker.stop();
-        //     game.stopped = true;
-        // }
-
-        // // 在当前标签页获焦时，继续游戏
-        // window.onfocus = function () {
-        //     if (game.stopped) {
-        //         ticker.start();
-        //         game.stopped = false;
-        //     }
-        // }
+        // 在当前标签页失焦时，暂停游戏
+        window.onblur = function () {
+            ticker.stop();
+            game.stopped = true;
+            // 唤起模态框
+            $('#game-stopped-modal').modal('show');
+            $('#game-stopped-modal').on('hidden.bs.modal', function (e) {
+                if (game.stopped) {
+                    ticker.start();
+                    game.stopped = false;
+                }
+            })
+        }
 
     </script>
 

@@ -123,3 +123,5 @@ class Eco {
         return mapNeedToBeUpdated;
     }
 }
+
+export { Eco };
