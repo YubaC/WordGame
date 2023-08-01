@@ -106,6 +106,26 @@ class PlayerController {
         });
     }
 
+    isPC() {
+        const userAgentInfo = navigator.userAgent;
+        const Agents = [
+            "Android",
+            "iPhone",
+            "SymbianOS",
+            "Windows Phone",
+            "iPad",
+            "iPod",
+        ];
+        let flag = true;
+        for (let v = 0; v < Agents.length; v++) {
+            if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                flag = false;
+                break;
+            }
+        }
+        return flag;
+    }
+
     /**
      * 处理长按的函数，长按时每隔 executionCycle 毫秒执行一次给定的函数(即 funcToExecute)
      */
@@ -127,83 +147,85 @@ class PlayerController {
         };
 
         // PC端
-        // 按钮
-        this.leftBtn.addEventListener("mousedown", () => {
-            start(this.player.moveLeft);
-        });
-        this.leftBtn.addEventListener("mouseup", end);
-        this.leftBtn.addEventListener("mouseleave", end);
+        if (this.isPC()) {
+            // 按钮
+            this.leftBtn.addEventListener("mousedown", () => {
+                start(this.player.moveLeft);
+            });
+            this.leftBtn.addEventListener("mouseup", end);
+            this.leftBtn.addEventListener("mouseleave", end);
 
-        this.rightBtn.addEventListener("mousedown", () => {
-            start(this.player.moveRight);
-        });
-        this.rightBtn.addEventListener("mouseup", end);
-        this.rightBtn.addEventListener("mouseleave", end);
+            this.rightBtn.addEventListener("mousedown", () => {
+                start(this.player.moveRight);
+            });
+            this.rightBtn.addEventListener("mouseup", end);
+            this.rightBtn.addEventListener("mouseleave", end);
 
-        this.upBtn.addEventListener("mousedown", () => {
-            start(this.player.moveUp);
-        });
-        this.upBtn.addEventListener("mouseup", end);
-        this.upBtn.addEventListener("mouseleave", end);
+            this.upBtn.addEventListener("mousedown", () => {
+                start(this.player.moveUp);
+            });
+            this.upBtn.addEventListener("mouseup", end);
+            this.upBtn.addEventListener("mouseleave", end);
 
-        this.downBtn.addEventListener("mousedown", () => {
-            start(this.player.moveDown);
-        });
-        this.downBtn.addEventListener("mouseup", end);
-        this.downBtn.addEventListener("mouseleave", end);
+            this.downBtn.addEventListener("mousedown", () => {
+                start(this.player.moveDown);
+            });
+            this.downBtn.addEventListener("mouseup", end);
+            this.downBtn.addEventListener("mouseleave", end);
 
-        // 键盘
-        let moving = false;
-        document.addEventListener("keydown", (e) => {
-            if (moving) return;
-            moving = true;
+            // 键盘
+            let moving = false;
+            document.addEventListener("keydown", (e) => {
+                if (moving) return;
+                moving = true;
 
-            switch (e.keyCode) {
-                case this.leftKey:
-                    start(this.player.moveLeft);
-                    break;
-                case this.rightKey:
-                    start(this.player.moveRight);
-                    break;
-                case this.upKey:
-                    start(this.player.moveUp);
-                    break;
-                case this.downKey:
-                    start(this.player.moveDown);
-                    break;
-                default:
-                    break;
-            }
-        });
+                switch (e.keyCode) {
+                    case this.leftKey:
+                        start(this.player.moveLeft);
+                        break;
+                    case this.rightKey:
+                        start(this.player.moveRight);
+                        break;
+                    case this.upKey:
+                        start(this.player.moveUp);
+                        break;
+                    case this.downKey:
+                        start(this.player.moveDown);
+                        break;
+                    default:
+                        break;
+                }
+            });
 
-        document.addEventListener("keyup", (e) => {
-            end();
-            moving = false;
-        });
+            document.addEventListener("keyup", (e) => {
+                end();
+                moving = false;
+            });
+        } else {
+            // 移动端
+            this.leftBtn.addEventListener("touchstart", () => {
+                start(this.player.moveLeft);
+            });
+            this.leftBtn.addEventListener("touchend", end);
+            this.leftBtn.addEventListener("touchcancel", end);
 
-        // 移动端
-        this.leftBtn.addEventListener("touchstart", () => {
-            start(this.player.moveLeft);
-        });
-        this.leftBtn.addEventListener("touchend", end);
-        this.leftBtn.addEventListener("touchcancel", end);
+            this.rightBtn.addEventListener("touchstart", () => {
+                start(this.player.moveRight);
+            });
+            this.rightBtn.addEventListener("touchend", end);
+            this.rightBtn.addEventListener("touchcancel", end);
 
-        this.rightBtn.addEventListener("touchstart", () => {
-            start(this.player.moveRight);
-        });
-        this.rightBtn.addEventListener("touchend", end);
-        this.rightBtn.addEventListener("touchcancel", end);
+            this.upBtn.addEventListener("touchstart", () => {
+                start(this.player.moveUp);
+            });
+            this.upBtn.addEventListener("touchend", end);
+            this.upBtn.addEventListener("touchcancel", end);
 
-        this.upBtn.addEventListener("touchstart", () => {
-            start(this.player.moveUp);
-        });
-        this.upBtn.addEventListener("touchend", end);
-        this.upBtn.addEventListener("touchcancel", end);
-
-        this.downBtn.addEventListener("touchstart", () => {
-            start(this.player.moveDown);
-        });
-        this.downBtn.addEventListener("touchend", end);
-        this.downBtn.addEventListener("touchcancel", end);
+            this.downBtn.addEventListener("touchstart", () => {
+                start(this.player.moveDown);
+            });
+            this.downBtn.addEventListener("touchend", end);
+            this.downBtn.addEventListener("touchcancel", end);
+        }
     }
 }
