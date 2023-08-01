@@ -21,7 +21,7 @@
         #map {
             letter-spacing: 0.2em;
             line-height: 1.4em;
-            margin-top: 20px;
+            margin-top: 5px;
         }
 
         #map p {
@@ -149,12 +149,19 @@
             margin: 20px;
         }
 
-        #game-stopped-modal .modal-body {
+        #game-stopped-modal .modal-body,
+        #gameover-modal .modal-body {
             padding: 100px 50px;
         }
 
-        #game-stopped-modal [data-bs-dismiss="modal"] {
+        #game-stopped-modal button,
+        #gameover-modal button {
             margin-top: 50px;
+        }
+
+        #game-healthbar {
+            width: 100%;
+            text-align: center;
         }
 
         /* 移动端 */
@@ -190,6 +197,26 @@
             </div>
         </div>
     </div>
+
+    <!-- 游戏结束的模态框 -->
+    <div class="modal" id="gameover-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <!-- 模态框内容 -->
+                <div class="modal-body text-center">
+                    <h1>游戏结束！</h1>
+                    <p id="gaveover-reason"></p>
+                    <p id="game-score"></p>
+                    <div class="d-grid">
+                        <button type="button" class="btn btn-primary btn-block"
+                            onclick="location.reload();">重新开始</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-healthbar"></div>
 
     <!-- 画布 -->
     <div id="map" class="text-center"></div>
@@ -234,7 +261,7 @@
         import { MapDrawer } from "./js/DrawMap.js";
         import { SummonMob } from "./js/mob.js";
         import { Eco } from "./js/ecosystem.js";
-        import { Player, PlayerController } from "./js/player.js";
+        import { Player, PlayerController, PlayerLive } from "./js/player.js";
         // !注意！这里必须闭包，因为Map类和BootStrap5中的Map类有冲突！
         //定义地图
         let blocks = [
@@ -277,6 +304,11 @@
             {
                 name: "💣",
                 do: function () {
+                    // 遍历实体，如果这个格子上没有炸弹，就放置一颗炸弹
+                    if (this.map.entities.some(entity => entity.x === this.x && entity.y === this.y && entity.type === "boom")) {
+                        return;
+                    }
+
                     const boom = new Boom({
                         x: this.x,
                         y: this.y,
@@ -326,11 +358,22 @@
             colorDict: colorDict,
         })
 
+
+        function gameOver() {
+            ticker.stop();
+            // 取消暂停游戏事件
+            window.onblur = null;
+            ticker.stop();
+            // 写入游戏结束的原因
+            $('#gaveover-reason').html(`原因：${helathChecer.gameOverReason}`);
+            $('#gameover-modal').modal('show');
+        }
         var map = new Map({
             blocks: blocks,
             entities: entities,
             passable: passable,
             drawMapFunc: mapDrawer.drawMap,
+            gameOverFunc: gameOver,
         })
 
         var ticker = new Ticker({
@@ -364,6 +407,13 @@
 
         // 画地图
         mapDrawer.drawMap(map);
+
+        let helathChecer = new PlayerLive({
+            player: player,
+            map: map,
+            ticker: ticker,
+        });
+        helathChecer.setup();
 
         // 向#game-inventory中添加物品
         inventory.forEach((item) => {

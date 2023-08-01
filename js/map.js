@@ -5,11 +5,13 @@ class Map {
         this.entities = config.entities;
         this.passable = config.passable;
         this.drawMapFunc = config.drawMapFunc;
+        this.gameOver = config.gameOverFunc;
 
         this.isInMap = this.isInMap.bind(this);
         this.isPassable = this.isPassable.bind(this);
         this.drawMap = this.drawMap.bind(this);
         this.destroy = this.destroy.bind(this);
+        this.gameOver = this.gameOver.bind(this);
     }
 
     isInMap(x, y) {

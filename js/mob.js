@@ -4,6 +4,9 @@ class Mob {
         this.y = config.y; // Needs to config
         this.map = config.map; // Needs to config
 
+        this.damage = config.damage || 3; // 攻击力
+        this.health = config.health || 10; // 生命值
+
         this.name = "怪";
         this.type = "mob";
         this.priority = 1;

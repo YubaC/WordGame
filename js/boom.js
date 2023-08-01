@@ -7,8 +7,11 @@ class Boom {
 
         this.name = "💣";
         this.type = "boom";
-        this.priority = 2;
+        this.damage = config.damage || 10; // 爆炸伤害
+        this.damageReduction = config.damageReduction || 0.6; // 爆炸伤害衰减
+        this.priority = 3;
         this.boomed = false;
+        this.boomedInThisTick = false; // 在本tick中是否已经爆炸
         this.boomedByOther = false; // 在被别的炸弹引爆后用于统一清除时间
         this.finished = false;
         this.ticksBrforeBoom = config.ticksBrforeBoom || 15;
@@ -29,6 +32,10 @@ class Boom {
      * @returns {boolean} 是否需要更新地图
      */
     update() {
+        if (this.boomedInThisTick) {
+            this.boomedInThisTick = false;
+        }
+
         if (this.boomedByOther) {
             this.boomed = true;
             this.boomedByOther = false;
@@ -58,6 +65,7 @@ class Boom {
      */
     boom() {
         this.boomed = true;
+        this.boomedInThisTick = true;
         this.name = "";
         this.ticksBrforeBoom = 0;
         const { blocks, entities } = this.map;
@@ -68,17 +76,18 @@ class Boom {
                 if (this.map.isInMap(i, j)) {
                     blocks[i][j].name = "炸";
                     entities.forEach((entity) => {
+                        // 引爆别的炸弹
                         if (entity.x === i && entity.y === j) {
                             if (entity.type === "boom" && !entity.boomed) {
                                 entity.boom();
                                 entity.boomedByOther = true;
-                            } else if (
-                                entity.type === "boom" &&
-                                entity.boomed
-                            ) {
-                                // do nothing
-                            } else {
-                                entity.finished = true;
+                            }
+
+                            if (entity.type === "mob") {
+                                entity.health -= this.damage;
+                                if (entity.health <= 0) {
+                                    entity.finished = true;
+                                }
                             }
                         }
                     });
