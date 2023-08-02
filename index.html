@@ -365,7 +365,6 @@
             colorDict: colorDict,
         })
 
-
         function gameOver() {
             ticker.stop();
             // 取消暂停游戏事件
@@ -472,19 +471,20 @@
         let game = {
             stopped: false,
         }
+
         // 在当前标签页失焦时，暂停游戏
-        // window.onblur = function () {
-        //     ticker.stop();
-        //     game.stopped = true;
-        //     // 唤起模态框
-        //     $('#game-stopped-modal').modal('show');
-        //     $('#game-stopped-modal').on('hidden.bs.modal', function (e) {
-        //         if (game.stopped) {
-        //             ticker.start();
-        //             game.stopped = false;
-        //         }
-        //     })
-        // }
+        window.onblur = function () {
+            ticker.stop();
+            game.stopped = true;
+            // 唤起模态框
+            $('#game-stopped-modal').modal('show');
+            $('#game-stopped-modal').on('hidden.bs.modal', function (e) {
+                if (game.stopped) {
+                    ticker.start();
+                    game.stopped = false;
+                }
+            })
+        }
     </script>
 
 </body>
