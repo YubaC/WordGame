@@ -154,6 +154,10 @@
             padding: 100px 50px;
         }
 
+        #gameover-modal {
+            transition: opacity 1s linear;
+        }
+
         #game-stopped-modal button,
         #gameover-modal button {
             margin-top: 50px;
@@ -199,7 +203,7 @@
     </div>
 
     <!-- 游戏结束的模态框 -->
-    <div class="modal" id="gameover-modal">
+    <div class="modal fade" id="gameover-modal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <!-- 模态框内容 -->
@@ -256,12 +260,13 @@
 
     <script type="module">
         import { Ticker } from "./js/tick.js";
+        import { EntityLive } from "./js/entity.js";
         import { Map } from "./js/map.js";
         import { Boom } from "./js/boom.js";
         import { MapDrawer } from "./js/DrawMap.js";
         import { SummonMob } from "./js/mob.js";
         import { Eco } from "./js/ecosystem.js";
-        import { Player, PlayerController, PlayerLive } from "./js/player.js";
+        import { Player, PlayerController } from "./js/player.js";
         // !注意！这里必须闭包，因为Map类和BootStrap5中的Map类有冲突！
         //定义地图
         let blocks = [
@@ -365,7 +370,15 @@
             window.onblur = null;
             ticker.stop();
             // 写入游戏结束的原因
-            $('#gaveover-reason').html(`原因：${helathChecer.gameOverReason}`);
+            switch (player.hurtedBy.type) {
+                case "boom":
+                    $('#gaveover-reason').html(`你 爆炸了！`);
+                    break;
+                case "mob":
+                    $('#gaveover-reason').html(`被怪物殴打致死 <del>欧拉欧拉欧拉</del>`);
+                    break;
+            }
+            // 屏幕渐变成黑白，动画时间为1s
             $('#gameover-modal').modal('show');
         }
 
@@ -381,6 +394,12 @@
             updateMapFunc: map.drawMap,
         })
         ticker.start();
+        window.ticker = ticker;
+
+        new EntityLive({
+            map: map,
+            ticker: ticker,
+        }).setup();
 
         new SummonMob({
             map: map,
@@ -400,21 +419,16 @@
             speed: 5,
         });
         player.setup();
+        window.player = player;
 
         var playerController = new PlayerController({
             player: player,
             map: map,
         });
+        player.health = 20;
 
         // 画地图
         mapDrawer.drawMap(map);
-
-        let helathChecer = new PlayerLive({
-            player: player,
-            map: map,
-            ticker: ticker,
-        });
-        helathChecer.setup();
 
         // 向#game-inventory中添加物品
         inventory.forEach((item) => {
@@ -449,19 +463,18 @@
             stopped: false,
         }
         // 在当前标签页失焦时，暂停游戏
-        window.onblur = function () {
-            ticker.stop();
-            game.stopped = true;
-            // 唤起模态框
-            $('#game-stopped-modal').modal('show');
-            $('#game-stopped-modal').on('hidden.bs.modal', function (e) {
-                if (game.stopped) {
-                    ticker.start();
-                    game.stopped = false;
-                }
-            })
-        }
-
+        // window.onblur = function () {
+        //     ticker.stop();
+        //     game.stopped = true;
+        //     // 唤起模态框
+        //     $('#game-stopped-modal').modal('show');
+        //     $('#game-stopped-modal').on('hidden.bs.modal', function (e) {
+        //         if (game.stopped) {
+        //             ticker.start();
+        //             game.stopped = false;
+        //         }
+        //     })
+        // }
     </script>
 
 </body>

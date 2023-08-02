@@ -9,13 +9,16 @@ class Boom {
         this.type = "boom";
         this.damage = config.damage || 10; // 爆炸伤害
         this.damageReduction = config.damageReduction || 0.6; // 爆炸伤害衰减
-        this.priority = 3;
+        this.damagePriority = config.damagePriority || 1000; // 攻击优先级，参见docs/attack.md
+        this.damageList = config.damageList || ["all"]; // 可以伤害的实体类型
+        this.taskPriority = 1000; // 决定在每tick中的更新顺序，数字越大越先更新
         this.boomed = false;
         this.boomedInThisTick = false; // 在本tick中是否已经爆炸
         this.boomedByOther = false; // 在被别的炸弹引爆后用于统一清除时间
         this.finished = false;
         this.ticksBrforeBoom = config.ticksBrforeBoom || 15;
         this.ticksBrforeClear = config.ticksBrforeClear || 5;
+        this.skipUpdate = 0; // 用于跳过更新的tick数
     }
 
     /**
@@ -32,14 +35,14 @@ class Boom {
      * @returns {boolean} 是否需要更新地图
      */
     update() {
-        if (this.boomedInThisTick) {
-            this.boomedInThisTick = false;
+        // 跳过更新
+        if (this.skipUpdate > 0) {
+            this.skipUpdate--;
+            return false;
         }
 
-        if (this.boomedByOther) {
-            this.boomed = true;
-            this.boomedByOther = false;
-            return true;
+        if (this.boomedInThisTick) {
+            this.boomedInThisTick = false;
         }
 
         if (this.boomed) {
@@ -80,20 +83,44 @@ class Boom {
                         if (entity.x === i && entity.y === j) {
                             if (entity.type === "boom" && !entity.boomed) {
                                 entity.boom();
-                                entity.boomedByOther = true;
-                            }
-
-                            if (entity.type === "mob") {
-                                entity.health -= this.damage;
-                                if (entity.health <= 0) {
-                                    entity.finished = true;
-                                }
+                                entity.skipUpdate += 1;
                             }
                         }
                     });
                 }
             }
         }
+    }
+
+    canHurt(entity) {
+        // 检查实体是否能被伤害
+        if (!this.boomedInThisTick) {
+            return false;
+        }
+        if (
+            !this.damageList.includes(entity.type) &&
+            !this.damageList.includes("all")
+        ) {
+            return false;
+        }
+        // 计算实体和炸弹是否行和列之间的距离小于等于炸弹的爆炸范围
+        const distanceX = Math.abs(entity.x - this.x);
+        const distanceY = Math.abs(entity.y - this.y);
+        const distance = Math.max(distanceX, distanceY);
+        return distance <= this.range;
+    }
+
+    hurt(entity) {
+        if (!this.canHurt(entity)) {
+            return false;
+        }
+
+        const distance =
+            Math.abs(this.x - entity.x) + Math.abs(this.y - entity.y);
+        const damage = Math.floor(
+            this.damage * Math.pow(this.damageReduction, distance)
+        );
+        return damage;
     }
 
     clearBoom() {

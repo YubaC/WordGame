@@ -64,12 +64,31 @@ class PlayerController {
         this.upKey = config.upKey || 87;
         this.downKey = config.downKey || 83;
         this.doKey = config.doKey || 32;
+
         this.player = config.player;
         this.map = config.map;
+
+        this.helathbar =
+            config.healthbar || document.getElementById("game-healthbar");
+        this.maxInvincibleTime = config.maxInvincibleTime || 5; // 无敌时间
+
+        // this.player.health发生改变时，更新healthbar
+        Object.defineProperty(this.player, "health", {
+            set: (value) => {
+                this.player._health = value;
+                this.updateHealthBar();
+            },
+            get: () => {
+                return this.player._health;
+            },
+        });
+
         this.setup = this.setup.bind(this);
         this.handleShortPress = this.handleShortPress.bind(this);
         this.handleLongPress = this.handleLongPress.bind(this);
+        this.updateHealthBar = this.updateHealthBar.bind(this);
         this.setup();
+        this.updateHealthBar();
     }
 
     setup() {
@@ -219,95 +238,9 @@ class PlayerController {
             this.downBtn.addEventListener("touchcancel", end);
         }
     }
-}
-
-class PlayerLive {
-    constructor(config) {
-        this.player = config.player;
-        this.map = config.map;
-        this.ticker = config.ticker;
-
-        this.helathbar =
-            config.healthbar || document.getElementById("game-healthbar");
-        this.Invincibility = config.Invincibility || 5; // 无敌时间，单位为tick
-        this.lastHurtTick = 0; // 上一次受伤距现在的tick数
-        this.gameOverReason = ""; // 游戏结束的原因
-
-        this.priority = 0;
-
-        this.setup = this.setup.bind(this);
-        this.update = this.update.bind(this);
-        this.updateHealthBar = this.updateHealthBar.bind(this);
-    }
-
-    setup() {
-        this.ticker.taskList.push(this);
-        this.updateHealthBar();
-    }
-
-    update() {
-        // 这里一律返回false，因为player生命值的更新不会导致地图更新
-        if (this.lastHurtTick < this.Invincibility) {
-            this.lastHurtTick++;
-            return false;
-        }
-
-        // 遍历entities，如果有怪物在player的位置，则player受伤
-        const { entities } = this.map;
-        const mobs = entities.filter((entity) => entity.type === "mob");
-        const hurtMobs = mobs.filter(
-            (mob) => mob.x === this.player.x && mob.y === this.player.y
-        );
-
-        // 检查怪物
-        if (hurtMobs.length > 0) {
-            this.player.health -= hurtMobs[0].damage;
-            this.lastHurtTick = 0;
-            this.updateHealthBar();
-
-            if (this.player.health <= 0) {
-                // 游戏结束
-                this.gameOverReason =
-                    "不幸被怪物殴打致死 <del>欧拉欧拉欧拉！</del>";
-                this.player.map.gameOver();
-            }
-        }
-
-        // 检查炸弹
-        const booms = entities.filter((entity) => entity.type === "boom");
-        // 在爆炸范围内的炸弹
-        const hurtBooms = booms.filter(
-            (boom) =>
-                boom.boomed &&
-                boom.x - boom.range <= this.player.x &&
-                boom.x + boom.range >= this.player.x &&
-                boom.y - boom.range <= this.player.y &&
-                boom.y + boom.range >= this.player.y
-        );
-        for (let boom of hurtBooms) {
-            // 计算伤害，伤害随距离的增加而衰减
-            const distance =
-                Math.abs(boom.x - this.player.x) +
-                Math.abs(boom.y - this.player.y);
-            const damage = Math.floor(
-                boom.damage * Math.pow(boom.damageReduction, distance)
-            );
-            this.player.health -= damage;
-
-            this.lastHurtTick = 0;
-            this.updateHealthBar();
-            if (this.player.health <= 0) {
-                this.gameOverReason =
-                    "被自己放置的炸弹炸死 <del>疯狂伊万</del>";
-                this.map.gameOver();
-            }
-        }
-        return false;
-    }
 
     updateHealthBar() {
         if (this.player.health <= 0) {
-            this.player.health = 0;
             // 游戏结束
             this.map.gameOver();
         }
@@ -317,12 +250,112 @@ class PlayerLive {
         // 向healthbar中添加心
         this.helathbar.innerHTML = "";
         const heart = document.createElement("span");
-        const doubleHeartNumber = Math.floor(this.player.health / 2);
-        const singleHeartNumber = this.player.health % 2;
+        const doubleHeartNumber =
+            this.player.health >= 0 ? Math.floor(this.player.health / 2) : 0;
+        const singleHeartNumber =
+            this.player.health >= 0 ? this.player.health % 2 : 0;
         heart.innerText =
             "💕".repeat(doubleHeartNumber) + "💗".repeat(singleHeartNumber);
         this.helathbar.appendChild(heart);
     }
 }
 
-export { Player, PlayerController, PlayerLive };
+// class PlayerLive {
+//     constructor(config) {
+//         this.player = config.player;
+//         this.map = config.map;
+//         this.ticker = config.ticker;
+
+//         this.taskPriority = 0;
+
+//         this.setup = this.setup.bind(this);
+//         this.update = this.update.bind(this);
+//         this.updateHealthBar = this.updateHealthBar.bind(this);
+//     }
+
+//     setup() {
+//         this.ticker.taskList.push(this);
+//         this.updateHealthBar();
+//     }
+
+//     update() {
+//         // 这里一律返回false，因为player生命值的更新不会导致地图更新
+//         if (this.lastHurtTick < this.Invincibility) {
+//             this.lastHurtTick++;
+//             return false;
+//         }
+
+//         // 遍历entities，如果有怪物在player的位置，则player受伤
+//         const { entities } = this.map;
+//         const mobs = entities.filter((entity) => entity.type === "mob");
+//         const hurtMobs = mobs.filter(
+//             (mob) => mob.x === this.player.x && mob.y === this.player.y
+//         );
+
+//         // 检查怪物
+//         if (hurtMobs.length > 0) {
+//             this.player.health -= hurtMobs[0].damage;
+//             this.lastHurtTick = 0;
+//             this.updateHealthBar();
+
+//             if (this.player.health <= 0) {
+//                 // 游戏结束
+//                 this.gameOverReason =
+//                     "不幸被怪物殴打致死 <del>欧拉欧拉欧拉！</del>";
+//                 this.player.map.gameOver();
+//             }
+//         }
+
+//         // 检查炸弹
+//         const booms = entities.filter((entity) => entity.type === "boom");
+//         // 在爆炸范围内的炸弹
+//         const hurtBooms = booms.filter(
+//             (boom) =>
+//                 boom.boomed &&
+//                 boom.x - boom.range <= this.player.x &&
+//                 boom.x + boom.range >= this.player.x &&
+//                 boom.y - boom.range <= this.player.y &&
+//                 boom.y + boom.range >= this.player.y
+//         );
+//         for (let boom of hurtBooms) {
+//             // 计算伤害，伤害随距离的增加而衰减
+//             const distance =
+//                 Math.abs(boom.x - this.player.x) +
+//                 Math.abs(boom.y - this.player.y);
+//             const damage = Math.floor(
+//                 boom.damage * Math.pow(boom.damageReduction, distance)
+//             );
+//             this.player.health -= damage;
+
+//             this.lastHurtTick = 0;
+//             this.updateHealthBar();
+//             if (this.player.health <= 0) {
+//                 this.gameOverReason =
+//                     "被自己放置的炸弹炸死 <del>疯狂伊万</del>";
+//                 this.map.gameOver();
+//             }
+//         }
+//         return false;
+//     }
+
+//     updateHealthBar() {
+//         if (this.player.health <= 0) {
+//             this.player.health = 0;
+//             // 游戏结束
+//             this.map.gameOver();
+//         }
+//         // 两颗心的emoji: 💕
+//         // 一颗心的emoji: 💗
+//         // 一颗心碎的emoji: 💔
+//         // 向healthbar中添加心
+//         this.helathbar.innerHTML = "";
+//         const heart = document.createElement("span");
+//         const doubleHeartNumber = Math.floor(this.player.health / 2);
+//         const singleHeartNumber = this.player.health % 2;
+//         heart.innerText =
+//             "💕".repeat(doubleHeartNumber) + "💗".repeat(singleHeartNumber);
+//         this.helathbar.appendChild(heart);
+//     }
+// }
+
+export { Player, PlayerController };

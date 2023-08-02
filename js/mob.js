@@ -5,11 +5,13 @@ class Mob {
         this.map = config.map; // Needs to config
 
         this.damage = config.damage || 3; // 攻击力
-        this.health = config.health || 10; // 生命值
+        this.damagePriority = config.damagePriority || 500; // 攻击优先级，参见docs/attack.md
+        this.damageList = config.damageList || ["player"]; // 可以伤害的实体类型
+        this.health = config.health || 2; // 生命值
 
         this.name = "怪";
         this.type = "mob";
-        this.priority = 1;
+        this.taskPriority = 800; // 决定在每tick中的更新顺序，数字越大越先更新
         this.finished = false;
 
         // 移动相关
@@ -21,6 +23,8 @@ class Mob {
 
         this.update = this.update.bind(this);
         this.move = this.move.bind(this);
+        this.canHurt = this.canHurt.bind(this);
+        this.hurt = this.hurt.bind(this);
     }
 
     /**
@@ -126,6 +130,32 @@ class Mob {
         }
     }
 
+    canHurt(entity) {
+        // 判断实体类型，从this.damageList中获取可以伤害该实体的实体类型
+        if (
+            !this.damageList.includes(entity.type) &&
+            !this.damageList.includes("all")
+        ) {
+            return false;
+        }
+
+        // 判断距离是否小于等于1
+        const distance =
+            Math.abs(this.x - entity.x) + Math.abs(this.y - entity.y);
+        if (distance > 1) {
+            return false;
+        }
+        return true;
+    }
+
+    // 判断是否能伤害某个实体
+    hurt(entity) {
+        if (!this.canHurt(entity)) {
+            return false;
+        }
+        return this.damage;
+    }
+
     /**
      * 清除自身
      * @memberof Mob
@@ -147,6 +177,8 @@ class SummonMob {
         this.summonSpeed = config.summonSpeed || 100; // 最大召唤速度，多少刻召唤一次
         this.summonProbability = config.summonProbability || 0.01; // 召唤的概率
         this.lastSummoned = 0; // 上一次召唤的距离现在的刻数
+
+        this.taskPriority = 600;
 
         this.setup = this.setup.bind(this);
         this.update = this.update.bind(this);

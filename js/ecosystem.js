@@ -3,6 +3,8 @@ class Eco {
         this.map = config.map;
         this.ticker = config.ticker;
 
+        this.taskPriority = 700;
+
         this.lastWaterSpreadTick = 0; // 上一次水蔓延距现在的tick数
         this.waterSpreadInterval = 5; // 水蔓延的间隔
         this.lastGrassSpreadTick = 0; // 上一次草蔓延距现在的tick数
