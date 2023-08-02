@@ -159,7 +159,7 @@
         }
 
         #game-stopped-modal button,
-        #gameover-modal button {
+        #gameover-modal button:nth-child(1) {
             margin-top: 50px;
         }
 
@@ -212,7 +212,9 @@
                     <p id="gaveover-reason"></p>
                     <p id="game-score"></p>
                     <div class="d-grid">
-                        <button type="button" class="btn btn-primary btn-block"
+                        <button type="button" class="btn btn-primary btn-block" onclick="window.respawn();"
+                            data-bs-dismiss="modal">原地复活</button>
+                        <button type="button" class="btn btn-danger btn-block mt-4"
                             onclick="location.reload();">重新开始</button>
                     </div>
                 </div>
@@ -381,6 +383,14 @@
             // 屏幕渐变成黑白，动画时间为1s
             $('#gameover-modal').modal('show');
         }
+
+        function respawn() {
+            // 重生
+            player.health = 20;
+            player.map.drawMap();
+        }
+
+        window.respawn = respawn;
 
         var map = new Map({
             blocks: blocks,
