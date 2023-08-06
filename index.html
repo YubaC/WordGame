@@ -13,179 +13,7 @@
 </head>
 
 <body>
-    <style>
-        body {
-            font-family: "Noto Color Emoji", sans-serif;
-        }
-
-        #map {
-            letter-spacing: 0.2em;
-            line-height: 1.4em;
-            margin-top: 5px;
-        }
-
-        #map p {
-            margin: 0;
-        }
-
-        #map span {
-            vertical-align: bottom;
-        }
-
-        #game-Inventory {
-            width: calc(100% - 40px);
-            height: 50px;
-            margin: 20px;
-            padding: 0px;
-            background-color: #e9e9ed;
-            border-radius: 5px;
-            list-style: none;
-            overflow-x: auto;
-            overflow-y: hidden;
-        }
-
-        #game-Inventory li {
-            aspect-ratio: 1/1;
-            height: 50px;
-            line-height: 50px;
-            text-align: center;
-            font-size: larger;
-
-            /* border: 1px solid #8f8f9d; */
-        }
-
-        #game-Inventory li.active {
-            background-color: #bdbdc2;
-        }
-
-        button {
-            border-radius: 5px;
-            border: 1px solid #8f8f9d;
-            background-color: #e9e9ed;
-        }
-
-        button:hover {
-            background-color: #d0d0d7;
-        }
-
-        button:active {
-            background-color: #b1b1b9;
-        }
-
-        button.contron-btn {
-            aspect-ratio: 1;
-            width: 50px;
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        button.direction-btn {
-            /* display: inline-block; */
-            /* padding: 0; */
-            /* margin: 0; */
-
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 512'%3E%3C!-- Font Awesome Free 5.15.4 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) --%3E%3Cpath d='M88 166.059V468c0 6.627 5.373 12 12 12h56c6.627 0 12-5.373 12-12V166.059h46.059c21.382 0 32.09-25.851 16.971-40.971l-86.059-86.059c-9.373-9.373-24.569-9.373-33.941 0l-86.059 86.059c-15.119 15.119-4.411 40.971 16.971 40.971H88z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: center;
-            background-size: 30%;
-            /* color: #fff; */
-            /* transition: background-color 0.2s ease-in-out; */
-        }
-
-        #downBtn {
-            transform: rotate(180deg);
-        }
-
-        #leftBtn {
-            transform: rotate(-90deg);
-        }
-
-        #rightBtn {
-            transform: rotate(90deg);
-        }
-
-        #direction-buttons {
-            max-width: fit-content;
-            max-height: fit-content;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            grid-template-rows: repeat(3, 1fr);
-            gap: 5px;
-            justify-items: center;
-            align-items: center;
-        }
-
-        #upBtn {
-            grid-column: 2 / 3;
-            grid-row: 1 / 2;
-        }
-
-        #downBtn {
-            grid-column: 2 / 3;
-            grid-row: 3 / 4;
-        }
-
-        #leftBtn {
-            grid-column: 1 / 2;
-            grid-row: 2 / 3;
-        }
-
-        #rightBtn {
-            grid-column: 3 / 4;
-            grid-row: 2 / 3;
-        }
-
-        .control-btns-master {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .control-btns {
-            margin: 20px;
-        }
-
-        #game-stopped-modal .modal-body,
-        #gameover-modal .modal-body {
-            padding: 100px 50px;
-        }
-
-        #gameover-modal {
-            transition: opacity 1s linear;
-        }
-
-        #game-stopped-modal button,
-        #gameover-modal button:nth-child(1) {
-            margin-top: 50px;
-        }
-
-        #game-healthbar {
-            width: 100%;
-            text-align: center;
-        }
-
-        /* 移动端 */
-        @media screen and (max-width: 768px) {
-            button.contron-btn {
-                width: 70px;
-            }
-
-            .control-btns-master {
-                display: inline-flex;
-                flex-direction: row-reverse;
-                width: 100%;
-                margin-top: 10px;
-            }
-
-            .control-btns {
-                margin: auto;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="./css/common.css">
 
     <!-- 游戏暂停的模态框 -->
     <div class="modal" id="game-stopped-modal">
@@ -194,8 +22,10 @@
                 <!-- 模态框内容 -->
                 <div class="modal-body text-center">
                     <h1>游戏已暂停</h1>
+                    <p class="turn-device">请旋转你的设备，使用横屏进行游戏</p>
                     <div class="d-grid">
-                        <button type="button" class="btn btn-primary btn-block" data-bs-dismiss="modal">继续游戏</button>
+                        <button type="button" id="game-continue" class="btn btn-primary btn-block"
+                            data-bs-dismiss="modal">继续游戏</button>
                     </div>
                 </div>
             </div>
@@ -222,15 +52,10 @@
         </div>
     </div>
 
-    <div id="game-healthbar"></div>
-
-    <!-- 画布 -->
-    <div id="map" class="text-center"></div>
-
-    <ul id="game-Inventory" class="d-inline-flex"></ul>
-
-    <!-- 操作 -->
-    <div class="control-btns-master">
+    <div id="player-control-container">
+        <div class="player-container-center"></div>
+        <ul id="game-Inventory" class="d-inline-flex"></ul>
+        <div id="game-healthbar"></div>
         <div id="direction-buttons" class="control-btns">
             <button id="upBtn" class="contron-btn direction-btn"></button>
             <button id="downBtn" class="contron-btn direction-btn"></button>
@@ -238,11 +63,15 @@
             <button id="rightBtn" class="contron-btn direction-btn"></button>
         </div>
 
-        <div class="control-btns">
-            <button id="doBtn" class="contron-btn">&#128163;</button><br>
-        </div>
-
+        <button id="doBtn" class="contron-btn">&#128163;</button><br>
     </div>
+
+    <!-- 画布 -->
+    <div id="map" class="text-center"></div>
+
+
+    <!-- 操作 -->
+
     <!--  
 ----------------→y
 |
@@ -260,46 +89,24 @@
     <script src="js/ecosystem.js"></script>
     <script src="js/player.js"></script> -->
 
+    <script src="./js/perlin.js"></script>
     <script type="module">
         import { Ticker } from "./js/tick.js";
+        import { ChunkLoadManager } from "./js/chunkLoadManager.js";
         import { EntityLive } from "./js/entity.js";
         import { Map } from "./js/map.js";
         import { Boom } from "./js/boom.js";
         import { MapDrawer } from "./js/DrawMap.js";
         import { SummonMob } from "./js/mob.js";
-        import { Eco } from "./js/ecosystem.js";
+        import { BlockUpdateDetector } from "./js/BUD.js";
         import { Player, PlayerController } from "./js/player.js";
         // !注意！这里必须闭包，因为Map类和BootStrap5中的Map类有冲突！
         //定义地图
-        let blocks = [
-            ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
-            ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
-            ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
-            ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
-            ["草", "草", "水", "水", "水", "草", "草", "草", "草", "草", "草", "草"],
-            ["草", "草", "水", "水", "水", "水", "水", "水", "桥", "桥", "水", "水"],
-            ["草", "草", "水", "水", "水", "水", "水", "水", "桥", "桥", "水", "水"],
-            ["草", "草", "水", "水", "水", "水", "水", "水", "桥", "桥", "水", "水"],
-            ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"],
-            ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"],
-            ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"],
-            ["草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草", "草"]
-        ];
-
-        // 将每一个block 变为 {name: "xxx"}
-        blocks = blocks.map((row, y) => {
-            return row.map((block, x) => {
-                return {
-                    name: block,
-                    x: x,
-                    y: y,
-                }
-            })
-        })
 
         const colorDict = {
             "草": "green",
             "水": "blue",
+            "沙": "khaki",
             "桥": "orange",
             "人": "red",
             "怪": "red",
@@ -307,12 +114,14 @@
             "炸": "black"
         };
 
+        window.Boom = Boom;
+
         const inventory = [
             {
                 name: "💣",
                 do: function () {
-                    // 遍历实体，如果这个格子上没有炸弹，就放置一颗炸弹
-                    if (this.map.entities.some(entity => entity.x === this.x && entity.y === this.y && entity.type === "boom")) {
+                    if (this.game.map.getEntitiesAt(this.game.centerX, this.game.centerY)
+                        .some(entity => entity.x === this.x && entity.y === this.y && entity.type === "boom")) {
                         return;
                     }
 
@@ -320,50 +129,52 @@
                         x: this.x,
                         y: this.y,
                         power: 2,
-                        map: this.map,
+                        game: this.game,
                     });
                     boom.setup();
-                    this.ticker.taskList.push(boom);
-                    this.map.drawMap();
+                    this.game.drawMap();
                 }
             },
             {
                 name: "草",
                 do: function () {
-                    this.map.blocks[this.x][this.y].name = "草";
-                    this.map.drawMap();
+                    playerSetBlock(this.x, this.y, "草");
                 }
             },
             {
                 name: "桥",
                 do: function () {
-                    this.map.blocks[this.x][this.y].name = "桥";
-                    this.map.drawMap();
+                    playerSetBlock(this.x, this.y, "桥");
                 }
             },
             {
                 name: "土",
                 do: function () {
-                    this.map.blocks[this.x][this.y].name = "土";
-                    this.map.drawMap();
+                    playerSetBlock(this.x, this.y, "土");
                 }
-            }, {
+            },
+            {
                 name: "水",
                 do: function () {
-                    this.map.blocks[this.x][this.y].name = "水";
-                    this.map.drawMap();
+                    playerSetBlock(this.x, this.y, "水");
                 }
             }
-        ]
+        ];
 
-        const passable = ["草", "桥", "土", "怪", "人"];
+        function playerSetBlock(x, y, name) {
+            game.map.setBlock(x, y, { name });
+            game.drawMap();
+            game.bud.queue.push(
+                { x: x, y: y, delay: 0, name: game.map.getBlock(x, y).name },
+                { x: x + 1, y: y, delay: 0, name: game.map.getBlock(x + 1, y).name },
+                { x: x - 1, y: y, delay: 0, name: game.map.getBlock(x - 1, y).name },
+                { x: x, y: y + 1, delay: 0, name: game.map.getBlock(x, y + 1).name },
+                { x: x, y: y - 1, delay: 0, name: game.map.getBlock(x, y - 1).name },
+            );
+            game.drawMap();
+        }
 
-        var entities = [];
-
-        const mapDrawer = new MapDrawer({
-            map: "#map",
-            colorDict: colorDict,
-        })
+        const passable = ["草", "水", "沙", "桥", "土", "怪", "人"];
 
         function gameOver() {
             ticker.stop();
@@ -380,8 +191,68 @@
                     break;
             }
             // 屏幕渐变成黑白，动画时间为1s
-            $('#gameover-modal').modal('show');
+            $('#gameover-modal').modal({
+                keyboard: false,
+                backdrop: 'static'
+            }).modal("show");
         }
+
+        /**
+         * 计算屏幕字符容纳量
+         * @returns {Object} {width: Number, height: Number}
+         */
+        function calcCharCapacity() {
+            // 方法为：向#map内添加不可见字符直到换行，然后计算换行后的字符数
+            // 然后再不断添加<p>，直到超出屏幕，计算<p>的个数
+            // 最后返回换行前的字符数*<p>的个数
+            const $map = $("#map");
+            const $p = $("<p></p>");
+            const $span = $("<span>水</span>");
+            $map.empty();
+            $map.append($p.append($span));
+            let height = 0;
+            while ($map.height() < document.documentElement.clientHeight) {
+                $map.append($p.clone());
+                height++;
+            }
+            height = height % 2 === 0 ? height - 1 : height;
+            // 取span.getBoundingClientRect();的width属性
+            const spanWidth = $span[0].getBoundingClientRect().width;
+            let width = Math.floor($p.text("a".repeat(100)).width() / spanWidth);
+            width = width % 2 === 0 ? width - 1 : width;
+            $map.empty();
+            return {
+                width,
+                height
+            }
+        }
+
+        window.onresize = function () {
+            const { width, height } = calcCharCapacity();
+            game.mapDrawer.outputXLength = height;
+            game.mapDrawer.outputYLength = width;
+            game.drawMap();
+        }
+
+        // 申请全屏横屏
+        $(document).ready(() => {
+            // 生成一个按钮，点击后全屏
+            const $fullscreenBtn = $("#game-continue");
+            $fullscreenBtn.click(() => {
+                const element = document.documentElement;
+                if (element.requestFullscreen) {
+                    element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) {
+                    element.webkitRequestFullscreen();
+                } else if (element.mozRequestFullScreen) {
+                    element.mozRequestFullScreen();
+                } else if (element.msRequestFullscreen) {
+                    element.msRequestFullscreen();
+                }
+            });
+            // 如果现在在竖屏，暂停游戏
+            gameStop();
+        })
 
         function respawn() {
             // 重生
@@ -391,53 +262,90 @@
 
         window.respawn = respawn;
 
+        var game = {
+            config: {
+                forceLoadRadius: 3, // 强加载区块半径
+                weakLoadRadius: 4, // 弱加载区块半径
+            },
+            centerX: 0,
+            centerY: 0,
+            stopped: false,
+            // map: map,
+            // ticker: ticker,
+            chunkLoaders: [], // 区块加载器所在的区块坐标{chunkX: Number, chunkY: Number}
+            activeEntities: [], // 活跃实体列表
+            players: [], // 玩家列表
+            gameOver: gameOver,
+            respawn: respawn,
+        };
+
         var map = new Map({
-            blocks: blocks,
-            entities: entities,
+            seed: "random seed",
             passable: passable,
-            drawMapFunc: mapDrawer.drawMap,
-            gameOverFunc: gameOver,
-        })
+        });
+        game.map = map;
 
         var ticker = new Ticker({
-            updateMapFunc: map.drawMap,
+            updateMapFunc: game.map.drawMap,
         })
         ticker.start();
-        window.ticker = ticker;
+        game.ticker = ticker;
+
+        new ChunkLoadManager({
+            game: game,
+        }).setup();
+
+        const mapDrawer = new MapDrawer({
+            mapElement: "#map",
+            colorDict: colorDict,
+            game: game,
+            outputXLength: calcCharCapacity().height,
+            outputYLength: calcCharCapacity().width,
+        });
+
+        game.mapDrawer = mapDrawer;
+        game.drawMap = () => game.mapDrawer.drawMap(game.centerX, game.centerY);
+        window.game = game;
+        game.drawMap();
+        ticker.updateMapFunc = game.drawMap;
 
         new EntityLive({
-            map: map,
-            ticker: ticker,
+            game: game,
         }).setup();
+
+        var bud = new BlockUpdateDetector({
+            game: game,
+        });
+        bud.setup();
+        game.bud = bud;
 
         new SummonMob({
-            map: map,
-            ticker: ticker,
+            game: game,
         }).setup();
 
-        new Eco({
-            map: map,
-            ticker: ticker,
-        }).setup();
+        // new Eco({
+        //     map: map,
+        //     ticker: ticker,
+        // }).setup();
 
         var player = new Player({
             x: 0,
             y: 0,
-            map: map,
-            ticker: ticker,
+            game: game,
             speed: 5,
         });
         player.setup();
         window.player = player;
+        game.players.push(player);
 
         var playerController = new PlayerController({
             player: player,
-            map: map,
+            game: game,
         });
         player.health = 20;
 
         // 画地图
-        mapDrawer.drawMap(map);
+        // mapDrawer.drawMap(map);
 
         // 向#game-inventory中添加物品
         inventory.forEach((item) => {
@@ -468,16 +376,15 @@
         // 点击第一个物品
         document.querySelector("#game-Inventory li").click();
 
-        let game = {
-            stopped: false,
-        }
-
-        // 在当前标签页失焦时，暂停游戏
-        window.onblur = function () {
+        // 游戏暂停的function
+        function gameStop() {
             ticker.stop();
             game.stopped = true;
             // 唤起模态框
-            $('#game-stopped-modal').modal('show');
+            $('#game-stopped-modal').modal({
+                keyboard: false,
+                backdrop: 'static'
+            }).modal('show');
             $('#game-stopped-modal').on('hidden.bs.modal', function (e) {
                 if (game.stopped) {
                     ticker.start();
@@ -485,6 +392,8 @@
                 }
             })
         }
+        // 在当前标签页失焦时，暂停游戏
+        window.onblur = gameStop;
     </script>
 
 </body>
