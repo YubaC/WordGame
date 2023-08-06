@@ -3,52 +3,112 @@ class Player {
         this.name = "人";
         this.x = config.x || 0;
         this.y = config.y || 0;
+        this.chunkX = config.chunkX || 0;
+        this.chunkY = config.chunkY || 0;
         this.health = config.health || 20;
         this.do = config.do || (() => {});
-        this.map = config.map; // Need to be set
-        this.ticker = config.ticker; // Need to be set
+        this.game = config.game;
         this.speed = config.speed || 5; // 5 block per second
 
         this.type = "player";
         this.setup = this.setup.bind(this);
+        this.moveSelfToChunk = this.moveSelfToChunk.bind(this);
+        this.changeSpeed = this.changeSpeed.bind(this);
         this.moveUp = this.moveUp.bind(this);
         this.moveDown = this.moveDown.bind(this);
         this.moveLeft = this.moveLeft.bind(this);
         this.moveRight = this.moveRight.bind(this);
+        this.do = this.do.bind(this);
     }
 
     setup() {
-        // 向entities中添加自身
-        this.map.entities.push(this);
+        const chunk = this.game.map.getChunkThatContains(this.x, this.y);
+        chunk.entities.push(this);
+        // 向chunkLoaders中添加自身
+        this.game.chunkLoaders.push(this);
+        // 向活跃实体列表中添加自身
+        this.game.activeEntities.push(this);
+    }
+
+    moveSelfToChunk(chunk) {
+        // 将实体移动到指定的区块
+        // 如果实体已经在该区块中，则不移动
+        const oldChunk = this.game.map.getChunkThatContains(this.x, this.y);
+        if (oldChunk === chunk) {
+            return;
+        }
+
+        // 从旧区块中移除
+        oldChunk.entities.splice(oldChunk.entities.indexOf(this), 1);
+        // 添加到新区块中
+        chunk.entities.push(this);
+        this.chunkX = chunk.chunkX;
+        this.chunkY = chunk.chunkY;
+    }
+
+    changeSpeed() {
+        // 如果在水里，则速度减半
+        const block = this.game.map.getBlock(this.x, this.y);
+        if (block.name === "水" && this.speed === 5) {
+            this.speed = 1;
+        } else if (block.name !== "水" && this.speed === 1) {
+            this.speed = 5;
+        }
     }
 
     moveUp() {
-        if (this.map.isPassable(this.x - 1, this.y)) {
+        if (this.game.map.isPassable(this.x - 1, this.y)) {
             this.x -= 1;
-            this.map.drawMap();
+            this.game.centerX = this.x;
+            this.game.drawMap();
+
+            this.changeSpeed();
+            this.moveSelfToChunk(
+                this.game.map.getChunkThatContains(this.x, this.y)
+            );
         }
     }
 
     moveDown() {
-        if (this.map.isPassable(this.x + 1, this.y)) {
+        if (this.game.map.isPassable(this.x + 1, this.y)) {
             this.x += 1;
-            this.map.drawMap();
+            this.game.centerX = this.x;
+            this.game.drawMap();
+
+            this.changeSpeed();
+            this.moveSelfToChunk(
+                this.game.map.getChunkThatContains(this.x, this.y)
+            );
         }
     }
 
     moveLeft() {
-        if (this.map.isPassable(this.x, this.y - 1)) {
+        if (this.game.map.isPassable(this.x, this.y - 1)) {
             this.y -= 1;
-            this.map.drawMap();
+            this.game.centerY = this.y;
+            this.game.drawMap();
+
+            this.changeSpeed();
+            this.moveSelfToChunk(
+                this.game.map.getChunkThatContains(this.x, this.y)
+            );
         }
     }
 
     moveRight() {
-        if (this.map.isPassable(this.x, this.y + 1)) {
+        if (this.game.map.isPassable(this.x, this.y + 1)) {
             this.y += 1;
-            this.map.drawMap();
+            this.game.centerY = this.y;
+            this.game.drawMap();
+
+            this.changeSpeed();
+            this.moveSelfToChunk(
+                this.game.map.getChunkThatContains(this.x, this.y)
+            );
         }
     }
+
+    do() {}
 }
 
 class PlayerController {
@@ -66,7 +126,7 @@ class PlayerController {
         this.doKey = config.doKey || 32;
 
         this.player = config.player;
-        this.map = config.map;
+        this.game = config.game;
 
         this.helathbar =
             config.healthbar || document.getElementById("game-healthbar");
@@ -93,7 +153,7 @@ class PlayerController {
 
     setup() {
         this.handleShortPress();
-        this.handleLongPress(1000 / this.player.speed);
+        this.handleLongPress();
         // console.log("PlayerController setup" + this.player.speed);
     }
 
@@ -139,18 +199,26 @@ class PlayerController {
     /**
      * 处理长按的函数，长按时每隔 executionCycle 毫秒执行一次给定的函数(即 funcToExecute)
      */
-    handleLongPress(executionCycle) {
+    handleLongPress() {
         let timeoutId;
         let intervalId;
-        function start(funcToExecute) {
+
+        const start = (funcToExecute) => {
             funcToExecute();
             timeoutId = setTimeout(() => {
-                funcToExecute();
-                intervalId = setInterval(() => {
-                    funcToExecute();
-                }, executionCycle);
-            }, executionCycle);
-        }
+                // funcToExecute();
+                run(funcToExecute);
+                // intervalId = setInterval(() => {
+                //     funcToExecute();
+                // }, executionCycle);
+            }, 1000 / this.player.speed);
+        };
+        const run = (funcToExecute) => {
+            funcToExecute();
+            intervalId = setTimeout(() => {
+                run(funcToExecute);
+            }, 1000 / this.player.speed);
+        };
         const end = () => {
             clearTimeout(timeoutId);
             clearInterval(intervalId);
@@ -242,10 +310,10 @@ class PlayerController {
     updateHealthBar() {
         if (this.player.health <= 0) {
             // 游戏结束
-            this.map.gameOver();
+            this.game.gameOver();
         }
         // 两颗心的emoji: 💕
-        // 一颗心的emoji: 💗
+        // 一颗心的emoji: ♥️
         // 一颗心碎的emoji: 💔
         // 向healthbar中添加心
         this.helathbar.innerHTML = "";
@@ -255,7 +323,10 @@ class PlayerController {
         const singleHeartNumber =
             this.player.health >= 0 ? this.player.health % 2 : 0;
         heart.innerText =
-            "💕".repeat(doubleHeartNumber) + "💗".repeat(singleHeartNumber);
+            "💕".repeat(doubleHeartNumber) + "♥️".repeat(singleHeartNumber);
+        // 添加灰色心至healthbar中的文字数为10
+        const grayHeartNumber = 10 - doubleHeartNumber - singleHeartNumber;
+        heart.innerText += "🖤".repeat(grayHeartNumber);
         this.helathbar.appendChild(heart);
     }
 }
