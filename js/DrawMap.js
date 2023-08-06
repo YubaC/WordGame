@@ -1,10 +1,18 @@
 class MapDrawer {
     constructor(config) {
-        this.$map = config.map instanceof jQuery ? config.map : $(config.map);
+        this.$mapElement =
+            config.mapElement instanceof jQuery
+                ? config.mapElement
+                : $(config.mapElement);
+        this.game = config.game;
+        this.outputXLength = config.outputXLength || 40;
+        this.outputYLength = config.outputYLength || 50;
         this.colorDict = config.colorDict;
+        this.emojis = ["☘️", "🍀"]; // 识别不出来的emoji
 
         this.setStyle();
 
+        this.isEmoji = this.isEmoji.bind(this);
         this.drawMap = this.drawMap.bind(this);
     }
 
@@ -14,18 +22,22 @@ class MapDrawer {
      * @memberof MapDrawer
      */
     isEmoji(content) {
-        // 1. 本身就是 Emoji 字符，如“😀”
+        // 1. 在 emojis 中
+        if (this.emojis.includes(content)) {
+            return true;
+        }
+        // 2. 本身就是 Emoji 字符，如“😀”
         if (content.length == 1) {
             const charCode = content.charCodeAt(0);
             return charCode >= 0x1f000 && charCode <= 0x1ffff;
         }
-        // 2. 由两个或多个字符组成，如“🌲”由“🌳”和“🌴”组成，“👨‍👩‍👧‍👦”由“👨”、“👩”、“👧”和“👦”组成
+        // 3. 由两个或多个字符组成，如“🌲”由“🌳”和“🌴”组成，“👨‍👩‍👧‍👦”由“👨”、“👩”、“👧”和“👦”组成
         if (content.length > 1) {
             // 使用正则表达式匹配是否由多个 Unicode 字符组成
             const regex = /[\u{1F000}-\u{1FFFF}]/u;
             return regex.test(content);
         }
-        // 3. 是 HTML 实体，如“&#128163;”
+        // 4. 是 HTML 实体，如“&#128163;”
         if (content.startsWith("&#")) {
             // 将 HTML 实体转换为 Unicode 字符
             const charCode = parseInt(content.substring(2, content.length - 1));
@@ -40,34 +52,33 @@ class MapDrawer {
      * @returns {number} Emoji 字体大小
      * @memberof MapDrawer
      */
-    getEmojiFontSize() {
-        const emojiText = "😀";
+    getFontSize() {
         const text = "草";
         // 添加至body中
         const span = document.createElement("span");
         span.style.visibility = "hidden";
-        span.innerText = emojiText;
-        document.body.appendChild(span);
-        // 分别获取两个元素的宽度和高度
-        const emojiWidth = span.offsetWidth;
-        const emojiHeight = span.offsetHeight;
         span.innerText = text;
-        const textWidth = span.offsetWidth;
-        const textLineHeight = span.offsetHeight;
+        this.$mapElement.append(span);
+
+        const rect = span.getBoundingClientRect();
+        const textWidth = rect.width;
+        const textLineHeight = rect.height;
         // 移除span
-        document.body.removeChild(span);
+        this.$mapElement.remove(span);
         // 计算字体大小(em)
-        const emojiSize = textWidth / emojiWidth;
-        const emojiLineHeight = textLineHeight / emojiHeight;
-        return Math.min(emojiSize, emojiLineHeight);
+        return { width: textWidth, height: textLineHeight };
     }
 
     setStyle() {
         const $style = $("<style></style>");
         // Get emoji font size
-        const emojiSize = this.getEmojiFontSize();
+        const emojiSize = this.getFontSize();
         // Add emoji font size
-        $style.append(`.emoji { font-size: ${emojiSize}em; }`);
+        // $style.append(`.emoji-${emoji} { font-size: ${emojiSize}em; }`);
+        $style.append(
+            `.emoji { display:inline-block; width: ${emojiSize.width}px; }`
+        );
+
         for (const key in this.colorDict) {
             if (this.colorDict.hasOwnProperty(key)) {
                 const color = this.colorDict[key];
@@ -86,18 +97,54 @@ class MapDrawer {
      * @memberof MapDrawer
      * @todo 优化绘制地图的性能
      */
-    drawMap(map) {
-        // console.error("Draw map"); //用于查找触发绘制地图的函数
-        // 叠加entities至blocks
-        // 1. 深拷贝blocks
-        let outputMap = JSON.parse(JSON.stringify(map.blocks));
+    drawMap(centerX, centerY) {
+        // console.error("drawMap");
+        // 裁取地图
+        // 1. 获取地图的大小
+        const xLength = this.outputXLength;
+        const yLength = this.outputYLength;
+        // 2. 计算裁取的范围
+        const x1 = centerX - Math.floor(xLength / 2);
+        const x2 = centerX + Math.floor(xLength / 2);
+        const y1 = centerY - Math.floor(yLength / 2);
+        const y2 = centerY + Math.floor(yLength / 2);
+        // 3. 裁取地图
+        let outputMap = this.game.map.getClipedMapData(
+            {
+                x: x1,
+                y: y1,
+            },
+            {
+                x: x2,
+                y: y2,
+            }
+        );
+
+        // let outputMap = JSON.parse(JSON.stringify(map.blocks));
         outputMap = outputMap.map((line) => line.map((block) => block.name));
-        // TODO: 为大地图截取部分地图
         // 2. 在人和怪物的位置上标记图标
-        for (const entity of map.entities) {
+        for (const entity of this.game.ticker.taskList) {
+            // 如果实体没有名字，则跳过
+            if (!entity.name) {
+                continue;
+            }
+            // 如果实体不在裁取的范围内，则跳过
+            if (
+                entity.x < x1 ||
+                entity.x > x2 ||
+                entity.y < y1 ||
+                entity.y > y2
+            ) {
+                continue;
+            }
             const { x, y, name } = entity;
-            outputMap[x][y] = name ? name : outputMap[x][y];
+            outputMap[x - x1][y - y1] = name ? name : outputMap[x - x1][y - y1];
         }
+        outputMap[this.game.centerX - x1][this.game.centerY - y1] = "人";
+        // for (const entity of map.entities) {
+        //     const { x, y, name } = entity;
+        //     outputMap[x][y] = name ? name : outputMap[x][y];
+        // }
         // 3. 生成地图 HTML
         let mapHtml = "";
         for (let y = 0; y < outputMap.length; y++) {
@@ -108,13 +155,16 @@ class MapDrawer {
                 if (this.isEmoji(content)) {
                     line += `<span class="emoji">${content}</span>`;
                 } else {
+                    // line += `<span class="color-${this.colorDict[content]} x-${
+                    //     y + x1
+                    // } y-${x + y1}"">${content}</span>`;
                     line += `<span class="color-${this.colorDict[content]}">${content}</span>`;
                 }
             }
             mapHtml += `<p>${line}</p>`;
         }
         // 4. 将地图 HTML 添加至页面
-        this.$map.html(mapHtml);
+        this.$mapElement.html(mapHtml);
     }
 }
 
