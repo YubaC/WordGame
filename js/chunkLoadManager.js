@@ -4,7 +4,7 @@
 class ChunkLoadManager {
     constructor(config) {
         this.game = config.game;
-        this.taskPriority = 500;
+        this.taskPriority = 400;
 
         // Loader所在的区块坐标数组
         this.loaderChunks = [];
