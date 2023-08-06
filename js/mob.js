@@ -1,9 +1,8 @@
-class Mob {
-    constructor(config) {
-        this.x = config.x; // Needs to config
-        this.y = config.y; // Needs to config
-        this.map = config.map; // Needs to config
+import { Entity } from "./entity.js";
 
+class Mob extends Entity {
+    constructor(config) {
+        super(config);
         this.damage = config.damage || 3; // 攻击力
         this.damagePriority = config.damagePriority || 500; // 攻击优先级，参见docs/attack.md
         this.damageList = config.damageList || ["player"]; // 可以伤害的实体类型
@@ -12,36 +11,18 @@ class Mob {
         this.name = "怪";
         this.type = "mob";
         this.taskPriority = 800; // 决定在每tick中的更新顺序，数字越大越先更新
-        this.finished = false;
 
         // 移动相关
         this.probability = config.probability || 0.1; // 想要移动的概率
         this.maxStep = config.maxStep || 5; // 一次最多移动的步数
         this.speed = config.speed || 1; // 移动速度，每刻移动的步数
         this.direction = 0; // 移动方向，0-上，1-右，2-下，3-左
-        this.stepsToMove = 0; // 距离下一次移动还需要的步数
 
         this.update = this.update.bind(this);
-        this.move = this.move.bind(this);
         this.canHurt = this.canHurt.bind(this);
         this.hurt = this.hurt.bind(this);
     }
 
-    /**
-     * 初始化的函数
-     * @memberof Mob
-     * @returns {void}
-     */
-    setup() {
-        // 向entities中添加自身
-        this.map.entities.push(this);
-    }
-
-    /**
-     * 负责在新的tick中更新状态的函数
-     * @memberof Mob
-     * @returns {boolean} 是否需要更新地图
-     */
     update() {
         // 1. 判断是否可以移动
         // 2. 判断是否想要移动
@@ -49,7 +30,7 @@ class Mob {
         // 4. 更新地图
 
         // 如果还有剩余步数，则继续移动
-        if (this.stepsToMove > 0) {
+        if (this.stepsStillneedToMove > 0) {
             return this.move();
         }
 
@@ -57,10 +38,10 @@ class Mob {
         // 遍历四周的地块，如果有一个是可通行的，则可以移动
         const { x, y } = this;
         const canMove =
-            this.map.isPassable(x - 1, y) ||
-            this.map.isPassable(x, y + 1) ||
-            this.map.isPassable(x + 1, y) ||
-            this.map.isPassable(x, y - 1);
+            this.game.map.isPassable(x - 1, y) ||
+            this.game.map.isPassable(x, y + 1) ||
+            this.game.map.isPassable(x + 1, y) ||
+            this.game.map.isPassable(x, y - 1);
 
         // 2. 判断是否想要移动
         // 如果不想移动，则返回false
@@ -77,57 +58,10 @@ class Mob {
 
         // 3. 移动
         // 随机生成移动的步数
-        this.stepsToMove = Math.floor(Math.random() * this.maxStep);
+        this.stepsStillneedToMove = Math.floor(Math.random() * this.maxStep);
         // 随机生成移动的方向
         this.direction = Math.floor(Math.random() * 4);
         return this.move();
-    }
-
-    /**
-     * 移动
-     * @memberof Mob
-     * @returns {boolean} 是否移动成功
-     */
-    move() {
-        // 移动
-        switch (this.direction) {
-            case 0: {
-                // 上
-                this.stepsToMove -= this.speed;
-                if (this.map.isPassable(this.x - 1, this.y)) {
-                    this.x -= this.speed;
-                    return true;
-                }
-                return false;
-            }
-            case 1: {
-                // 右
-                this.stepsToMove -= this.speed;
-                if (this.map.isPassable(this.x, this.y + 1)) {
-                    this.y += this.speed;
-                    return true;
-                }
-                return false;
-            }
-            case 2: {
-                // 下
-                this.stepsToMove -= this.speed;
-                if (this.map.isPassable(this.x + 1, this.y)) {
-                    this.x += this.speed;
-                    return true;
-                }
-                return false;
-            }
-            case 3: {
-                // 左
-                this.stepsToMove -= this.speed;
-                if (this.map.isPassable(this.x, this.y - 1)) {
-                    this.y -= this.speed;
-                    return true;
-                }
-                return false;
-            }
-        }
     }
 
     canHurt(entity) {
@@ -155,24 +89,12 @@ class Mob {
         }
         return this.damage;
     }
-
-    /**
-     * 清除自身
-     * @memberof Mob
-     * @returns {void}
-     */
-    teardown() {
-        // 从entities中删除自身
-        const index = this.map.entities.indexOf(this);
-        this.map.entities.splice(index, 1);
-    }
 }
 
 // 生成怪物的函数
 class SummonMob {
     constructor(config) {
-        this.map = config.map; // Needs to config
-        this.ticker = config.ticker; // Needs to config
+        this.game = config.game;
         this.maxMob = config.maxMob || 3; // 最大怪物数量
         this.summonSpeed = config.summonSpeed || 100; // 最大召唤速度，多少刻召唤一次
         this.summonProbability = config.summonProbability || 0.01; // 召唤的概率
@@ -186,7 +108,7 @@ class SummonMob {
 
     setup() {
         // 向ticker中添加自身
-        this.ticker.taskList.push(this);
+        this.game.ticker.taskList.push(this);
     }
 
     /**
@@ -196,31 +118,33 @@ class SummonMob {
      */
     update() {
         // 遍历entities，如果怪物数量小于最大怪物数量，则以summonSpeed的概率召唤怪物
-        const { entities } = this.map;
+        const entities = this.game.activeEntities;
         const mobs = entities.filter((entity) => entity.type === "mob");
         if (
             mobs.length < this.maxMob &&
             this.lastSummoned >= this.summonSpeed &&
             Math.random() < this.summonProbability
         ) {
-            // 获取一个随机的空地块
-            const { blocks } = this.map;
-            const { length: xLength } = blocks;
-            const { length: Ylength } = blocks[0];
-
+            let mobX, mobY;
             do {
-                var x = Math.floor(Math.random() * xLength);
-                var y = Math.floor(Math.random() * Ylength);
-            } while (!this.map.isPassable(x, y));
+                // 获取一个距离玩家不超过10的随机位置
+                const { x, y } =
+                    this.game.players[
+                        Math.floor(Math.random() * this.game.players.length)
+                    ];
+                const randomX = Math.floor(Math.random() * 10) - 5;
+                const randomY = Math.floor(Math.random() * 10) - 5;
+                mobX = x + randomX;
+                mobY = y + randomY;
+            } while (!this.game.map.isPassable(mobX, mobY));
 
             // 生成怪物
             const mob = new Mob({
-                x: x,
-                y: y,
-                map: this.map,
+                x: mobX,
+                y: mobY,
+                game: this.game,
             });
             mob.setup();
-            this.ticker.taskList.push(mob);
             this.lastSummoned = 0;
             return true;
         } else {

@@ -1,7 +1,196 @@
+class Entity {
+    constructor(config) {
+        this.x = config.x; // Needs to config
+        this.y = config.y; // Needs to config
+        this.game = config.game; // Needs to config
+
+        this.damage = config.damage || 0; // 攻击力
+        this.damagePriority = config.damagePriority || 0; // 攻击优先级，参见docs/attack.md
+        this.damageList = config.damageList || ["player"]; // 可以伤害的实体类型
+        // this.health = config.health || 0; // 生命值
+
+        // 无敌时间
+        this.invincibleTime = 0;
+        this.maxInvincibleTime = config.maxInvincibleTime || 5;
+
+        this.name = ""; // 显示在地图上的名字
+        this.type = ""; // 实体的类型
+        this.taskPriority = 0; // 决定在每tick中的更新顺序，数字越大越先更新
+        this.finished = false; // 是否已经完成，如果完成则会被清除
+
+        // 移动相关
+        this.speed = config.speed || 1; // 移动速度，每刻移动的步数
+        this.direction = 0; // 移动方向，0-上，1-右，2-下，3-左
+        this.stepsStillneedToMove = 0; // 还没走完的步数
+        this.lastMoveTick = 0; // 上一次移动的距离现在的tick数，如果speed < 1，则用于处理多个tick移动一步的情况
+
+        this.update = this.update.bind(this);
+        this.moveEntityToChunk = this.moveEntityToChunk.bind(this);
+        this.move = this.move.bind(this);
+    }
+
+    /**
+     * 初始化的函数
+     * @memberof Entity
+     * @returns {void}
+     */
+    setup() {
+        // 向所在的区块中添加自身
+        const chunk = this.game.map.getChunkThatContains(this.x, this.y);
+        chunk.entities.push(this);
+        this.game.ticker.taskList.push(this);
+        // 向活跃实体列表中添加自身
+        this.game.activeEntities.push(this);
+    }
+
+    update() {}
+
+    moveEntityToChunk(oldChunk, newChunk) {
+        // 将实体移动到指定的区块
+        // 如果实体已经在该区块中，则不移动
+        // console.log("移动实体到新的区块", this, newChunk);
+        if (oldChunk === newChunk) {
+            return;
+        }
+
+        // 从旧区块中移除
+        oldChunk.entities.splice(oldChunk.entities.indexOf(this), 1);
+        // 添加到新区块中
+        newChunk.entities.push(this);
+        // console.log("实体移动到了新的区块", this, newChunk);
+
+        // 如果实体跑出了强加载区块，则将自己从taskList中移除
+        for (let fChunk of this.game.map.forceLoad) {
+            // console.log(fChunk === newChunk, fChunk, newChunk);
+            if (newChunk === fChunk) {
+                return;
+            }
+        }
+        // console.log("实体跑出了强加载区块，将自己从taskList中移除", this);
+        this.game.ticker.taskList.splice(
+            this.game.ticker.taskList.indexOf(this),
+            1
+        );
+    }
+
+    /**
+     * 移动
+     * @memberof Entity
+     * @returns {boolean} 是否移动成功
+     */
+    move() {
+        // 移动
+        // 计算每多少个tick要移动一步
+        const stepsPerTick = 1 / this.speed;
+        // this.speed的意思是每刻移动的步数，因此如果 stepsPerTick > 1，则需要多个tick才能移动一步
+        // 否则，每个tick都移动一步或多步
+        // 当前所在的区块位置
+        if (stepsPerTick < 1) {
+            // 如果上一次移动距离现在的tick数小于stepsPerTick，则不移动
+            if (this.lastMoveTick < stepsPerTick) {
+                this.lastMoveTick++;
+                return false;
+            }
+            this.lastMoveTick = 0;
+        }
+
+        const oldChunk = this.game.map.getChunkThatContains(this.x, this.y);
+        // stepsToMove为这一步需要走的长度，当speed >=1 时，stepsToMove = speed，否则stepsToMove = 1
+        const stepsToMove = this.speed >= 1 ? this.speed : 1;
+        switch (this.direction) {
+            case 0: {
+                let i = 0;
+                while (
+                    i < stepsToMove &&
+                    this.game.map.isPassable(this.x - 1, this.y)
+                ) {
+                    this.x -= 1;
+                    this.stepsStillneedToMove -= 1;
+                    i++;
+                }
+                // 将自身移动到新的区块中，这个函数会自动判断是否需要移动
+                this.moveEntityToChunk(
+                    oldChunk,
+                    this.game.map.getChunkThatContains(this.x, this.y)
+                );
+                // 如果一步也没走，则返回false，否则返回true
+                return i > 0;
+            }
+            case 1: {
+                // 右
+                let i = 0;
+                while (
+                    i < stepsToMove &&
+                    this.game.map.isPassable(this.x, this.y + 1)
+                ) {
+                    this.y += 1;
+                    this.stepsStillneedToMove -= 1;
+                    i++;
+                }
+                // 将自身移动到新的区块中，这个函数会自动判断是否需要移动
+                this.moveEntityToChunk(
+                    oldChunk,
+                    this.game.map.getChunkThatContains(this.x, this.y)
+                );
+                // 如果一步也没走，则返回false，否则返回true
+                return i > 0;
+            }
+            case 2: {
+                // 下
+                let i = 0;
+                while (
+                    i < stepsToMove &&
+                    this.game.map.isPassable(this.x + 1, this.y)
+                ) {
+                    this.x += 1;
+                    this.stepsStillneedToMove -= 1;
+                    i++;
+                }
+                // 将自身移动到新的区块中，这个函数会自动判断是否需要移动
+                this.moveEntityToChunk(
+                    oldChunk,
+                    this.game.map.getChunkThatContains(this.x, this.y)
+                );
+                // 如果一步也没走，则返回false，否则返回true
+                return i > 0;
+            }
+            case 3: {
+                // 左
+                let i = 0;
+                while (
+                    i < stepsToMove &&
+                    this.game.map.isPassable(this.x, this.y - 1)
+                ) {
+                    this.y -= 1;
+                    this.stepsStillneedToMove -= 1;
+                    i++;
+                }
+                // 将自身移动到新的区块中，这个函数会自动判断是否需要移动
+                this.moveEntityToChunk(
+                    oldChunk,
+                    this.game.map.getChunkThatContains(this.x, this.y)
+                );
+                // 如果一步也没走，则返回false，否则返回true
+                return i > 0;
+            }
+        }
+    }
+
+    teardown() {
+        // 从当前所在的区块中移除自身
+        const chunk = this.game.map.getChunkThatContains(this.x, this.y);
+        chunk.entities.splice(chunk.entities.indexOf(this), 1);
+        // 从活跃实体列表中移除自身
+        this.game.activeEntities.splice(
+            this.game.activeEntities.indexOf(this),
+            1
+        );
+    }
+}
+
 class EntityLive {
     constructor(config) {
-        this.map = config.map;
-        this.ticker = config.ticker;
+        this.game = config.game;
         this.taskPriority = 900;
 
         // 不同类型的实体可以伤害的实体不同
@@ -18,12 +207,12 @@ class EntityLive {
     }
 
     setup() {
-        this.ticker.taskList.push(this);
+        this.game.ticker.taskList.push(this);
     }
 
     update() {
         // 遍历实体列表，计算每个实体受到的伤害
-        this.map.entities.forEach((entity) => {
+        this.game.activeEntities.forEach((entity) => {
             // 如果实体没有health属性，则不检查伤害
             if (!entity.health) {
                 return;
@@ -41,7 +230,7 @@ class EntityLive {
 
     checkDamage(targetEntity) {
         // 遍历实体列表，获取可以伤害当前实体的实体
-        let damageSourceList = this.map.entities
+        let damageSourceList = this.game.activeEntities
             .map((entity) => {
                 if (!entity.hurt) {
                     return { damageCaused: false };
@@ -83,4 +272,4 @@ class EntityLive {
     }
 }
 
-export { EntityLive };
+export { Entity, EntityLive };
