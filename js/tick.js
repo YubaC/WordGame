@@ -59,7 +59,7 @@ class Ticker {
      * @returns {void}
      */
     doTask() {
-        console.log("Tick +1");
+        // console.log("Tick +1");
         // 排序task, 优先级高的先执行，优先级为task.taskPriority
         this.taskList.sort((a, b) => {
             const priorityA = a.taskPriority || 0;
